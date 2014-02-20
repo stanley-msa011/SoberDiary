@@ -55,14 +55,13 @@ public class AnalysisCounterView extends StatisticPageView {
 	public void updateCounter(){
 		
 		int prev_coupon = PreferenceControl.lastShowedCoupon();
-		
 		int total_counter = PreferenceControl.getTotalCounter();
-		
 		
     	int coupon = total_counter/Config.COUPON_COUNTER;
     	int counter = total_counter%Config.COUPON_COUNTER;
     	
     	PreferenceControl.setShowedCoupon(coupon);
+    	PreferenceControl.setCouponChange(false);
     	
     	if (prev_coupon <coupon){
     		if (Build.VERSION.SDK_INT < 16)

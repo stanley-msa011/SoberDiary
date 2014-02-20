@@ -30,7 +30,6 @@ public class ChartLabelView extends View {
 	
 	private int chart_type = 0;
 	
-	
 	public ChartLabelView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		text_paint.setColor(0xFFAAAAAA);

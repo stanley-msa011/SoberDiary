@@ -49,6 +49,8 @@ import android.widget.TextView;
 
 public class MainActivity extends FragmentActivity {
 
+	public static MainActivity mainActivity = null;
+	
 	static private TabHost tabHost;
 
 	static private TabSpec[] tabs;
@@ -90,6 +92,9 @@ public class MainActivity extends FragmentActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		mainActivity = this;
+		
 		setContentView(R.layout.activity_main);
 
 		if (PreferenceControl.checkFirstUID())
@@ -98,9 +103,9 @@ public class MainActivity extends FragmentActivity {
 		Typefaces.initAll();
 		CustomToast.settingSoundPool();
 
-		loading_page = (ImageView) this.findViewById(R.id.loading_page);
+		loading_page = (ImageView) findViewById(R.id.loading_page);
 
-		tabHost = (TabHost) this.findViewById(android.R.id.tabhost);
+		tabHost = (TabHost) findViewById(android.R.id.tabhost);
 		tabHost.setup();
 
 		if (tabs == null)
@@ -200,8 +205,8 @@ public class MainActivity extends FragmentActivity {
 		super.onResume();
 		if (LockCheck.check()) {
 			Intent lock_intent = new Intent(this, LockedActivity.class);
-			this.startActivity(lock_intent);
-			this.finish();
+			startActivity(lock_intent);
+			finish();
 			return;
 		}
 		setTimers();
@@ -239,7 +244,11 @@ public class MainActivity extends FragmentActivity {
 		}
 	}
 
-	public void setDefaultTab() {
+	public void setCouponChange(boolean change){
+		customTabs[1].showHighlight(change);
+	}
+	
+	private void setDefaultTab() {
 		ft = fm.beginTransaction();
 		fragments[0] = new TestFragment();
 		fragments[1] = new StatisticFragment();
@@ -247,8 +256,10 @@ public class MainActivity extends FragmentActivity {
 
 		ft.add(android.R.id.tabcontent, fragments[0], tabName[0]);
 		setTabState(tabName[0]);
-		if (PreferenceControl.getPageChange())
-			customTabs[2].showHighlight(true);
+		
+		customTabs[1].showHighlight(PreferenceControl.getCouponChange());
+		customTabs[2].showHighlight(PreferenceControl.getPageChange());
+		
 		ft.commit();
 	}
 
@@ -271,14 +282,15 @@ public class MainActivity extends FragmentActivity {
 			setTimers();
 			if (tabId.equals(tabName[0])) {
 				ClickLog.Log(ClickLogId.TAB_TEST);
-				if (PreferenceControl.getPageChange())
-					customTabs[2].showHighlight(true);
+				customTabs[1].showHighlight(PreferenceControl.getCouponChange());
+				customTabs[2].showHighlight(PreferenceControl.getPageChange());
 			} else if (tabId.equals(tabName[1])) {
 				ClickLog.Log(ClickLogId.TAB_STATISTIC);
-				if (PreferenceControl.getPageChange())
-					customTabs[2].showHighlight(true);
+				customTabs[1].showHighlight(false);
+				customTabs[2].showHighlight(PreferenceControl.getPageChange());
 			} else if (tabId.equals(tabName[2])) {
 				ClickLog.Log(ClickLogId.TAB_STORYTELLING);
+				customTabs[1].showHighlight(PreferenceControl.getCouponChange());
 				customTabs[2].showHighlight(false);
 			}
 			ft = fm.beginTransaction();
@@ -395,7 +407,7 @@ public class MainActivity extends FragmentActivity {
 		if (menu == null)
 			menu = new CustomMenu(this);
 		if (!menu.isShowing() && clickable)
-			menu.showAtLocation(this.getWindow().getDecorView(), Gravity.BOTTOM, 0, 0);
+			menu.showAtLocation(getWindow().getDecorView(), Gravity.BOTTOM, 0, 0);
 	}
 
 	@Override
@@ -422,11 +434,11 @@ public class MainActivity extends FragmentActivity {
 		switch (id) {
 		case R.id.menu_about:
 			newIntent = new Intent(this, AboutActivity.class);
-			this.startActivity(newIntent);
+			startActivity(newIntent);
 			return true;
 		case R.id.menu_setting:
 			newIntent = new Intent(this, SettingActivity.class);
-			this.startActivity(newIntent);
+			startActivity(newIntent);
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
@@ -441,10 +453,15 @@ public class MainActivity extends FragmentActivity {
 	@Override
 	public boolean onKeyUp(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_MENU) {
-			if (menu != null && menu.isShowing())
-				closeOptionsMenu();
-			else
-				openOptionsMenu();
+			if (Build.VERSION.SDK_INT <14){
+				return super.onKeyUp(keyCode, event);
+			}
+			else{
+				if (menu != null && menu.isShowing())
+					closeOptionsMenu();
+				else
+					openOptionsMenu();
+			}
 			return true;
 		} else if (keyCode == KeyEvent.KEYCODE_BACK) {
 			if (menu != null && menu.isShowing()) {
@@ -452,9 +469,6 @@ public class MainActivity extends FragmentActivity {
 				return true;
 			} else {
 				if (clickable) {
-					Context context = MainActivity.this.getBaseContext();
-					if (context != null)
-						;
 					return super.onKeyUp(keyCode, event);
 				} else
 					return true;

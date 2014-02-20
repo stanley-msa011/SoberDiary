@@ -11,6 +11,7 @@ import ubicomp.soberdiary.main.ui.CustomToastSmall;
 import ubicomp.soberdiary.main.ui.Typefaces;
 import ubicomp.soberdiary.system.clicklog.ClickLog;
 import ubicomp.soberdiary.system.clicklog.ClickLogId;
+import ubicomp.soberdiary.system.config.PreferenceControl;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -243,8 +244,11 @@ public class StorytellingTestActivity extends Activity {
 						isCorrect, selectedAnswer, agreement, 0));
 				if (!isCorrect)
 					CustomToast.generateToast(R.string.storytelling_test_incorrect, -1);
-				else
+				else{
+					if (PreferenceControl.checkCouponChange())
+						PreferenceControl.setCouponChange(true);
 					CustomToast.generateToast(R.string.storytelling_test_correct, addScore);
+				}
 				if (agreementChange)
 					ClickLog.Log(ClickLogId.STORYTELLING_TEST_SUBMIT);
 				else

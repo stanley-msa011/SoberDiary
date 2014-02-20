@@ -273,6 +273,8 @@ public class FacebookActivity extends Activity {
 						info = new FacebookInfo(System.currentTimeMillis(), image_week, image_score, text_msg, false,
 								true, sendGroup, 0);
 						int addScore = db.insertFacebookInfo(info);
+						if (PreferenceControl.checkCouponChange())
+							PreferenceControl.setCouponChange(true);
 						CustomToast.generateToast(R.string.fb_success_toast, addScore);
 
 					} else {

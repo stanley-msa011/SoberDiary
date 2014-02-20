@@ -14,6 +14,7 @@ import ubicomp.soberdiary.main.ui.CustomToastSmall;
 import ubicomp.soberdiary.main.ui.Typefaces;
 import ubicomp.soberdiary.system.clicklog.ClickLog;
 import ubicomp.soberdiary.system.clicklog.ClickLogId;
+import ubicomp.soberdiary.system.config.PreferenceControl;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -245,6 +246,9 @@ public class VoiceRecordBlock implements RecorderCallee {
 					mediaRecorder = null;
 					int addScore = db.insertUserVoiceRecord(new UserVoiceRecord(System.currentTimeMillis(), curTV.year,
 							curTV.month, curTV.day, 0));
+					if (PreferenceControl.checkCouponChange())
+						PreferenceControl.setCouponChange(true);
+					
 					CustomToast.generateToast(R.string.audio_box_toast_record_end, addScore);
 				} catch (IllegalStateException e) {
 				}
@@ -265,6 +269,9 @@ public class VoiceRecordBlock implements RecorderCallee {
 						mediaRecorder = null;
 						int addScore = db.insertUserVoiceRecord(new UserVoiceRecord(System.currentTimeMillis(),
 								curTV.year, curTV.month, curTV.day, 0));
+						if (PreferenceControl.checkCouponChange())
+							PreferenceControl.setCouponChange(true);
+						
 						CustomToast.generateToast(R.string.audio_box_toast_timeup, addScore);
 						recordCaller.updateHasRecorder(chartItemIdx);
 					} catch (IllegalStateException e) {

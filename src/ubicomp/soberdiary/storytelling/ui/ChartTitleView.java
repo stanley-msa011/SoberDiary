@@ -77,11 +77,14 @@ public class ChartTitleView extends View {
 				ClickLog.Log(ClickLogId.STORYTELLING_CHART_TYPE3);
 			}
 			caller.setChartType(chart_type);
-			invalidate();
 		}
 		return true;
 	}
 
+	public void setChartType(int type){
+		chart_type = type;
+	}
+	
 	@Override
 	protected void onDraw(Canvas canvas) {
 		super.onDraw(canvas);

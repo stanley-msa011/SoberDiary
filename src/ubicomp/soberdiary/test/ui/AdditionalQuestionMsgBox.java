@@ -11,6 +11,7 @@ import ubicomp.soberdiary.main.ui.ScreenSize;
 import ubicomp.soberdiary.main.ui.Typefaces;
 import ubicomp.soberdiary.system.clicklog.ClickLogId;
 import ubicomp.soberdiary.system.clicklog.ClickLog;
+import ubicomp.soberdiary.system.config.PreferenceControl;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Point;
@@ -260,6 +261,8 @@ public class AdditionalQuestionMsgBox{
 			int emotion =  emotionSeekBar.getProgress();
 			DatabaseControl db = new DatabaseControl();
 			int addScore = db.insertAdditionalQuestionnaire(new AdditionalQuestionnaire(System.currentTimeMillis(),true,emotion,craving,0));
+			if (PreferenceControl.checkCouponChange())
+				PreferenceControl.setCouponChange(true);
 			CustomToast.generateToast(R.string.additional_questionnaire_toast, addScore);
 			clear();
 		}

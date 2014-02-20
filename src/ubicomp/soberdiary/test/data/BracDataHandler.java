@@ -81,7 +81,9 @@ public class BracDataHandler {
 		Detection curDetection = db.getLatestDetection();
 		int curState = StorytellingGraphics.getPageIdx(curDetection.weeklyScore, curDetection.tv.week);
 
-		boolean pageChange = (prevShowWeek == curDetection.tv.week && prevShowWeekState < curState);
+		if (prevShowWeek < curDetection.tv.week)
+			prevShowWeekState = 0;
+		boolean pageChange = (prevShowWeekState < curState);
 		PreferenceControl.setPageChange(pageChange);
 		Log.d("PAGE_CHANGE",prevShowWeek+" "+prevShowWeekState+" "+curDetection.tv.week+" "+curState+" "+pageChange);
 		

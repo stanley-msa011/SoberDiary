@@ -695,8 +695,10 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 		chartYAxis.invalidate();
 		chartView.setChartType(chart_type);
 		chartView.invalidate();
-		chartLabel.setChartType(type);
+		chartLabel.setChartType(chart_type);
 		chartLabel.invalidate();
+		chartTitle.setChartType(chart_type);
+		chartTitle.invalidate();
 	}
 	
 	private void checkHasRecorder() {

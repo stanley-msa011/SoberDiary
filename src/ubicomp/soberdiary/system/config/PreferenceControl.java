@@ -7,6 +7,7 @@ import ubicomp.soberdiary.data.database.DatabaseControl;
 import ubicomp.soberdiary.data.structure.ExchangeHistory;
 import ubicomp.soberdiary.data.structure.TimeValue;
 import ubicomp.soberdiary.main.App;
+import ubicomp.soberdiary.main.MainActivity;
 import ubicomp.soberdiary.main.R;
 
 public class PreferenceControl {
@@ -483,6 +484,24 @@ public class PreferenceControl {
 	
 	public static boolean getPageChange(){
 		return sp.getBoolean("pageChange", false);
+	}
+	
+	public static boolean checkCouponChange(){
+		int prevCoupon = PreferenceControl.lastShowedCoupon();
+		int curCoupon = PreferenceControl.getTotalCounter()/Config.COUPON_COUNTER;
+		return curCoupon != prevCoupon;
+	}
+	
+	public static boolean getCouponChange(){
+		return sp.getBoolean("couponChange", false);
+	}
+	
+	public static void setCouponChange(boolean change){
+		SharedPreferences.Editor edit = sp.edit();
+		edit.putBoolean("couponChange", change);
+		edit.commit();
+		if (MainActivity.mainActivity!=null)
+			MainActivity.mainActivity.setCouponChange(change);
 	}
 	
 }

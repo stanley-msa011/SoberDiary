@@ -10,6 +10,7 @@ import ubicomp.soberdiary.main.ui.CustomToastSmall;
 import ubicomp.soberdiary.main.ui.Typefaces;
 import ubicomp.soberdiary.system.clicklog.ClickLogId;
 import ubicomp.soberdiary.system.clicklog.ClickLog;
+import ubicomp.soberdiary.system.config.PreferenceControl;
 import android.os.Bundle;
 import android.app.Activity;
 import android.graphics.Typeface;
@@ -218,8 +219,14 @@ public class EmotionManageActivity extends Activity {
 		@Override
 		public void onClick(View v) {
 			ClickLog.Log(ClickLogId.EMOTION_MANAGE_SELECTION);
+			
+			
 			int addScore = db.insertEmotionManagement(new EmotionManagement(System.currentTimeMillis(), curTV.year,
 					curTV.month, curTV.day, emotion, r_type, reason, 0));
+			
+			if (PreferenceControl.checkCouponChange())
+				PreferenceControl.setCouponChange(true);
+			
 			CustomToast.generateToast(R.string.emotion_manage_end_toast, addScore);
 			activity.finish();
 		}

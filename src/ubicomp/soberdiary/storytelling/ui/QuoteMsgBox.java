@@ -9,10 +9,12 @@ import ubicomp.soberdiary.main.ui.EnablePage;
 import ubicomp.soberdiary.main.ui.Typefaces;
 import ubicomp.soberdiary.system.clicklog.ClickLog;
 import ubicomp.soberdiary.system.clicklog.ClickLogId;
+import ubicomp.soberdiary.system.config.PreferenceControl;
 import ubicomp.soberdiary.system.uploader.DataUploader;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Typeface;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
@@ -88,6 +90,9 @@ public class QuoteMsgBox {
 			ClickLog.Log(ClickLogId.STORYTELLING_READ_OK);
 			int addScore = db.insertStorytellingRead(
 					new StorytellingRead(System.currentTimeMillis(),false,page,0));
+			Log.d("STORYTELLING_READ","addScore "+addScore);
+			if (PreferenceControl.checkCouponChange())
+				PreferenceControl.setCouponChange(true);
 			CustomToast.generateToast(R.string.bonus, addScore);
 			DataUploader.upload();
 		}
