@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/questionnaire_button"
+    >
+
+    <EditText
+        android:id="@+id/question_edit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="6.7dp"
+        android:background="@drawable/questionnaire_edit_text"
+        android:hint="@string/emotion_manage_input"
+        android:textColor="#FF000000"
+        android:imeOptions="actionDone"
+        android:inputType="text"
+        android:layout_centerVertical="true"
+        android:maxLength="255"
+        android:paddingLeft="10dp"
+        android:textSize="@dimen/large_text_size"/>
+
+</RelativeLayout>

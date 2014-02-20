@@ -1,0 +1,92 @@
+package ubicomp.soberdiary.data.structure;
+
+import java.util.Calendar;
+
+import android.app.AlarmManager;
+
+import ubicomp.soberdiary.main.App;
+import ubicomp.soberdiary.main.R;
+import ubicomp.soberdiary.system.check.WeekNumCheck;
+
+public class TimeValue {
+	public int year,month,day,hour,timeslot,week;
+	public long timestamp;
+	public static final int TIME_MORNING = 0;
+	public static final int TIME_NOON = 1;
+	public static final int TIME_NIGHT = 2;
+	
+	public static TimeValue generate(long timestamp){
+		Calendar cal = Calendar.getInstance();
+		cal.setTimeInMillis(timestamp);
+		int year = cal.get(Calendar.YEAR);
+		int month = cal.get(Calendar.MONTH);
+		int day = cal.get(Calendar.DAY_OF_MONTH);
+		int hour = cal.get(Calendar.HOUR_OF_DAY);
+		int week = WeekNumCheck.getWeek(timestamp);
+		int timeslot;
+		if (hour < 12)
+			timeslot = TimeValue.TIME_MORNING;
+		else if (hour < 20)
+			timeslot = TimeValue.TIME_NOON;
+		else
+			timeslot = TimeValue.TIME_NIGHT;
+		
+		return new TimeValue(year,month,day,hour,timeslot,timestamp,week);
+	}
+	
+	private TimeValue(int year, int month, int day,int hour,int timeslot,long timestamp,int week){
+		this.year = year;
+		this.month = month;
+		this.day = day;
+		this.hour = hour;
+		this.timeslot = timeslot;
+		this.timestamp = timestamp;
+		this.week = week;
+	}
+	
+	public String toString(){
+		return year+"/"+(month+1)+"/"+day;
+	}
+	
+	public String toSimpleDateString(){
+		if (isToday())
+			return App.context.getString(R.string.today);
+		return (month+1)+"/"+day;
+	}
+	public boolean isSameTimeBlock(TimeValue tv){
+		return tv!=null &&this.year == tv.year && this.month == tv.month && this.day == tv.day && this.timeslot == tv.timeslot;
+	}
+	
+	public boolean isSameDay(TimeValue tv){
+		return tv!=null &&this.year == tv.year && this.month == tv.month && this.day == tv.day;
+	}
+	
+	public String toFileString(){
+		return year+"_"+(month+1)+"_"+day;
+	}
+	
+	public int toClickValue(){
+		return (month+1) * 100+ day * 10;
+	}
+	
+	public String toDetailString(){
+		return year+"/"+(month+1)+"/"+day+":"+timeslot+" @week="+week+" ts = "+timestamp;
+	}
+	
+	public boolean afterADay(TimeValue tv){
+		long gap = this.timestamp - tv.timestamp;
+		return gap > AlarmManager.INTERVAL_DAY;
+	}
+	public boolean afterAWeek(TimeValue tv){
+		long gap = this.timestamp - tv.timestamp;
+		return gap > AlarmManager.INTERVAL_DAY*7;
+	}
+	public boolean isToday(){
+		Calendar cal = Calendar.getInstance();
+		int cYear = cal.get(Calendar.YEAR);
+		int cMonth = cal.get(Calendar.MONTH);
+		int cDay = cal.get(Calendar.DAY_OF_MONTH);
+		
+		return cYear == year && cMonth == month && cDay == day;
+	}
+}

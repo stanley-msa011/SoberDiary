@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#99000000" >
+
+    <RelativeLayout
+        android:layout_width="232.7dp"
+        android:layout_height="126dp"
+        android:layout_centerInParent="true"
+        android:background="@drawable/record_bg"
+        android:splitMotionEvents="false" >
+
+        <TextView
+            android:id="@+id/play_help"
+            android:layout_width="232.7dp"
+            android:layout_height="76dp"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:textColor="#FF8a8b8b"
+            android:textSize="@dimen/normal_text_size"/>
+
+        <ImageView
+            android:id="@+id/play_cancel_button"
+            android:layout_width="102.7dp"
+            android:layout_height="40dp"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/play_help"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="3.3dp"
+            android:gravity="center"
+            android:scaleType="center"
+            android:src="@drawable/cancel" />
+
+        <ImageView
+            android:id="@+id/play_pause_button"
+            android:layout_width="102.7dp"
+            android:layout_height="40dp"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/play_help"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="3.3dp"
+            android:gravity="center"
+            android:scaleType="center" />
+    </RelativeLayout>
+
+</RelativeLayout>

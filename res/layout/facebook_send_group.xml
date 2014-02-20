@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/questionnaire_background_normal"
+    >
+
+    <TextView
+        android:id="@+id/fb_privacy_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:text="@string/fb_privacy"
+        android:textSize="@dimen/large_text_size"
+        android:layout_marginLeft="16dp"
+        android:textColor="#FF777777" />
+
+    <Spinner
+        android:id="@+id/fb_privacy_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@+id/fb_privacy_text"
+      />
+
+</RelativeLayout>

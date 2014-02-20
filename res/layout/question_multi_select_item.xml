@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal" 
+    android:background="@drawable/questionnaire_background_normal"
+    >
+    <TextView
+        android:id="@+id/question_select0"
+        android:layout_width="match_parent"
+        android:layout_height= "match_parent"
+        android:layout_gravity="center"
+        android:layout_weight="1" 
+        android:maxLines="2"
+        android:textSize="@dimen/large_text_size"
+        android:textColor="#FF5c5c5c"
+        android:gravity="center"
+        />
+    
+    <TextView
+        android:id="@+id/question_select1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:layout_weight="1" 
+        android:maxLines="2"
+        android:textSize="@dimen/large_text_size"
+        android:textColor="#FF5c5c5c"
+        android:gravity="center"
+        />
+    
+    <TextView
+        android:id="@+id/question_select2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:layout_weight="1" 
+        android:maxLines="2"
+        android:textSize="@dimen/large_text_size"
+        android:textColor="#FF5c5c5c"
+        android:gravity="center"
+        />
+</LinearLayout>

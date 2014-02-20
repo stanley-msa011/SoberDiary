@@ -1,0 +1,144 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".PreSettingActivity" 
+    >
+
+    <ScrollView 
+        android:layout_width="match_parent"
+    	android:layout_height="match_parent"
+        >
+    <LinearLayout 
+        android:layout_width="match_parent"
+    	android:layout_height="wrap_content"
+    	android:orientation="vertical"
+    	android:dividerPadding="5dp"
+        >
+      	<TextView
+	        android:id="@+id/version"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:text="" />
+    
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="UID:" />
+
+    	<EditText
+    	    android:id="@+id/uid_edit"
+    	    android:layout_width="wrap_content"
+    	    android:layout_height="wrap_content"
+    	    android:ems="10"
+    	    >
+
+  	    </EditText>
+
+    	<CheckBox
+    	    android:id="@+id/developer_switch"
+    	    android:layout_width="wrap_content"
+    	    android:layout_height="wrap_content"
+    	    android:textOn="yes"
+    	    android:textOff="no"
+    	    android:text="Is Developer?" />
+
+    	<TextView
+	        android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:text="Target Good:" />
+
+    	<EditText
+    	    android:id="@+id/target_good_edit"
+    	    android:layout_width="wrap_content"
+    	    android:layout_height="wrap_content"
+    	    android:ems="10" />
+    
+    	<TextView
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:text="Target $:" />
+    
+        <EditText
+            android:id="@+id/target_money_edit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="number" >
+    	</EditText>
+    
+    	<TextView
+	        android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:text="per Drink:" />
+    
+        <EditText
+            android:id="@+id/target_drink_edit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="number" >
+    	</EditText>
+        
+    	<TextView
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:text="Start Date:" />
+    	<TextView
+	        android:id="@+id/date"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	/>
+     	<Button
+        	android:id="@+id/date_button"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:text="date" />
+
+    	<Button
+	        android:id="@+id/uid_OK"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:text="OK" />
+    	
+    	<Button
+	        android:id="@+id/clean_OK"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:text="清空點數" />
+
+    	<Button
+    	    android:id="@+id/restore"
+    	    android:layout_width="wrap_content"
+    	    android:layout_height="wrap_content"
+    	    android:text="RESTORE" />
+    	
+    	<Button
+    	    android:id="@+id/debug_normal_switch"
+    	    android:layout_width="wrap_content"
+    	    android:layout_height="wrap_content"
+    	    />
+
+    	<CheckBox
+    	    android:id="@+id/system_lock"
+    	    android:layout_width="wrap_content"
+    	    android:layout_height="wrap_content"
+    	    android:text="Lock the system?" />
+    	<TextView
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:text="Lock date:" />
+    	<TextView
+	        android:id="@+id/lock_date"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	/>
+    	<Button
+    	    android:id="@+id/lock_button"
+    	    android:layout_width="wrap_content"
+    	    android:layout_height="wrap_content"
+    	    android:text="system lock date" />
+    	
+    </LinearLayout>
+    </ScrollView>
+</RelativeLayout>
