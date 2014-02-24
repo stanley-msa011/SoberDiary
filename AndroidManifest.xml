@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ubicomp.soberdiary.main"
-    android:versionCode="37"
-    android:versionName="1.09" >
+    android:versionCode="39"
+    android:versionName="1.11" >
 
     <uses-sdk
         android:maxSdkVersion="19"
@@ -93,16 +93,10 @@
             </intent-filter>
         </receiver>
 
-        <service android:name="ubicomp.soberdiary.main.AlarmService" >
-        </service>
-        <service android:name="ubicomp.soberdiary.main.UploadService" >
-        </service>
-        <service android:name="ubicomp.soberdiary.main.ClickLoggerService" >
-        </service>
-        <service android:name="ubicomp.soberdiary.main.GPSService" >
-        </service>
-        <service android:name="ubicomp.soberdiary.main.GCMIntentService" >
-        </service>
+        <service android:name="ubicomp.soberdiary.main.AlarmService" />
+        <service android:name="ubicomp.soberdiary.main.UploadService" />
+        <service android:name="ubicomp.soberdiary.main.GPSService" />
+        <service android:name="ubicomp.soberdiary.main.GCMIntentService" />
 
         <activity
             android:name="ubicomp.soberdiary.main.PreSettingActivity"

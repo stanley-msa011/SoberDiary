@@ -4,147 +4,156 @@ import ubicomp.soberdiary.main.R;
 
 public class StorytellingGraphics {
 
-	public static final int[][] PAGE= 
-		{
-			{	R.drawable.history_page001,R.drawable.history_page002,R.drawable.history_page003,
-				R.drawable.history_page004,R.drawable.history_page005,R.drawable.history_page006,
-				R.drawable.history_page007,R.drawable.history_page008,R.drawable.history_page009,
-				R.drawable.history_page010,R.drawable.history_page011,R.drawable.history_page012,
-				R.drawable.history_page013,R.drawable.history_page014,R.drawable.history_page015,
-				}, // 1
-			{	R.drawable.history_page016,R.drawable.history_page017,R.drawable.history_page018,
-					R.drawable.history_page019,R.drawable.history_page020,R.drawable.history_page021,
-					R.drawable.history_page022,R.drawable.history_page023,R.drawable.history_page024,
-					R.drawable.history_page025,R.drawable.history_page026,R.drawable.history_page027,
-					R.drawable.history_page028,R.drawable.history_page029,R.drawable.history_page030,
-				}, // 2
-			{	R.drawable.history_page031,R.drawable.history_page032,R.drawable.history_page033,
-					R.drawable.history_page034,R.drawable.history_page035,R.drawable.history_page036,
-					R.drawable.history_page037,R.drawable.history_page038,R.drawable.history_page039,
-					R.drawable.history_page040,R.drawable.history_page041,R.drawable.history_page042,
-					R.drawable.history_page043,R.drawable.history_page044,R.drawable.history_page045,
-				}, // 3			
-			{	R.drawable.history_page046,R.drawable.history_page047,R.drawable.history_page048,
-					R.drawable.history_page049,R.drawable.history_page050,R.drawable.history_page051,
-					R.drawable.history_page052,R.drawable.history_page053,R.drawable.history_page054,
-					R.drawable.history_page055,R.drawable.history_page056,R.drawable.history_page057,
-					R.drawable.history_page058,R.drawable.history_page059,R.drawable.history_page060,
-				}, // 4
-			{	R.drawable.history_page061,R.drawable.history_page062,R.drawable.history_page063,
-					R.drawable.history_page064,R.drawable.history_page065,R.drawable.history_page066,
-					R.drawable.history_page067,R.drawable.history_page068,R.drawable.history_page069,
-					R.drawable.history_page070,R.drawable.history_page071,R.drawable.history_page072,
-					R.drawable.history_page073,R.drawable.history_page074,R.drawable.history_page075,
-				}, // 5
-			{	R.drawable.history_page076,R.drawable.history_page077,R.drawable.history_page078,
-					R.drawable.history_page079,R.drawable.history_page080,R.drawable.history_page081,
-					R.drawable.history_page082,R.drawable.history_page083,R.drawable.history_page084,
-					R.drawable.history_page085,R.drawable.history_page086,R.drawable.history_page087,
-					R.drawable.history_page088,R.drawable.history_page089,R.drawable.history_page090,
-				}, // 6
-			{	R.drawable.history_page091,R.drawable.history_page092,R.drawable.history_page093,
-					R.drawable.history_page094,R.drawable.history_page095,R.drawable.history_page096,
-					R.drawable.history_page097,R.drawable.history_page098,R.drawable.history_page099,
-					R.drawable.history_page100,R.drawable.history_page101,R.drawable.history_page102,
-					R.drawable.history_page103,R.drawable.history_page104,R.drawable.history_page105,
-				}, // 7			
-			{	R.drawable.history_page106,R.drawable.history_page107,R.drawable.history_page108,
-					R.drawable.history_page109,R.drawable.history_page110,R.drawable.history_page111,
-					R.drawable.history_page112,R.drawable.history_page113,R.drawable.history_page114,
-					R.drawable.history_page115,R.drawable.history_page116,R.drawable.history_page117,
-					R.drawable.history_page118,R.drawable.history_page119,R.drawable.history_page120,
-				}, // 8
-			{	R.drawable.history_page121,R.drawable.history_page122,R.drawable.history_page123,
-					R.drawable.history_page124,R.drawable.history_page125,R.drawable.history_page126,
-					R.drawable.history_page127,R.drawable.history_page128,R.drawable.history_page129,
-					R.drawable.history_page130,R.drawable.history_page131,R.drawable.history_page132,
-					R.drawable.history_page133,R.drawable.history_page134,R.drawable.history_page135,
-				}, // 9
-			{	R.drawable.history_page136,R.drawable.history_page137,R.drawable.history_page138,
-					R.drawable.history_page139,R.drawable.history_page140,R.drawable.history_page141,
-					R.drawable.history_page142,R.drawable.history_page143,R.drawable.history_page144,
-					R.drawable.history_page145,R.drawable.history_page146,R.drawable.history_page147,
-					R.drawable.history_page148,R.drawable.history_page149,R.drawable.history_page150,
-				}, // A
-			{	R.drawable.history_page151,R.drawable.history_page152,R.drawable.history_page153,
-					R.drawable.history_page154,R.drawable.history_page155,R.drawable.history_page156,
-					R.drawable.history_page157,R.drawable.history_page158,R.drawable.history_page159,
-					R.drawable.history_page160,R.drawable.history_page161,R.drawable.history_page162,
-					R.drawable.history_page163,R.drawable.history_page164,R.drawable.history_page165,
-				}, // B			
-			{	R.drawable.history_page166,R.drawable.history_page167,R.drawable.history_page168,
-					R.drawable.history_page169,R.drawable.history_page170,R.drawable.history_page171,
-					R.drawable.history_page172,R.drawable.history_page173,R.drawable.history_page174,
-					R.drawable.history_page175,R.drawable.history_page176,R.drawable.history_page177,
-					R.drawable.history_page178,R.drawable.history_page179,R.drawable.history_page180,
-				}, // C
-		};
+	private static final int[][] PAGE = {
+			{ R.drawable.story_0_0, R.drawable.story_0_1, R.drawable.story_0_2, R.drawable.story_0_3,
+					R.drawable.story_0_4, R.drawable.story_0_5, R.drawable.story_0_6, R.drawable.story_0_7,
+					R.drawable.story_0_8, R.drawable.story_0_9, R.drawable.story_0_10, R.drawable.story_0_11,
+					R.drawable.story_0_12, R.drawable.story_0_13, R.drawable.story_0_14, }, // 0
+			{ R.drawable.story_1_0, R.drawable.story_1_1, R.drawable.story_1_2, R.drawable.story_1_3,
+					R.drawable.story_1_4, R.drawable.story_1_5, R.drawable.story_1_6, R.drawable.story_1_7,
+					R.drawable.story_1_8, R.drawable.story_1_9, R.drawable.story_1_10, R.drawable.story_1_11,
+					R.drawable.story_1_12, R.drawable.story_1_13, R.drawable.story_1_14, }, // 1
+			{ R.drawable.story_2_0, R.drawable.story_2_1, R.drawable.story_2_2, R.drawable.story_2_3,
+					R.drawable.story_2_4, R.drawable.story_2_5, R.drawable.story_2_6, R.drawable.story_2_7,
+					R.drawable.story_2_8, R.drawable.story_2_9, R.drawable.story_2_10, R.drawable.story_2_11,
+					R.drawable.story_2_12, R.drawable.story_2_13, R.drawable.story_2_14, }, // 2
+			{ R.drawable.story_3_0, R.drawable.story_3_1, R.drawable.story_3_2, R.drawable.story_3_3,
+					R.drawable.story_3_4, R.drawable.story_3_5, R.drawable.story_3_6, R.drawable.story_3_7,
+					R.drawable.story_3_8, R.drawable.story_3_9, R.drawable.story_3_10, R.drawable.story_3_11,
+					R.drawable.story_3_12, R.drawable.story_3_13, R.drawable.story_3_14, }, // 3
+			{ R.drawable.story_4_0, R.drawable.story_4_1, R.drawable.story_4_2, R.drawable.story_4_3,
+					R.drawable.story_4_4, R.drawable.story_4_5, R.drawable.story_4_6, R.drawable.story_4_7,
+					R.drawable.story_4_8, R.drawable.story_4_9, R.drawable.story_4_10, R.drawable.story_4_11,
+					R.drawable.story_4_12, R.drawable.story_4_13, R.drawable.story_4_14, }, // 4
+			{ R.drawable.story_5_0, R.drawable.story_5_1, R.drawable.story_5_2, R.drawable.story_5_3,
+					R.drawable.story_5_4, R.drawable.story_5_5, R.drawable.story_5_6, R.drawable.story_5_7,
+					R.drawable.story_5_8, R.drawable.story_5_9, R.drawable.story_5_10, R.drawable.story_5_11,
+					R.drawable.story_5_12, R.drawable.story_5_13, R.drawable.story_5_14, }, // 5
+			{ R.drawable.story_6_0, R.drawable.story_6_1, R.drawable.story_6_2, R.drawable.story_6_3,
+					R.drawable.story_6_4, R.drawable.story_6_5, R.drawable.story_6_6, R.drawable.story_6_7,
+					R.drawable.story_6_8, R.drawable.story_6_9, R.drawable.story_6_10, R.drawable.story_6_11,
+					R.drawable.story_6_12, R.drawable.story_6_13, R.drawable.story_6_14, }, // 6
+			{ R.drawable.story_7_0, R.drawable.story_7_1, R.drawable.story_7_2, R.drawable.story_7_3,
+					R.drawable.story_7_4, R.drawable.story_7_5, R.drawable.story_7_6, R.drawable.story_7_7,
+					R.drawable.story_7_8, R.drawable.story_7_9, R.drawable.story_7_10, R.drawable.story_7_11,
+					R.drawable.story_7_12, R.drawable.story_7_13, R.drawable.story_7_14, }, // 7
+			{ R.drawable.story_8_0, R.drawable.story_8_1, R.drawable.story_8_2, R.drawable.story_8_3,
+					R.drawable.story_8_4, R.drawable.story_8_5, R.drawable.story_8_6, R.drawable.story_8_7,
+					R.drawable.story_8_8, R.drawable.story_8_9, R.drawable.story_8_10, R.drawable.story_8_11,
+					R.drawable.story_8_12, R.drawable.story_8_13, R.drawable.story_8_14, }, // 8
+			{ R.drawable.story_9_0, R.drawable.story_9_1, R.drawable.story_9_2, R.drawable.story_9_3,
+					R.drawable.story_9_4, R.drawable.story_9_5, R.drawable.story_9_6, R.drawable.story_9_7,
+					R.drawable.story_9_8, R.drawable.story_9_9, R.drawable.story_9_10, R.drawable.story_9_11,
+					R.drawable.story_9_12, R.drawable.story_9_13, R.drawable.story_9_14, }, // 9
+			{ R.drawable.story_10_0, R.drawable.story_10_1, R.drawable.story_10_2, R.drawable.story_10_3,
+					R.drawable.story_10_4, R.drawable.story_10_5, R.drawable.story_10_6, R.drawable.story_10_7,
+					R.drawable.story_10_8, R.drawable.story_10_9, R.drawable.story_10_10, R.drawable.story_10_11,
+					R.drawable.story_10_12, R.drawable.story_10_13, R.drawable.story_10_14, }, // 10
+			{ R.drawable.story_11_0, R.drawable.story_11_1, R.drawable.story_11_2, R.drawable.story_11_3,
+					R.drawable.story_11_4, R.drawable.story_11_5, R.drawable.story_11_6, R.drawable.story_11_7,
+					R.drawable.story_11_8, R.drawable.story_11_9, R.drawable.story_11_10, R.drawable.story_11_11,
+					R.drawable.story_11_12, R.drawable.story_11_13, R.drawable.story_11_14, }, // 11
+	};
+
+	private static final int MAX_PAGE = 11;
+	private static final int MAX_SCORE = 42;
+
+	/*
+	 * pos= 
+	 *    0 1 2 3
+	 *    4 5 6 7
+	 *    8 9 10 11
+	 *    12 13 14 15
+	 */
+
+	private static final int[][] UPDATE_POS = { 
+		{ 0, 8, 11, 8, 11,
+			4, 0, 7, 8, 7,
+			11, 11, 7, 4, 2 },// 0
+		{0, 1, 4, 4, 4,
+			8, 8, 11, 11, 7,
+			7, 7, 4, 2, 7},// 1
+		{0, 8, 11, 8, 11,
+			11, 4, 11, 7, 4,
+			4, 1, 8, 4, 7},//2
+		{0, 8, 11, 8, 11,
+			7, 7, 7, 4, 4,
+			8, 8, 4, 7, 7},//3
+		{0, 8, 8, 7, 7,
+			2, 2, 11, 11, 7,
+			8, 4, 11, 4, 11},//4
+		{0, 11, 11, 11, 7,
+			7, 7, 8, 4, 4,
+			7, 4, 7, 1, 1},//5
+		{0, 4, 4, 7, 1,
+			2, 4, 1, 2, 11,
+			4, 11, 8, 1, 0},//6 temp
+		{0, 4, 11, 4, 1,
+			11, 6, 6, 6, 4,
+			8, 8, 4, 7, 7},//7
+		{0, 7, 11, 8, 8,
+			11, 4, 7, 7, 7,
+			8, 4, 8, 11, 7},//8
+		{0, 11, 7, 7, 11,
+			11, 11, 11, 11, 11,
+			4, 4, 8, 7, 11},//9
+		{0, 4, 4, 8, 7,
+			11, 8, 7, 7, 1,
+			1, 2, 7, 4, 2},//10
+		{0, 8, 8, 8, 8,
+			11, 11, 7, 7, 11,
+			11, 4, 8, 7, 3},//11
+	};
+
+	public static int getArrowPos(int idx, int week){
+		return UPDATE_POS[week][idx];
+	}
 	
-	
-	public static final int MAX_PAGE = 11;
-	public static final int MAX_SCORE = 42;
-	
-	public static final int[] PAGE_FULL= 
-		{
-		R.drawable.history_page001, // 1
-		R.drawable.history_page016, // 2
-		R.drawable.history_page031, // 3
-		R.drawable.history_page046, // 4
-		R.drawable.history_page061, // 5
-		R.drawable.history_page076, // 6
-		R.drawable.history_page091, // 7
-		R.drawable.history_page106, // 8
-		R.drawable.history_page121, // 9
-		R.drawable.history_page136, // 10
-		R.drawable.history_page151, // 11
-		R.drawable.history_page166  // 12
-		 };
-	
-	public static int getPage(int score, int week){
+	public static int getPage(int score, int week) {
 		if (week < 0)
 			week = 0;
 		else if (week > MAX_PAGE)
 			week = MAX_PAGE;
-		if (score <0)
+		if (score < 0)
 			score = 0;
 		else if (score > MAX_SCORE)
 			score = MAX_SCORE;
-		int idx = score * 14/MAX_SCORE;
+		int idx = score * 14 / MAX_SCORE;
 		return PAGE[week][idx];
 	}
-	
-	public static int getPageByIdx(int idx,int week){
+
+	public static int getPageByIdx(int idx, int week) {
 		if (week < 0)
 			week = 0;
 		else if (week > MAX_PAGE)
 			week = MAX_PAGE;
-		if (idx <0)
+		if (idx < 0)
 			idx = 0;
 		else if (idx > 14)
 			idx = 14;
 		return PAGE[week][idx];
 	}
-	
-	public static int getPageIdx(int score, int week){
+
+	public static int getPageIdx(int score, int week) {
 		if (week < 0)
 			week = 0;
 		else if (week > MAX_PAGE)
 			week = MAX_PAGE;
-		if (score <0)
+		if (score < 0)
 			score = 0;
 		else if (score > MAX_SCORE)
 			score = MAX_SCORE;
-		int idx = score * 14/MAX_SCORE;
+		int idx = score * 14 / MAX_SCORE;
 		return idx;
 	}
 
-	public static int[] getAnimationBgs(Integer[] scores){
+	public static int[] getAnimationBgs(Integer[] scores) {
 		if (scores == null)
 			return null;
-		int [] pages = new int[scores.length];
-		for (int i=0;i<pages.length;++i)
-			pages[i] = getPage(scores[i],i);
+		int[] pages = new int[scores.length];
+		for (int i = 0; i < pages.length; ++i)
+			pages[i] = getPage(scores[i], i);
 		return pages;
 	}
-	
+
 }

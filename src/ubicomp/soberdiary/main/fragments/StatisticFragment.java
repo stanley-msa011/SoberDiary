@@ -155,11 +155,22 @@ public class StatisticFragment extends Fragment implements ShowRadarChart, Quest
 		}
 
 		@Override
-		public void onPageSelected(int arg0) {
+		public void onPageSelected(int idx) {
 
+			switch(idx){
+			case 0:
+				ClickLog.Log(ClickLogId.STATISTIC_TODAY);
+				break;
+			case 1:
+				ClickLog.Log(ClickLogId.STATISTIC_WEEK);
+				break;
+			case 2:
+				ClickLog.Log(ClickLogId.STATISTIC_MONTH);
+				break;
+			}
 			for (int i = 0; i < 3; ++i)
 				dots[i].setImageDrawable(dot_off);
-			dots[arg0].setImageDrawable(dot_on);
+			dots[idx].setImageDrawable(dot_on);
 		}
 
 	}

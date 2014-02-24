@@ -43,7 +43,9 @@ import android.app.AlarmManager;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Point;
 import android.graphics.PointF;
+import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -61,7 +63,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnKeyListener;
 import android.view.ViewGroup;
-import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.Animation.AnimationListener;
+import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
@@ -78,7 +82,7 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 	private RelativeLayout pageLayout;
 	private RelativeLayout chartAreaLayout;
 	private PageWidgetVertical pageWidget;
-	private ImageView prevPageImage;
+	private ImageView prevPageImage, pageArrow;
 	private PageAnimationTaskVertical pageAnimationTask;
 	private PageAnimationTaskVerticalFling pageAnimationTask2;
 	private HorizontalScrollView scrollView;
@@ -140,13 +144,22 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 	private FacebookOnClickListener facebookOnClickListener = new FacebookOnClickListener();
 	private final RecordBoxOnKeyListener recordBoxOnKeyListener = new RecordBoxOnKeyListener();
 	private QuoteScrollListener quoteScrollListener = new QuoteScrollListener();
-	private AlphaAnimation animation = new AlphaAnimation(1.f, 0.f);
+	private Animation animation;
+	private Animation arrowAnimation;
 	
 	private static final long READING_PAGE_TIME = Config.READING_PAGE_TIME;
 
 	private RecordBox recordBox;
 	private QuoteMsgBox quoteMsgBox;
 
+	private final static int[] PAGE_ARROW_RES = {
+		R.drawable.page_arrow_left_up, R.drawable.page_arrow_up, R.drawable.page_arrow_up, R.drawable.page_arrow_right_up,
+		R.drawable.page_arrow_left, R.drawable.page_arrow_left, R.drawable.page_arrow_right, R.drawable.page_arrow_right,
+		R.drawable.page_arrow_left, R.drawable.page_arrow_left, R.drawable.page_arrow_right, R.drawable.page_arrow_right,
+		R.drawable.page_arrow_left_down, R.drawable.page_arrow_down, R.drawable.page_arrow_down, R.drawable.page_arrow_right_down
+	};
+	private Point[] page_update_pos = new Point[16];
+	
 	//private static final String TAG = "STORYTELLING";
 
 	@Override
@@ -162,32 +175,58 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 		format.setMinimumIntegerDigits(1);
 		format.setMinimumFractionDigits(0);
 		format.setMaximumFractionDigits(0);
-
-		animation.setDuration(2500);
-		animation.setFillAfter(true);
-
+		
+		animation = AnimationUtils.loadAnimation(getActivity(), R.anim.page_change_animation);
+		animation.setAnimationListener(
+				new AnimationListener(){
+					@Override
+					public void onAnimationEnd(Animation animation) {
+						prevPageImage.setImageDrawable(null);
+					}
+					@Override
+					public void onAnimationRepeat(Animation animation) {	}
+					@Override
+					public void onAnimationStart(Animation animation) {
+					}
+				});
+		arrowAnimation = AnimationUtils.loadAnimation(getActivity(), R.anim.page_arrow_animation);
+		arrowAnimation.setAnimationListener(
+				new AnimationListener(){
+					@Override
+					public void onAnimationEnd(Animation animation) {
+						isAnimation = false;
+					}
+					@Override
+					public void onAnimationRepeat(Animation animation) {
+					}
+					@Override
+					public void onAnimationStart(Animation animation) {
+						isAnimation = true;
+					}
+				});
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		view = inflater.inflate(R.layout.storytelling_fragment, container, false);
 
-		topLayout = (RelativeLayout) view.findViewById(R.id.history_top_layout);
-		pageLayout = (RelativeLayout) view.findViewById(R.id.history_book_layout);
-		scrollView = (HorizontalScrollView) view.findViewById(R.id.history_scroll_view);
-		chartAreaLayout = (RelativeLayout) view.findViewById(R.id.history_chart_area_layout);
-		quoteHiddenLayout = (RelativeLayout) view.findViewById(R.id.history_quote_hidden_layout);
-		quoteHiddenText = (TextView) view.findViewById(R.id.history_quote_hidden_text);
-		quoteScrollView = (ScrollView) view.findViewById(R.id.history_quote_scroll_view);
-		fbButton = (ImageView) view.findViewById(R.id.history_fb_button);
-		stageRateText = (TextView) view.findViewById(R.id.history_stage_rate);
-		quoteText = (TextView) view.findViewById(R.id.history_quote);
-		stageLayout = (RelativeLayout) view.findViewById(R.id.history_stage_message_layout);
-		stageMessage = (TextView) view.findViewById(R.id.history_stage);
-		stageMessageText = (TextView) view.findViewById(R.id.history_stage_message);
-		storytellingButton = (ImageView) view.findViewById(R.id.history_storytelling_button);
-		prevPageImage = (ImageView) view.findViewById(R.id.history_prev_image);
-		frame = (FrameLayout) view.findViewById(R.id.history_frame_layout);
+		topLayout = (RelativeLayout) view.findViewById(R.id.story_top_layout);
+		pageLayout = (RelativeLayout) view.findViewById(R.id.story_book_layout);
+		scrollView = (HorizontalScrollView) view.findViewById(R.id.story_scroll_view);
+		chartAreaLayout = (RelativeLayout) view.findViewById(R.id.story_chart_area_layout);
+		quoteHiddenLayout = (RelativeLayout) view.findViewById(R.id.story_quote_hidden_layout);
+		quoteHiddenText = (TextView) view.findViewById(R.id.story_quote_hidden_text);
+		quoteScrollView = (ScrollView) view.findViewById(R.id.story_quote_scroll_view);
+		fbButton = (ImageView) view.findViewById(R.id.story_fb_button);
+		stageRateText = (TextView) view.findViewById(R.id.story_stage_rate);
+		quoteText = (TextView) view.findViewById(R.id.story_quote);
+		stageLayout = (RelativeLayout) view.findViewById(R.id.story_stage_message_layout);
+		stageMessage = (TextView) view.findViewById(R.id.story_stage);
+		stageMessageText = (TextView) view.findViewById(R.id.story_stage_message);
+		storytellingButton = (ImageView) view.findViewById(R.id.story_storytelling_button);
+		prevPageImage = (ImageView) view.findViewById(R.id.story_prev_image);
+		pageArrow = (ImageView) view.findViewById(R.id.story_page_arrow);
+		frame = (FrameLayout) view.findViewById(R.id.story_frame_layout);
 		chartView = (ChartView) view.findViewById(R.id.chartView);
 		chartYAxis = (ChartYAxisView) view.findViewById(R.id.chartYAxisView);
 		chartTitle = (ChartTitleView) view.findViewById(R.id.chartTitleView);
@@ -312,13 +351,24 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 		chartView.invalidate();
 	}
 
-	private void showAlphaAnimation() {
+	private void showUpdateAnimation() {
 		if (PreferenceControl.getPageChange()) {
+			isAnimation = true;
 			int curState = StorytellingGraphics.getPageIdx(page_states[page_week], page_week);
 			int prevStateId = StorytellingGraphics.getPageByIdx(curState - 1, page_week);
+			
+			int posIdx = StorytellingGraphics.getArrowPos(curState, page_week);
+			pageArrow.setImageResource(PAGE_ARROW_RES[posIdx]);
+			Rect rect = pageArrow.getDrawable().getBounds();
+			RelativeLayout.LayoutParams param = (RelativeLayout.LayoutParams)pageArrow.getLayoutParams();
+			param.leftMargin = page_update_pos[posIdx].x - rect.width()/2;
+			param.topMargin = page_update_pos[posIdx].y - rect.height()/2;
+			
 			prevPageImage.setImageResource(prevStateId);
 			prevPageImage.setAnimation(animation);
+			pageArrow.setAnimation(arrowAnimation);
 			animation.start();
+			arrowAnimation.start();
 			PreferenceControl.setPrevShowWeekState(page_week, curState);
 			PreferenceControl.setPageChange(false);
 		}
@@ -327,7 +377,7 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 	@Override
 	public void endOnViewCreateAnimation() {
 		endAnimation();
-		showAlphaAnimation();
+		showUpdateAnimation();
 	}
 
 	@Override
@@ -407,6 +457,14 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 			page_width = topLayout.getWidth();
 			page_height = topLayout.getHeight();
 			
+			for (int i=0; i<4;++i){
+				int pos_y = page_height * (1+i*2)/8;
+				for (int j=0;j<4;++j){
+					int pos_x = page_width * (1+j*2)/8;
+					page_update_pos[i*4+j] = new Point(pos_x,pos_y);
+				}
+			}
+			
 			from = new PointF(page_width, page_height);
 			to = new PointF(page_width / 2, -page_height*4/3);
 
@@ -462,7 +520,7 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 			if (page_week == 0) {
 				resetPage(0);
 				pageWidget.invalidate();
-				showAlphaAnimation();
+				showUpdateAnimation();
 			} else {
 				startAnim();
 			}

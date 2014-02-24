@@ -29,7 +29,7 @@
             android:layout_height="wrap_content" >
             <TextView
             android:id="@+id/gcm_text"
-            android:layout_width="240dp"
+            android:layout_width="220dp"
             android:layout_height="wrap_content"
             android:textColor="#FF000000"
             android:lineSpacingMultiplier="1.2"

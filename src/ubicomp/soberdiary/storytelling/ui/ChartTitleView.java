@@ -69,6 +69,7 @@ public class ChartTitleView extends View {
 				ClickLog.Log(ClickLogId.STORYTELLING_CHART_TYPE0);
 			} else if (x < title_2) {
 				chart_type = 1;
+				ClickLog.Log(ClickLogId.STORYTELLING_CHART_TYPE1);
 			} else if (x < title_3) {
 				chart_type = 2;
 				ClickLog.Log(ClickLogId.STORYTELLING_CHART_TYPE2);

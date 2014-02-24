@@ -66,7 +66,7 @@ public class TimeValue {
 	}
 	
 	public int toClickValue(){
-		return (month+1) * 100+ day * 10;
+		return (month+1) * 100+ day;
 	}
 	
 	public String toDetailString(){
