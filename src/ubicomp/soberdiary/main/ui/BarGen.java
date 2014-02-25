@@ -183,10 +183,12 @@ public class BarGen {
 	public static View createAnimationView(int anim_id){
 		RelativeLayout layout = (RelativeLayout) inflater.inflate(R.layout.question_animation_item, null);
 		ImageView img = (ImageView)layout.findViewById(R.id.question_animation);
-		img.setBackgroundResource(anim_id);
-		TextView text = (TextView)layout.findViewById(R.id.question_description);
+		//img.setBackgroundResource(anim_id);
+		img.setImageResource(anim_id);
+		TextView text = (TextView)layout.findViewById(R.id.question_animation_right_button);
 		text.setTypeface(wordTypefaceBold);
 		return layout;
 	}
+	
 	
 }

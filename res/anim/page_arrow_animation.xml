@@ -7,7 +7,7 @@
         android:fillAfter="true"
         android:fromAlpha="1"
         android:interpolator="@android:anim/bounce_interpolator"
-        android:repeatCount="5"
+        android:repeatCount="7"
         android:repeatMode="reverse"
         android:toAlpha="0" />
 
@@ -17,7 +17,7 @@
         android:fromDegrees="0"
         android:pivotX="0.5"
         android:pivotY="0.5"
-        android:startOffset="3600"
+        android:startOffset="4800"
         android:toDegrees="720" />
 
     <scale
@@ -27,7 +27,7 @@
         android:fromYScale="1.0"
         android:pivotX="0.5"
         android:pivotY="0.5"
-        android:startOffset="3600"
+        android:startOffset="4800"
         android:toXScale="0.0"
         android:toYScale="0.0" />
 
@@ -36,7 +36,7 @@
         android:fillAfter="true"
         android:fromAlpha="1.0"
         android:interpolator="@android:anim/bounce_interpolator"
-        android:startOffset="3600"
+        android:startOffset="4800"
         android:toAlpha="0.0" />
 
 </set>

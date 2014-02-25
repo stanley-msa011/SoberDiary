@@ -15,6 +15,7 @@ import ubicomp.soberdiary.system.config.PreferenceControl;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
@@ -43,9 +44,11 @@ public class EmotionActivity extends Activity {
 	private RelativeLayout animEndLayout;
 	private TextView callOK, callCancel, callHelp;
 	private TextView animOK, animCancel, animHelp;
-	private ImageView animLeft, animRight, animationImg;
-
-	private LinearLayout endLayout;
+	private ImageView animLeft, animCenter, animationImg;
+	private ImageView barBg, bar, barStart, barEnd;
+	private RelativeLayout barLayout;
+	
+	private TextView endButton;
 	
 	private Activity activity;
 
@@ -66,7 +69,7 @@ public class EmotionActivity extends Activity {
 
 	private static final int TYPE_SOCIAL = 4, TYPE_FAMILY = 5;
 
-	DatabaseControl db;
+	private DatabaseControl db;
 
 	private int state = 0;
 
@@ -76,7 +79,9 @@ public class EmotionActivity extends Activity {
 	private final AnimationPlayClickListener animationPlayClickListener = new AnimationPlayClickListener();
 	private final AnimationStopClickListener animationStopClickListener = new AnimationStopClickListener();
 	private final MediaOnCompletionListener mediaOnCompletionListener = new MediaOnCompletionListener();
-
+	
+	private CountDownTimer musicTimer;
+	
 	private int anim_id, media_id;
 
 	@Override
@@ -122,6 +127,10 @@ public class EmotionActivity extends Activity {
 			bgLayout.removeView(callLayout);
 		if (animEndLayout != null)
 			bgLayout.removeView(animEndLayout);
+		if (musicTimer !=null){
+			musicTimer.cancel();
+			musicTimer = null;
+		}
 		if (mediaPlayer != null) {
 			mediaPlayer.release();
 			mediaPlayer = null;
@@ -228,7 +237,7 @@ public class EmotionActivity extends Activity {
 		switch (selection) {
 		case 0:
 			tv = BarGen.createTextView(R.string.emotionDIY_help_case0);
-			anim_id = R.anim.muisc_animation;
+			anim_id = R.anim.music_animation;
 			media_id = R.raw.music;
 			break;
 		case 1:
@@ -253,52 +262,72 @@ public class EmotionActivity extends Activity {
 			animation.stop();
 			animation = null;
 		}
+		if (musicTimer !=null){
+			musicTimer.cancel();
+			musicTimer = null;
+		}
 		if (mediaPlayer != null) {
 			mediaPlayer.release();
 			mediaPlayer = null;
 		}
 
-		RelativeLayout av = (RelativeLayout) BarGen.createAnimationView(anim_id);
+		RelativeLayout av =null;
+		av= (RelativeLayout) BarGen.createAnimationView(anim_id);
+		
+		barLayout = (RelativeLayout) av.findViewById(R.id.question_progress_layout);
+		barBg = (ImageView) av.findViewById(R.id.question_progress_bar_bg);
+		bar = (ImageView) av.findViewById(R.id.question_progress_bar);
+		barStart = (ImageView) av.findViewById(R.id.question_progress_bar_start);
+		barEnd = (ImageView) av.findViewById(R.id.question_progress_bar_end);
+		
 		animationImg = (ImageView) av.findViewById(R.id.question_animation);
-		animation = (AnimationDrawable) animationImg.getBackground();
+		animation = (AnimationDrawable) animationImg.getDrawable();
 		animation.start();
-
-		endLayout = (LinearLayout) av.findViewById(R.id.question_end);
-		endLayout.setOnClickListener(new AnimCheckOnClickListener(selection));
+		
+		endButton = (TextView) av.findViewById(R.id.question_animation_right_button);
+		endButton.setOnClickListener(new AnimCheckOnClickListener(selection));
 		
 		mediaPlayer = MediaPlayer.create(getApplicationContext(), media_id);
 		mediaPlayer.setOnCompletionListener(mediaOnCompletionListener);
 
 		animLeft = (ImageView) av.findViewById(R.id.question_animation_left_button);
-		animRight = (ImageView) av.findViewById(R.id.question_animation_right_button);
+		animCenter = (ImageView) av.findViewById(R.id.question_animation_center_button);
 
-		animLeft.setImageResource(R.drawable.stop);
-		animRight.setImageResource(R.drawable.pause);
-		animLeft.setOnClickListener(animationStopClickListener);
-		animRight.setOnClickListener(animationPlayClickListener);
+		animCenter.setImageResource(R.drawable.stop);
+		animLeft.setImageResource(R.drawable.pause);
+		animCenter.setOnClickListener(animationStopClickListener);
+		animLeft.setOnClickListener(animationPlayClickListener);
 
 		mainTop.addView(av);
 
+		int total_time = mediaPlayer.getDuration();
+		musicTimer = new MusicTimer(total_time);
 		mediaPlayer.start();
 	}
 
 	private class AnimationPlayClickListener implements OnClickListener {
 		@Override
 		public void onClick(View arg0) {
+			if (musicTimer !=null){
+				musicTimer.cancel();
+				musicTimer = null;
+			}
 			if (mediaPlayer.isPlaying()) {
 				mediaPlayer.pause();
-				animRight.setImageResource(R.drawable.play);
-				animRight.setOnClickListener(animationPlayClickListener);
-				animLeft.setImageResource(0);
-				animLeft.setOnClickListener(null);
+				animLeft.setImageResource(R.drawable.play);
+				animLeft.setOnClickListener(animationPlayClickListener);
+				animCenter.setImageResource(0);
+				animCenter.setOnClickListener(null);
 				animation.stop();
 				ClickLog.Log(ClickLogId.EMOTION_DIY_PAUSE);
 			} else {
+				musicTimer = new MusicTimer(mediaPlayer.getDuration()-mediaPlayer.getCurrentPosition());
 				mediaPlayer.start();
-				animRight.setImageResource(R.drawable.pause);
-				animRight.setOnClickListener(animationPlayClickListener);
-				animLeft.setImageResource(R.drawable.stop);
-				animLeft.setOnClickListener(animationStopClickListener);
+				musicTimer.start();
+				animLeft.setImageResource(R.drawable.pause);
+				animLeft.setOnClickListener(animationPlayClickListener);
+				animCenter.setImageResource(R.drawable.stop);
+				animCenter.setOnClickListener(animationStopClickListener);
 				animation.start();
 				ClickLog.Log(ClickLogId.EMOTION_DIY_PLAY);
 			}
@@ -308,13 +337,17 @@ public class EmotionActivity extends Activity {
 	private class AnimationStopClickListener implements OnClickListener {
 		@Override
 		public void onClick(View arg0) {
+			if (musicTimer !=null){
+				musicTimer.cancel();
+				musicTimer = null;
+			}
 			if (mediaPlayer.isPlaying()) {
 				mediaPlayer.pause();
 				mediaPlayer.seekTo(0);
-				animRight.setImageResource(R.drawable.play);
-				animRight.setOnClickListener(animationPlayClickListener);
-				animLeft.setImageResource(0);
-				animLeft.setOnClickListener(null);
+				animLeft.setImageResource(R.drawable.play);
+				animLeft.setOnClickListener(animationPlayClickListener);
+				animCenter.setImageResource(0);
+				animCenter.setOnClickListener(null);
 				animation.stop();
 				ClickLog.Log(ClickLogId.EMOTION_DIY_STOP);
 			}
@@ -325,10 +358,15 @@ public class EmotionActivity extends Activity {
 
 		@Override
 		public void onCompletion(MediaPlayer mp) {
-			animRight.setImageResource(R.drawable.play);
-			animRight.setOnClickListener(animationPlayClickListener);
-			animLeft.setImageResource(0);
-			animLeft.setOnClickListener(null);
+			if (musicTimer!=null){
+				musicTimer.cancel();
+				musicTimer = null;
+			}
+			mp.seekTo(0);
+			animLeft.setImageResource(R.drawable.play);
+			animLeft.setOnClickListener(animationPlayClickListener);
+			animCenter.setImageResource(0);
+			animCenter.setOnClickListener(null);
 			animation.stop();
 		}
 	}
@@ -429,16 +467,20 @@ public class EmotionActivity extends Activity {
 		public void onClick(View v) {
 
 			if (mediaPlayer!= null && mediaPlayer.isPlaying()) {
+				if (musicTimer !=null){
+					musicTimer.cancel();
+					musicTimer = null;
+				}
 				mediaPlayer.pause();
-				animRight.setImageResource(R.drawable.play);
-				animRight.setOnClickListener(animationPlayClickListener);
-				animLeft.setImageResource(0);
-				animLeft.setOnClickListener(null);
+				animLeft.setImageResource(R.drawable.play);
+				animLeft.setOnClickListener(animationPlayClickListener);
+				animCenter.setImageResource(0);
+				animCenter.setOnClickListener(null);
 				animation.stop();
 			}
 
 			animLeft.setEnabled(false);
-			animRight.setEnabled(false);
+			animCenter.setEnabled(false);
 			animationImg.setEnabled(false);
 			bgLayout.addView(animEndLayout);
 
@@ -458,7 +500,7 @@ public class EmotionActivity extends Activity {
 		@Override
 		public void onClick(View v) {
 			animLeft.setEnabled(true);
-			animRight.setEnabled(true);
+			animCenter.setEnabled(true);
 			animationImg.setEnabled(true);
 			bgLayout.removeView(animEndLayout);
 			ClickLog.Log(ClickLogId.EMOTION_DIY_END_PLAY_CANCEL);
@@ -605,8 +647,31 @@ public class EmotionActivity extends Activity {
 		}
 	}
 
-	private boolean enableBack = true;
+	private class MusicTimer extends CountDownTimer {
 
+		public MusicTimer(long total_millis) {
+			super(total_millis, 50);
+		}
+
+		@Override
+		public void onFinish() {
+		}
+
+		@Override
+		public void onTick(long millisUntilFinished) {
+			if (bar!=null){
+				RelativeLayout.LayoutParams barParam = (LayoutParams) bar.getLayoutParams();
+				int total_len = barBg.getWidth() - barStart.getWidth() - barEnd.getWidth();
+				barParam.width = total_len*mediaPlayer.getCurrentPosition()/mediaPlayer.getDuration();
+				barLayout.updateViewLayout(bar, barParam);
+				if (animation == null){
+				}
+			}
+		}
+	}
+	
+	
+	private boolean enableBack = true;
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
@@ -616,6 +681,10 @@ public class EmotionActivity extends Activity {
 			if (animation != null) {
 				animation.stop();
 				animation = null;
+			}
+			if (musicTimer != null){
+				musicTimer.cancel();
+				musicTimer = null;
 			}
 			if (mediaPlayer != null) {
 				mediaPlayer.release();
