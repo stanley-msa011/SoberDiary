@@ -131,7 +131,7 @@ public class FacebookActivity extends Activity {
 		privacySelection = createSendGroupView();
 		inputLayout.addView(privacySelection);
 
-		shareButton = BarGen.createIconView(R.string.fb_share, R.drawable.questionnaire_item_ok,
+		shareButton = BarGen.createIconView(R.string.fb_share, R.drawable.ok,
 				new SendOnClickListener());
 
 		inputLayout.addView(shareButton);

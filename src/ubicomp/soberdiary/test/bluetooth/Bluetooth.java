@@ -131,10 +131,8 @@ public class Bluetooth {
 	}
 	
 	public void enableAdapter(){
-		Log.d(TAG,"Enable Adapter Start");
 		btEnabledBeforeStart = true;
 		if (!btAdapter.isEnabled()){
-			Log.d(TAG,"Enable Adapter Not Start");
 			btEnabledBeforeStart = false;
 			btAdapter.enable();
 			int state = btAdapter.getState();
@@ -317,7 +315,7 @@ public class Bluetooth {
 	public void read(){
 		
 		boolean end=false;
-		byte[] temp = new byte[1024];
+		byte[] temp = new byte[256];
 		int bytes = 0;
 		String msg = "";
 		isPeak=false;
@@ -383,10 +381,11 @@ public class Bluetooth {
 						zero_start_time = System.currentTimeMillis();
 					zero_end_time = System.currentTimeMillis();
 					zero_duration += ( zero_end_time - zero_start_time);
+					Log.d(TAG,"zero>"+zero_duration+" "+(zero_end_time - zero_start_time));
 					zero_start_time = zero_end_time;
 					if (zero_duration > MAX_ZERO_DURATION)
 						throw new Exception("ZERO_DURATION");
-					Thread.sleep(50);
+					Thread.sleep(40);
 				}
 			}
 			close();

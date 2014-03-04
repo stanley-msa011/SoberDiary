@@ -31,14 +31,16 @@ public class BitmapGenerator {
 		
 		
 		//Draw quote
+		int text_color = App.context.getResources().getColor(R.color.page_gray);
 		Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		paint.setColor(0xFF717071);
+		paint.setColor(text_color);
 		paint.setTextSize(textSize);
 		paint.setTextAlign(Paint.Align.LEFT);
 		paint.setTypeface(Typefaces.getWordTypeface());
 		
+		int black = App.context.getResources().getColor(R.color.black);
 		Paint titlePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		titlePaint.setColor(0xFF000000);
+		titlePaint.setColor(black);
 		titlePaint.setAlpha(35);
 		titlePaint.setTextSize(textSize*3);
 		titlePaint.setTypeface(Typefaces.getWordTypefaceBold());

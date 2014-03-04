@@ -14,6 +14,7 @@ import ubicomp.soberdiary.system.clicklog.ClickLog;
 import ubicomp.soberdiary.system.config.PreferenceControl;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.annotation.SuppressLint;
@@ -56,10 +57,10 @@ public class EmotionActivity extends Activity {
 
 	private AnimationDrawable animation;
 
-	private static final int[] DRAWABLE_ID = { R.drawable.questionnaire_item_sol_0,
-			R.drawable.questionnaire_item_sol_1, R.drawable.questionnaire_item_sol_2,
-			R.drawable.questionnaire_item_sol_3, R.drawable.questionnaire_item_sol_4,
-			R.drawable.questionnaire_item_sol_5 };
+	private static final int[] DRAWABLE_ID = { R.drawable.emotion_diy_suggest_0,
+			R.drawable.emotion_diy_suggest_1, R.drawable.emotion_diy_suggest_2,
+			R.drawable.emotion_diy_suggest_3, R.drawable.emotion_diy_suggest_4,
+			R.drawable.emotion_diy_suggest_5 };
 
 	private static String[] texts;
 
@@ -84,6 +85,8 @@ public class EmotionActivity extends Activity {
 	
 	private int anim_id, media_id;
 
+	private Runnable animRunnable = new AnimationRunnable();
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -213,7 +216,7 @@ public class EmotionActivity extends Activity {
 			OnClickListener listener = new CallCheckOnClickListener(type, names[i], calls[i]);
 			String text = names[i];
 			if (names[i].length() > 0) {
-				View vv = BarGen.createIconView(text, R.drawable.questionnaire_item_call, listener);
+				View vv = BarGen.createIconView(text, R.drawable.call, listener);
 				mainLayout.addView(vv);
 				++counter;
 			}
@@ -258,6 +261,9 @@ public class EmotionActivity extends Activity {
 		}
 		mainTop.addView(tv);
 
+		if (animationImg != null){
+			animationImg.removeCallbacks(animRunnable);
+		}
 		if (animation != null) {
 			animation.stop();
 			animation = null;
@@ -282,7 +288,10 @@ public class EmotionActivity extends Activity {
 		
 		animationImg = (ImageView) av.findViewById(R.id.question_animation);
 		animation = (AnimationDrawable) animationImg.getDrawable();
-		animation.start();
+		if (Build.VERSION.SDK_INT < 14)
+			animationImg.post(animRunnable);
+		else
+			animation.start();
 		
 		endButton = (TextView) av.findViewById(R.id.question_animation_right_button);
 		endButton.setOnClickListener(new AnimCheckOnClickListener(selection));
@@ -303,6 +312,7 @@ public class EmotionActivity extends Activity {
 		int total_time = mediaPlayer.getDuration();
 		musicTimer = new MusicTimer(total_time);
 		mediaPlayer.start();
+		musicTimer.start();
 	}
 
 	private class AnimationPlayClickListener implements OnClickListener {
@@ -381,7 +391,7 @@ public class EmotionActivity extends Activity {
 		View tv;
 		tv = BarGen.createTextView(text);
 		mainLayout.addView(tv);
-		View vv = BarGen.createIconView(R.string.try_to_do, R.drawable.questionnaire_item_ok, new EndOnClickListener(3,
+		View vv = BarGen.createIconView(R.string.try_to_do, R.drawable.ok, new EndOnClickListener(3,
 				selected));
 		mainLayout.addView(vv);
 
@@ -664,8 +674,6 @@ public class EmotionActivity extends Activity {
 				int total_len = barBg.getWidth() - barStart.getWidth() - barEnd.getWidth();
 				barParam.width = total_len*mediaPlayer.getCurrentPosition()/mediaPlayer.getDuration();
 				barLayout.updateViewLayout(bar, barParam);
-				if (animation == null){
-				}
 			}
 		}
 	}
@@ -678,6 +686,9 @@ public class EmotionActivity extends Activity {
 			ClickLog.Log(ClickLogId.EMOTION_DIY_RETURN);
 			if (!enableBack)
 				return false;
+			if (animationImg != null){
+				animationImg.removeCallbacks(animRunnable);
+			}
 			if (animation != null) {
 				animation.stop();
 				animation = null;
@@ -712,4 +723,12 @@ public class EmotionActivity extends Activity {
 		return super.onKeyDown(keyCode, event);
 	}
 
+	
+	private class AnimationRunnable implements Runnable{
+		@Override
+		public void run() {
+			if (animation!=null)
+				animation.start();
+		}
+	}
 }

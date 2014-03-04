@@ -25,7 +25,7 @@ public class BootBoardcastReceiver extends BroadcastReceiver{
 		
 		Log.d(TAG,"BootBroadcastReceiver - "+action);
 		
-		if (action.equals(Intent.ACTION_TIME_CHANGED) || action.equals(Intent.ACTION_TIMEZONE_CHANGED)){
+		if (action.equals(Intent.ACTION_TIME_CHANGED) || action.equals(Intent.ACTION_TIMEZONE_CHANGED) ){//|| action.equals(Intent.ACTION_EXTERNAL_APPLICATIONS_AVAILABLE)){
 			PreferenceControl.timeReset();
 		}
 		

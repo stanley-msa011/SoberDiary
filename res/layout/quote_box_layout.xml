@@ -3,7 +3,7 @@
      xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#99000000"
+    android:background="@color/shadow"
     >
    
 
@@ -25,7 +25,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:scaleType="fitXY"
-            android:src="@drawable/question_bg_top" />
+            android:src="@drawable/questionnaire_bg_top" />
 
         <TextView
             android:id="@+id/quote_text"
@@ -34,7 +34,8 @@
             android:layout_centerVertical="true"
             android:textSize="@dimen/normal_text_size"
             android:layout_marginLeft="26.7dp"
-            android:textColor="#FF573b3b" />
+            android:layout_marginBottom="-4dp"
+            android:textColor="@color/dark_gray" />
     </RelativeLayout>
 
     <RelativeLayout
@@ -47,7 +48,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:scaleType="fitXY"
-            android:src="@drawable/question_bg_bottom" />
+            android:src="@drawable/questionnaire_bg_bottom" />
 
         <TextView
             android:id="@+id/quote_enter"
@@ -59,7 +60,7 @@
             android:text="@string/know"
             android:textSize="@dimen/normal_text_size"
             android:layout_marginRight="26.7dp"
-            android:textColor="#FF573b3b" />
+            android:textColor="@color/dark_gray" />
 
     </RelativeLayout>
 

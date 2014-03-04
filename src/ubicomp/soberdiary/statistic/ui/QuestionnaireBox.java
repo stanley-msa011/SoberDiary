@@ -91,8 +91,8 @@ public class QuestionnaireBox {
 		mainParam.width = mainParam.height = LayoutParams.MATCH_PARENT;
 		help.setTypeface(wordTypefaceBold);
 		next.setTypeface(wordTypefaceBold);
-		choiceDrawable = r.getDrawable(R.drawable.question_choice);
-		choiceSelectedDrawable = r.getDrawable(R.drawable.question_choice_selection);
+		choiceDrawable = r.getDrawable(R.drawable.bar_radio_button);
+		choiceSelectedDrawable = r.getDrawable(R.drawable.bar_radio_button_checked);
 		closeButton.setOnClickListener(new ExitListener());
 	}
 	

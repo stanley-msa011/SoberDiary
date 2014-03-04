@@ -46,6 +46,8 @@ public class StatisticWeekViewSDK10 extends StatisticPageView {
 	private Typeface digitTypefaceBold;
 	private Typeface wordTypefaceBold;
 	
+	private static final int text_color = App.context.getResources().getColor(R.color.text_gray);
+	
 	public StatisticWeekViewSDK10() {
 		super(R.layout.statistic_week_view_sdk10);
 		db = new DatabaseControl();
@@ -81,7 +83,7 @@ public class StatisticWeekViewSDK10 extends StatisticPageView {
 		for (int i=0;i<nBlocks;++i){
 			time_labels[i] = new TextView(context);
 			time_labels[i].setTextSize(TypedValue.COMPLEX_UNIT_PX,textSize);
-			time_labels[i].setTextColor(0xFF727171);
+			time_labels[i].setTextColor(text_color);
 			time_labels[i].setText(blockHint[i]);
 			time_labels[i].setTypeface(wordTypefaceBold);
 			time_labels[i].setGravity(Gravity.CENTER);
@@ -93,7 +95,7 @@ public class StatisticWeekViewSDK10 extends StatisticPageView {
 		for (int i=0;i<nDays;++i){
 			date_labels[i] = new TextView(context);
 			date_labels[i].setTextSize(TypedValue.COMPLEX_UNIT_PX,textSize);
-			date_labels[i].setTextColor(0xFF727171);
+			date_labels[i].setTextColor(text_color);
 			date_labels[i].setGravity(Gravity.CENTER);
 			date_labels[i].setTypeface(digitTypefaceBold);
 			dateLayout.addView(date_labels[i]);
@@ -122,7 +124,7 @@ public class StatisticWeekViewSDK10 extends StatisticPageView {
 			labelLayout.addView(labelImgs[i]);
 			labels[i] = new TextView(context);
 			labels[i].setTextSize(TypedValue.COMPLEX_UNIT_PX,textSize);
-			labels[i].setTextColor(0xFF727171);
+			labels[i].setTextColor(text_color);
 			labels[i].setGravity(Gravity.LEFT|Gravity.CENTER_VERTICAL);
 			labels[i].setTypeface(wordTypefaceBold);
 			labels[i].setText(labelHint[i]);

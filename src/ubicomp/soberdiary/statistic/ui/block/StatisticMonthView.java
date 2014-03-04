@@ -50,6 +50,7 @@ public class StatisticMonthView extends StatisticPageView {
 	private Calendar startDate;
 	
 	private static final float ALPHA = 0.4F; 
+	private static final int text_color = App.context.getResources().getColor(R.color.text_gray);
 	
 	public StatisticMonthView() {
 		super(R.layout.statistic_month_view);
@@ -84,7 +85,7 @@ public class StatisticMonthView extends StatisticPageView {
 		for (int i=0;i<nBlocks;++i){
 			time_labels[i] = new TextView(context);
 			time_labels[i].setTextSize(TypedValue.COMPLEX_UNIT_PX,textSize);
-			time_labels[i].setTextColor(0xFF727171);
+			time_labels[i].setTextColor(text_color);
 			time_labels[i].setText(blockHint[i]);
 			time_labels[i].setTypeface(wordTypefaceBold);
 			time_labels[i].setGravity(Gravity.CENTER);
@@ -116,7 +117,7 @@ public class StatisticMonthView extends StatisticPageView {
 			labelLayout.addView(labelImgs[i]);
 			labels[i] = new TextView(context);
 			labels[i].setTextSize(TypedValue.COMPLEX_UNIT_PX,textSize);
-			labels[i].setTextColor(0xFF727171);
+			labels[i].setTextColor(text_color);
 			labels[i].setGravity(Gravity.LEFT|Gravity.CENTER_VERTICAL);
 			labels[i].setText(labelHint[i]);
 			labels[i].setTypeface(wordTypefaceBold);

@@ -30,19 +30,24 @@ public class ChartLabelView extends View {
 	
 	private int chart_type = 0;
 	
+	private static final int text_color = App.context.getResources().getColor(R.color.chart_text);
+	private static final int green = App.context.getResources().getColor(R.color.green);
+	private static final int orange = App.context.getResources().getColor(R.color.lite_orange);
+	private static final int white = App.context.getResources().getColor(R.color.white);
+	
 	public ChartLabelView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		text_paint.setColor(0xFFAAAAAA);
+		text_paint.setColor(text_color );
 		text_paint.setTextAlign(Align.CENTER);
 		text_paint.setTextSize(textSize);
 		text_paint.setTypeface(Typefaces.getWordTypefaceBold());
 
-		emotion_paint.setColor(0xFF2dc7b3);
-		desire_paint.setColor(0xFFf19700);
-		brac_paint.setColor(0xFFFFFFFF);
+		emotion_paint.setColor(green);
+		desire_paint.setColor(orange);
+		brac_paint.setColor(white);
 
-		paint_pass.setColor(0xFF5bdebe);
-		paint_fail.setColor(0xFFf09600);
+		paint_pass.setColor(green);
+		paint_fail.setColor(orange);
 
 		type_str[0] = getResources().getString(R.string.emotion_short);
 		type_str[1] = getResources().getString(R.string.craving_short);

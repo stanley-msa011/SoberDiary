@@ -23,11 +23,11 @@ public class EmotionManageHistoryActivity extends Activity {
 	private LinearLayout main;
 
 	private static final int[] EMOTION_DRAWABLE_ID = { 
-			R.drawable.questionnaire_item_e0,R.drawable.questionnaire_item_e1,
-			R.drawable.questionnaire_item_e2, R.drawable.questionnaire_item_e3,
-			R.drawable.questionnaire_item_e4, R.drawable.questionnaire_item_e5,
-			R.drawable.questionnaire_item_e6, R.drawable.questionnaire_item_e7,
-			R.drawable.questionnaire_item_e8, R.drawable.questionnaire_item_e9,
+			R.drawable.emotion_type_0,R.drawable.emotion_type_1,
+			R.drawable.emotion_type_2, R.drawable.emotion_type_3,
+			R.drawable.emotion_type_4, R.drawable.emotion_type_5,
+			R.drawable.emotion_type_6, R.drawable.emotion_type_7,
+			R.drawable.emotion_type_8, R.drawable.emotion_type_9,
 	};
 
 	private DatabaseControl db;

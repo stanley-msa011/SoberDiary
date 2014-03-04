@@ -77,6 +77,7 @@ public class TimeValue {
 		long gap = this.timestamp - tv.timestamp;
 		return gap > AlarmManager.INTERVAL_DAY;
 	}
+	
 	public boolean afterAWeek(TimeValue tv){
 		long gap = this.timestamp - tv.timestamp;
 		return gap > AlarmManager.INTERVAL_DAY*7;
@@ -88,5 +89,10 @@ public class TimeValue {
 		int cDay = cal.get(Calendar.DAY_OF_MONTH);
 		
 		return cYear == year && cMonth == month && cDay == day;
+	}
+	
+	public boolean showNotificationDialog(long curTime){
+		long gap = curTime - timestamp;
+		return gap > AlarmManager.INTERVAL_DAY*3;
 	}
 }

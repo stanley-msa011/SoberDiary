@@ -5,6 +5,7 @@ import java.text.DecimalFormat;
 import java.util.Random;
 
 import ubicomp.soberdiary.data.file.MainStorage;
+import ubicomp.soberdiary.main.App;
 import ubicomp.soberdiary.main.R;
 import ubicomp.soberdiary.main.MainActivity;
 import ubicomp.soberdiary.main.GPSService;
@@ -45,6 +46,8 @@ import ubicomp.soberdiary.test.gps.GPSInitTask;
 import ubicomp.soberdiary.test.gps.GPSInterface;
 import ubicomp.soberdiary.test.ui.AdditionalQuestionMsgBox;
 import ubicomp.soberdiary.test.ui.FeedbackMsgBox;
+import ubicomp.soberdiary.test.ui.NotificationDialog;
+import ubicomp.soberdiary.test.ui.NotificationInterface;
 import ubicomp.soberdiary.test.ui.TestQuestionCaller;
 import ubicomp.soberdiary.test.ui.TestQuestionMsgBox;
 import ubicomp.soberdiary.test.ui.TestQuestionMsgBoxInterface;
@@ -68,6 +71,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -77,7 +82,7 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-public class TestFragment extends Fragment implements GPSInterface,TestQuestionCaller, BluetoothDebugger, BluetoothMessageUpdater,BluetoothCaller, CameraCaller, EnablePage {
+public class TestFragment extends Fragment implements GPSInterface,TestQuestionCaller, BluetoothDebugger, BluetoothMessageUpdater,BluetoothCaller, CameraCaller, EnablePage, NotificationInterface {
 
 	private static final String TAG = "TEST_PAGE";
 
@@ -141,8 +146,8 @@ public class TestFragment extends Fragment implements GPSInterface,TestQuestionC
 	private ChangeMsgHandler msgHandler;
 	private TextView debugBracValueView;
 	
-	private static final int[] BLOW_RESOURCE = { 0, R.drawable.test_circle1, R.drawable.test_circle2,
-			R.drawable.test_circle3, R.drawable.test_circle4, R.drawable.test_circle5, R.drawable.test_circle5 };
+	private static final int[] BLOW_RESOURCE = { 0, R.drawable.test_progress_1, R.drawable.test_progress_2,
+			R.drawable.test_progress_3, R.drawable.test_progress_4, R.drawable.test_progress_5, R.drawable.test_progress_5 };
 	private ImageView face;
 
 	private QuestionFile questionFile;
@@ -155,7 +160,8 @@ public class TestFragment extends Fragment implements GPSInterface,TestQuestionC
 	private static int soundId;
 	
 	private AdditionalQuestionMsgBox addBox;
-	private AdditionalLoadingHandler additionalLoadingHandler;
+	
+	private NotificationDialog notificationDialog;
 	
 	private CountDownTimer testCountDownTimer = null; 
 	private CountDownTimer openSensorMsgTimer = null;
@@ -163,6 +169,8 @@ public class TestFragment extends Fragment implements GPSInterface,TestQuestionC
 	private LinearLayout middleLayout;
 	
 	private TextView guideTop,guideBottom;
+	
+	private Animation startButtonAnimation = AnimationUtils.loadAnimation(App.context, R.anim.start_button_animation);
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -184,7 +192,6 @@ public class TestFragment extends Fragment implements GPSInterface,TestQuestionC
 		failBgHandler = new FailMessageHandler();
 		testHandler = new TestHandler();
 		changeTabsHandler = new ChangeTabsHandler();
-		additionalLoadingHandler = new AdditionalLoadingHandler();
 		test_guide_msg = getResources().getStringArray(R.array.test_guide_msg);
 	}
 	
@@ -230,6 +237,12 @@ public class TestFragment extends Fragment implements GPSInterface,TestQuestionC
 			addBox.clear();
 			addBox = null;
 		}
+		if (notificationDialog!=null)
+			notificationDialog.removeView();
+		if (startText != null){
+			startText.setAnimation(null);
+			startButtonAnimation.cancel();
+		}
 		super.onPause();
 	}
 
@@ -241,8 +254,10 @@ public class TestFragment extends Fragment implements GPSInterface,TestQuestionC
 		LoadingDialogControl.dismiss();
 		if (PreferenceControl.showAdditionalQuestionnaire()){
 			PreferenceControl.setShowAdditonalQuestionnaire();
-			additionalLoadingHandler.sendEmptyMessage(0);
-		}
+			addBox = new AdditionalQuestionMsgBox(main_layout,testFragment);
+			addBox.generateAdditionalBox();
+		}else
+			notificationDialog.setting();
 	}
 
 	@Override
@@ -287,6 +302,8 @@ public class TestFragment extends Fragment implements GPSInterface,TestQuestionC
 
 		msgBox = new TestQuestionMsgBox(testFragment,testFragment, main_layout);
 		feedbackBox = new FeedbackMsgBox(testFragment,main_layout);
+		
+		notificationDialog = new NotificationDialog(testFragment.getActivity(),main_layout, testFragment, testFragment);
 		
 		return view;
 	}
@@ -434,6 +451,10 @@ public class TestFragment extends Fragment implements GPSInterface,TestQuestionC
 				PreferenceControl.setAfterFirstTime();
 				showTutorial();
 			} else {
+				
+				startText.setAnimation(null);
+				startButtonAnimation.cancel();
+				
 				long lastTime = PreferenceControl.getLastTestTime();
 				long curTime = System.currentTimeMillis();
 				Boolean debug = PreferenceControl.isDebugMode();
@@ -550,8 +571,6 @@ public class TestFragment extends Fragment implements GPSInterface,TestQuestionC
 
 		if (testHandler != null)
 			testHandler.removeMessages(0);
-		if (additionalLoadingHandler!=null)
-			additionalLoadingHandler.removeMessages(0);
 		
 		if (testCountDownTimer!=null)
 			testCountDownTimer.cancel();
@@ -588,8 +607,6 @@ public class TestFragment extends Fragment implements GPSInterface,TestQuestionC
 		if (changeTabsHandler != null) {
 			changeTabsHandler.removeMessages(0);
 		}
-		if (additionalLoadingHandler!=null)
-			additionalLoadingHandler.removeMessages(0);
 		
 		if (testCountDownTimer!=null){
 			testCountDownTimer.cancel();
@@ -630,14 +647,6 @@ public class TestFragment extends Fragment implements GPSInterface,TestQuestionC
 		startButton.setOnClickListener(new EndTestOnClickListener());
 	}
 	
-	private class AdditionalLoadingHandler extends Handler {
-		public void handleMessage(Message msg) {
-			addBox = new AdditionalQuestionMsgBox(main_layout,testFragment);
-			addBox.gen();
-			addBox.generateAdditionalBox();
-		}
-	}
-
 	@SuppressLint("HandlerLeak")
 	private class FailMessageHandler extends Handler {
 
@@ -675,6 +684,8 @@ public class TestFragment extends Fragment implements GPSInterface,TestQuestionC
 				startButton.setOnClickListener(null);
 			}else
 				MainActivity.setTimers();
+			
+			MainActivity.enableTabAndClick(true);
 		}
 	}
 
@@ -832,6 +843,19 @@ public class TestFragment extends Fragment implements GPSInterface,TestQuestionC
 	public void enableStartButton(boolean enable){
 		startButton.setEnabled(enable);
 	}
+	
+	@Override
+	public void notifyStartButton() {
+		startText.startAnimation(startButtonAnimation);
+	}
+
+	@Override
+	public void notifyAdditionalQuestionnaire() {
+		PreferenceControl.setShowAdditonalQuestionnaire();
+		addBox = new AdditionalQuestionMsgBox(main_layout,testFragment);
+		addBox.generateAdditionalBox();		
+	}
+	
 	
 	// Debug
 	// --------------------------------------------------------------------------------------------------------

@@ -146,14 +146,14 @@ public class VoiceRecordBlock implements RecorderCallee {
 			help.setText(R.string.voice_main_help);
 			topIcon.setImageDrawable(recDrawable);
 			topButton.setOnClickListener(recListener);
-			topButton.setBackgroundResource(R.drawable.record_box_right_top_button);
+			topButton.setBackgroundResource(R.drawable.record_box_top_button);
 			if (db.hasAudio(curTV)) {
 				bottomIcon.setImageDrawable(playDrawable);
-				bottomButton.setBackgroundResource(R.drawable.record_box_right_bottom_button);
+				bottomButton.setBackgroundResource(R.drawable.record_box_bottom_button);
 				bottomButton.setOnClickListener(playListener);
 			} else {
 				bottomIcon.setImageDrawable(playOffDrawable);
-				bottomButton.setBackgroundResource(R.drawable.record_bg_right_bottom);
+				bottomButton.setBackgroundResource(R.drawable.record_button_bottom);
 				bottomButton.setOnClickListener(null);
 			}
 			recordCaller.enablePage(true, 0);
@@ -164,10 +164,10 @@ public class VoiceRecordBlock implements RecorderCallee {
 			countDownTimer.start();
 			topIcon.setImageDrawable(null);
 			topButton.setOnClickListener(null);
-			topButton.setBackgroundResource(R.drawable.record_bg_right_top);
+			topButton.setBackgroundResource(R.drawable.record_button_top);
 			bottomIcon.setImageDrawable(stopDrawable);
 			bottomButton.setOnClickListener(endPlayListener);
-			bottomButton.setBackgroundResource(R.drawable.record_box_right_bottom_button);
+			bottomButton.setBackgroundResource(R.drawable.record_box_bottom_button);
 			recordCaller.enablePage(false, 0);
 			break;
 		case STATE_ON_RECORD:
@@ -176,26 +176,26 @@ public class VoiceRecordBlock implements RecorderCallee {
 			countDownTimer.start();
 			topIcon.setImageDrawable(stopDrawable);
 			topButton.setOnClickListener(endRecListener);
-			topButton.setBackgroundResource(R.drawable.record_box_right_top_button);
+			topButton.setBackgroundResource(R.drawable.record_box_top_button);
 			bottomIcon.setImageDrawable(null);
 			bottomButton.setOnClickListener(null);
-			bottomButton.setBackgroundResource(R.drawable.record_bg_right_bottom);
+			bottomButton.setBackgroundResource(R.drawable.record_button_bottom);
 			recordCaller.enablePage(false, 0);
 			break;
 		case STATE_PREPARING:
 			help.setText(R.string.audio_box_preparing);
 			topButton.setOnClickListener(null);
-			topButton.setBackgroundResource(R.drawable.record_bg_right_top);
+			topButton.setBackgroundResource(R.drawable.record_button_top);
 			bottomButton.setOnClickListener(null);
-			bottomButton.setBackgroundResource(R.drawable.record_bg_right_bottom);
+			bottomButton.setBackgroundResource(R.drawable.record_button_bottom);
 			recordCaller.enablePage(true, 0);
 			break;
 		case STATE_BEFORE_INIT:
 			help.setText(R.string.audio_box_preparing);
 			topButton.setOnClickListener(null);
-			topButton.setBackgroundResource(R.drawable.record_bg_right_top);
+			topButton.setBackgroundResource(R.drawable.record_button_top);
 			bottomButton.setOnClickListener(null);
-			bottomButton.setBackgroundResource(R.drawable.record_bg_right_bottom);
+			bottomButton.setBackgroundResource(R.drawable.record_button_bottom);
 			break;
 		}
 		topIcon.invalidate();

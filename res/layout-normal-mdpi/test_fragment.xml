@@ -3,7 +3,7 @@
     android:id="@+id/test_fragment_main_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FF100e0e"
+    android:background="@color/test_bg"
     android:splitMotionEvents="false" >
 
     <ImageView
@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:scaleType="fitXY"
-        android:src="@drawable/test_background_top" />
+        android:src="@drawable/test_bg_top" />
 
     <LinearLayout
         android:id="@+id/test_bg_middle"
@@ -28,14 +28,14 @@
             android:layout_weight="109"
             android:adjustViewBounds="true"
             android:scaleType="fitXY"
-            android:src="@drawable/test_background_left" />
+            android:src="@drawable/test_bg_left" />
 
         <FrameLayout
             android:id="@+id/test_bg_center"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="center"
-			android:background="@drawable/test_background_center" 
+			android:background="@drawable/test_bg_center" 
             android:layout_weight="260" >
 
             <FrameLayout
@@ -52,7 +52,7 @@
                 android:layout_height="match_parent"
                 android:adjustViewBounds="true"
                 android:scaleType="fitXY"
-                android:background="@drawable/test_background_center" />
+                android:background="@drawable/test_bg_center" />
 
             <FrameLayout
                 android:id="@+id/test_start_layout"
@@ -65,7 +65,7 @@
                     android:layout_height="match_parent"
                     android:adjustViewBounds="true"
                     android:scaleType="fitXY"
-                    android:background="@drawable/start_button_selector" />
+                    android:background="@drawable/start_button" />
 
                 <ImageView
                     android:id="@+id/test_start_stroke"
@@ -73,7 +73,7 @@
                     android:layout_height="match_parent"
                     android:adjustViewBounds="true"
                     android:scaleType="fitXY"
-                    android:background="@drawable/test_button_stroke" />
+                    android:background="@drawable/test_progress_bg" />
 
                 <ImageView
                     android:id="@+id/test_start_circle"
@@ -97,7 +97,7 @@
                     android:layout_gravity="center"
                     android:gravity="center"
                     android:text="@string/start"
-                    android:textColor="#FF454545"
+                    android:textColor="@color/test_start_button"
                     android:textSize="@dimen/large_title_size"/>
 
                 <TextView
@@ -106,7 +106,7 @@
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
                     android:gravity="center"
-                    android:textColor="#FF2e2e2e"
+                    android:textColor="@color/count_down"
                     android:textSize="@dimen/xlarge_text_size"/>
             </FrameLayout>
         </FrameLayout>
@@ -117,7 +117,7 @@
             android:layout_weight="109"
             android:adjustViewBounds="true"
             android:scaleType="fitXY"
-            android:src="@drawable/test_background_right" />
+            android:src="@drawable/test_bg_right" />
     </LinearLayout>
 
     <ImageView
@@ -126,7 +126,7 @@
         android:layout_below="@+id/test_bg_middle"
         android:adjustViewBounds="true"
         android:scaleType="fitXY"
-        android:src="@drawable/test_background_bottom" />
+        android:src="@drawable/test_bg_bottom" />
 
     <TextView
         android:id="@+id/test_message"
@@ -135,7 +135,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="26dp"
         android:gravity="center"
-        android:textColor="#FF989898"
+        android:textColor="@color/test_message"
         android:textSize="@dimen/normal_text_size" />
 
     <TextView
@@ -146,7 +146,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="37dp"
         android:gravity="center"
-        android:textColor="#FFc98123"
+        android:textColor="@color/orange"
         android:textSize="@dimen/normal_text_size" />
     
     <TextView 
@@ -157,7 +157,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="14dp"
         android:gravity="center"
-        android:textColor="#FFc98123"
+        android:textColor="@color/orange"
         android:textSize="@dimen/normal_title_size"
         />
 
@@ -170,7 +170,7 @@
         android:layout_marginTop="4dp"
         android:padding="13dp"
         android:scaleType="fitXY"
-        android:src="@drawable/test_tutorial_button" />
+        android:src="@drawable/tutorial_button" />
 
     <!-- Used for Debugging -->
 
@@ -184,7 +184,7 @@
             android:id="@+id/debug_mode_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#FFFFFFFF" />
+            android:textColor="@color/white" />
 
         <LinearLayout
             android:id="@+id/debugButtons"
@@ -271,7 +271,7 @@
             android:layout_width="match_parent"
             android:layout_height="180dp"
             android:layout_alignParentBottom="true"
-            android:background="#99000000" >
+            android:background="@color/shadow" >
 
             <FrameLayout
                 android:layout_width="match_parent"
@@ -281,12 +281,12 @@
                     android:id="@+id/debug_msg"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="#00000000"
+                    android:background="@color/black"
                     android:enabled="false"
                     android:focusable="false"
                     android:freezesText="true"
                     android:inputType="textMultiLine"
-                    android:textColor="#FFFFFFFF" />
+                    android:textColor="@color/white" />
             </FrameLayout>
         </ScrollView>
 

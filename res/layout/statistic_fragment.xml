@@ -3,7 +3,7 @@
     android:id="@+id/statistic_fragment_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/statistic_background_all"
+    android:background="@drawable/statistic_bg"
     android:splitMotionEvents="false" >
 
     <LinearLayout
@@ -74,7 +74,7 @@
         android:padding="13.3dp"
         android:layout_marginTop="2dp"
         android:layout_marginRight="2dp"
-        android:src="@drawable/statistic_question_button"
+        android:src="@drawable/statistic_questionnaire_button"
         android:visibility="invisible" />
 
 </RelativeLayout>

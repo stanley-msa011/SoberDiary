@@ -22,12 +22,14 @@ public class ChartYAxisView extends View {
 	
 	private int chart_type = 0;
 	
+	private int yaxis_color = App.context.getResources().getColor(R.color.chart_y_axis);
+	
 	public ChartYAxisView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		text_paint_small.setColor(0xFF3c3b3b);
+		text_paint_small.setColor(yaxis_color);
 		text_paint_small.setTextAlign(Align.CENTER);
 		text_paint_small.setTextSize(textSize);
-		text_paint_small.setTypeface(Typefaces.getDigitTypeface());
+		text_paint_small.setTypeface(Typefaces.getDigitTypefaceBold());
 		high = getResources().getString(R.string.high);
 		bar_width = App.context.getResources().getDimensionPixelSize(R.dimen.chart_bar_size);
 	}

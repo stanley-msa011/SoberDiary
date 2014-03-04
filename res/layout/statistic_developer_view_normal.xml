@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:text="BrAC:"
         android:textSize="26sp"
-        android:textColor="#FF000000"
+        android:textColor="@color/black"
         />
 
     <TextView
@@ -18,7 +18,7 @@
         android:layout_height="wrap_content"
         android:textSize="26sp"
         android:layout_toRightOf="@+id/developer_brac"
-        android:textColor="#FF000000"
+        android:textColor="@color/black"
         />
     <TextView
         android:id="@+id/developer_voltage"
@@ -27,7 +27,7 @@
         android:text="Voltage:"
         android:textSize="26sp"
         android:layout_below="@+id/developer_brac"
-        android:textColor="#FF000000"
+        android:textColor="@color/black"
         />
      <TextView
         android:id="@+id/developer_voltage_value"
@@ -36,7 +36,7 @@
         android:textSize="26sp"
         android:layout_toRightOf="@+id/developer_voltage"
         android:layout_below="@+id/developer_brac"
-        android:textColor="#FF000000"
+        android:textColor="@color/black"
         />
     
     <TextView
@@ -46,7 +46,7 @@
         android:text="Timestamp:"
         android:textSize="26sp"
         android:layout_below="@+id/developer_voltage"
-        android:textColor="#FF000000"
+        android:textColor="@color/black"
         />
      <TextView
         android:id="@+id/developer_ts_value"
@@ -54,7 +54,7 @@
         android:layout_height="wrap_content"
         android:textSize="26sp"
         android:layout_below="@+id/developer_ts"
-        android:textColor="#FF000000"
+        android:textColor="@color/black"
         />
      
 </RelativeLayout>

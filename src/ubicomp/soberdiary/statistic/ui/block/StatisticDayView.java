@@ -43,6 +43,9 @@ public class StatisticDayView extends StatisticPageView {
 	private String[] blockHintTime = new String[3];
 	
 	
+	private static final int text_color = App.context.getResources().getColor(R.color.text_gray);
+	private static final int value_color = App.context.getResources().getColor(R.color.white);
+	
 	private static final int nBlocks = 3;
 	
 	private Typeface digitTypeface;
@@ -51,23 +54,23 @@ public class StatisticDayView extends StatisticPageView {
 	private Typeface wordTypefaceBold;
 	
 	private final static int[] emotionId = {
-		R.drawable.msg_emotion_0,
-		R.drawable.msg_emotion_1,
-		R.drawable.msg_emotion_2,
-		R.drawable.msg_emotion_3,
-		R.drawable.msg_emotion_4,};
+		R.drawable.emotion_0,
+		R.drawable.emotion_1,
+		R.drawable.emotion_2,
+		R.drawable.emotion_3,
+		R.drawable.emotion_4,};
 	
 	private final static int[] desireId = {
-		R.drawable.msg_craving_0,
-		R.drawable.msg_craving_1,
-		R.drawable.msg_craving_2,
-		R.drawable.msg_craving_3,
-		R.drawable.msg_craving_4,
-		R.drawable.msg_craving_5,
-		R.drawable.msg_craving_6,
-		R.drawable.msg_craving_7,
-		R.drawable.msg_craving_8,
-		R.drawable.msg_craving_9,
+		R.drawable.craving_0,
+		R.drawable.craving_1,
+		R.drawable.craving_2,
+		R.drawable.craving_3,
+		R.drawable.craving_4,
+		R.drawable.craving_5,
+		R.drawable.craving_6,
+		R.drawable.craving_7,
+		R.drawable.craving_8,
+		R.drawable.craving_9,
 	};
 	
 	private int e_idx, c_idx;
@@ -128,16 +131,16 @@ public class StatisticDayView extends StatisticPageView {
 			Spannable s = new SpannableString(blockHintStr[i]+"\n"+blockHintTime[i]);
 			int start = 0;
 			int end = blockHintStr[i].length()+1;
-			s.setSpan(new CustomTypefaceSpan("custom1",wordTypefaceBold,0xFF727171), start, end, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+			s.setSpan(new CustomTypefaceSpan("custom1",wordTypefaceBold,text_color), start, end, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
 			start = end;
 			end = start + blockHintTime[i].length();
-			s.setSpan(new CustomTypefaceSpan("custom2",digitTypefaceBold,0xFF727171), start, end, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+			s.setSpan(new CustomTypefaceSpan("custom2",digitTypefaceBold,text_color), start, end, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
 			circleTexts[i].setText(s);
 			circleTexts[i].setGravity(Gravity.CENTER);
 			circleTexts[i].setTypeface(wordTypefaceBold);
 			
 			circleValues[i].setTextSize(TypedValue.COMPLEX_UNIT_PX,textSize);
-			circleValues[i].setTextColor(0xFFFFFFFF);
+			circleValues[i].setTextColor(value_color);
 			circleValues[i].setTypeface(digitTypeface);
 		}
 		
@@ -217,19 +220,19 @@ public class StatisticDayView extends StatisticPageView {
 			Spannable s = new SpannableString(month_str+m_text+day_str+d_text+"\n"+time_str);
 			int start = 0;
 			int end = month_str.length();
-			s.setSpan(new CustomTypefaceSpan("c1",digitTypeface,0xFF727171), start, end, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+			s.setSpan(new CustomTypefaceSpan("c1",digitTypeface,text_color), start, end, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
 			start = end;
 			end = start+m_text.length();
-			s.setSpan(new CustomTypefaceSpan("c2",wordTypeface,0xFF727171), start, end, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+			s.setSpan(new CustomTypefaceSpan("c2",wordTypeface,text_color), start, end, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
 			start = end;
 			end = start+day_str.length();
-			s.setSpan(new CustomTypefaceSpan("c1",digitTypeface,0xFF727171), start, end, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+			s.setSpan(new CustomTypefaceSpan("c1",digitTypeface,text_color), start, end, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
 			start = end;
 			end = start+d_text.length()+1;
-			s.setSpan(new CustomTypefaceSpan("c2",wordTypeface,0xFF727171), start, end, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+			s.setSpan(new CustomTypefaceSpan("c2",wordTypeface,text_color), start, end, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
 			start = end;
 			end = start+time_str.length();
-			s.setSpan(new CustomTypefaceSpan("c1",digitTypeface,0xFF727171), start, end, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+			s.setSpan(new CustomTypefaceSpan("c1",digitTypeface,text_color), start, end, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
 			bracTime.setText(s);
 		}
 

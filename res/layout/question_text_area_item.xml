@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/questionnaire_background_normal"
+    android:background="@drawable/bar_bg_normal"
    >
 
     <TextView
@@ -12,7 +12,7 @@
         android:layout_gravity="center"
         android:maxLines="5"
         android:textSize="@dimen/large_text_size"
-        android:textColor="#FF5c5c5c"
+        android:textColor="@color/text_gray"
         android:lineSpacingMultiplier="1.5"
         android:layout_margin="16dp"
         android:layout_marginStart="16dp"

@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#99000000" >
+    android:background="@color/shadow" >
 
     <RelativeLayout
         android:id="@+id/question_box_layout"
@@ -24,7 +24,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="-4dp"
-                android:background="@drawable/question_bg_top"
+                android:background="@drawable/questionnaire_bg_top"
                 android:splitMotionEvents="false" >
 
                 <TextView
@@ -33,7 +33,7 @@
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:layout_marginLeft="26.7dp"
-                    android:textColor="#FF573b3b"
+                    android:textColor="@color/dark_gray"
                     android:textSize="@dimen/normal_text_size"/>
             </RelativeLayout>
 
@@ -41,7 +41,7 @@
                 android:id="@+id/question_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/question_bg_content"
+                android:background="@drawable/questionnaire_bg_inner"
                 android:layout_marginTop="-4dp"
                 android:layout_marginBottom="-4dp"
                 android:orientation="vertical"
@@ -51,7 +51,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="-4dp"
-                android:background="@drawable/question_bg_bottom"
+                android:background="@drawable/questionnaire_bg_bottom"
                 android:splitMotionEvents="false" >
 
                 <TextView
@@ -62,7 +62,7 @@
                     android:layout_centerVertical="true"
                     android:layout_marginRight="26.7dp"
                     android:gravity="center"
-                    android:textColor="#FF573b3b"
+                    android:textColor="@color/dark_gray"
                     android:textSize="@dimen/normal_text_size"/>
             </RelativeLayout>
         </LinearLayout>
@@ -75,7 +75,7 @@
             android:adjustViewBounds="true"
             android:paddingBottom="13.3dp"
             android:paddingLeft="13.3dp"
-            android:src="@drawable/question_close" />
+            android:src="@drawable/exit" />
     </RelativeLayout>
 
 </RelativeLayout>

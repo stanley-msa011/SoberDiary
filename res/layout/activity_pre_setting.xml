@@ -42,6 +42,14 @@
     	    android:textOn="yes"
     	    android:textOff="no"
     	    android:text="Is Developer?" />
+    	
+    	<CheckBox
+    	    android:id="@+id/sensor_switch"
+    	    android:layout_width="wrap_content"
+    	    android:layout_height="wrap_content"
+    	    android:textOn="yes"
+    	    android:textOff="no"
+    	    android:text="Use new sensor?" />
 
     	<TextView
 	        android:layout_width="wrap_content"

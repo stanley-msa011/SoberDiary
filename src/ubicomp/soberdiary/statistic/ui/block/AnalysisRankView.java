@@ -189,7 +189,11 @@ public class AnalysisRankView extends StatisticPageView {
 			
 			int restPeople = nPeople - 4;
 			int restRank = rank - 3;
-			int len = width_bar - restRank*width_bar/restPeople;
+			int len =0;
+			if (restPeople == 0)
+				len = width_bar;
+			else
+				len = width_bar - restRank*width_bar/restPeople;
 			paramMonth.leftMargin = marginLeft + len;
 			contentLayoutMonth.updateViewLayout(pointerMonth, paramMonth);
 			
@@ -253,7 +257,11 @@ public class AnalysisRankView extends StatisticPageView {
 			
 			int restPeople = nPeople - 4;
 			int restRank = rank - 3;
-			int len = width_bar - restRank*width_bar/restPeople;
+			int len;
+			if (restPeople == 0)
+				len = width_bar;
+			else
+				len = width_bar - restRank*width_bar/restPeople;
 			paramWeek.leftMargin = marginLeft + len;
 			contentLayoutWeek.updateViewLayout(pointerWeek, paramWeek);
 			

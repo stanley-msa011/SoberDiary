@@ -45,6 +45,7 @@ public class PreSettingActivity extends Activity {
 	private int target_t, drink_t;
 
 	private CheckBox developer_switch;
+	private CheckBox sensor_switch;
 
 	private static final int DATE_DIALOG_ID = 0;
 	private static final int LOCK_DIALOG_ID = 1;
@@ -60,6 +61,9 @@ public class PreSettingActivity extends Activity {
 
 		developer_switch = (CheckBox) this.findViewById(R.id.developer_switch);
 		developer_switch.setChecked(PreferenceControl.isDeveloper());
+		
+		sensor_switch = (CheckBox) this.findViewById(R.id.sensor_switch);
+		sensor_switch.setChecked(PreferenceControl.getUseNewSensor());
 
 		target_good = (EditText) this.findViewById(R.id.target_good_edit);
 		target_good.setText(PreferenceControl.getSavingGoal());
@@ -202,6 +206,7 @@ public class PreSettingActivity extends Activity {
 			if (check) {
 				PreferenceControl.setUID(text);
 				PreferenceControl.setIsDeveloper(developer_switch.isChecked());
+				PreferenceControl.setUseNewSensor(sensor_switch.isChecked());
 				PreferenceControl.setGoal(target_g, target_t, drink_t);
 				PreferenceControl.setStartDate(mYear, mMonth, mDay);
 

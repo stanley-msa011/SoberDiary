@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/questionnaire_background_normal"
+    android:background="@drawable/bar_bg_normal"
     >
 
     <TextView
@@ -13,7 +13,7 @@
         android:text="@string/fb_privacy"
         android:textSize="@dimen/large_text_size"
         android:layout_marginLeft="16dp"
-        android:textColor="#FF777777" />
+        android:textColor="@color/text_gray" />
 
     <Spinner
         android:id="@+id/fb_privacy_spinner"

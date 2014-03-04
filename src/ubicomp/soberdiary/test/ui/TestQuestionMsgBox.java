@@ -10,10 +10,8 @@ import ubicomp.soberdiary.system.clicklog.ClickLog;
 import ubicomp.soberdiary.system.config.PreferenceControl;
 import ubicomp.soberdiary.test.gps.GPSInterface;
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Rect;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -54,7 +52,6 @@ public class TestQuestionMsgBox implements TestQuestionMsgBoxInterface{
 	
 	private LinearLayout questionLayout;
 	
-	private Resources r;
 	private EndOnClickListener endListener;
 	private CancelOnClickListener cancelListener;
 	
@@ -62,8 +59,9 @@ public class TestQuestionMsgBox implements TestQuestionMsgBoxInterface{
 	private Typeface wordTypeface;
 	private Typeface wordTypefaceBold;
 	
-	private Drawable[] emotionDrawables;
-	private Drawable[] cravingDrawables;
+	private int[] emotionResIds = {R.drawable.emotion_0,R.drawable.emotion_1,R.drawable.emotion_2,R.drawable.emotion_3,R.drawable.emotion_4};
+	private int[] cravingResIds = {R.drawable.craving_0,R.drawable.craving_1,R.drawable.craving_2,R.drawable.craving_3,R.drawable.craving_4,
+			R.drawable.craving_5,R.drawable.craving_6,R.drawable.craving_7,R.drawable.craving_8,R.drawable.craving_9};
 	
 	private TextView title;
 	private TextView send,notSend;
@@ -76,7 +74,6 @@ public class TestQuestionMsgBox implements TestQuestionMsgBoxInterface{
 		this.testQuestionCaller = testQuestionCaller;
 		this.gpsInterface = gps;
 		this.context = App.context;
-		this.r = context.getResources();
 		this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		this.mainLayout = mainLayout;
 		emotionStr = context.getResources().getStringArray(R.array.emotion_state);
@@ -176,25 +173,6 @@ public class TestQuestionMsgBox implements TestQuestionMsgBoxInterface{
 		RelativeLayout.LayoutParams boxParam = (LayoutParams) boxLayout.getLayoutParams();
 		boxParam.addRule(RelativeLayout.CENTER_IN_PARENT,RelativeLayout.TRUE);
 		
-		emotionDrawables = new Drawable[5];
-		emotionDrawables[0]  = r.getDrawable(R.drawable.msg_emotion_0);
-		emotionDrawables[1]  = r.getDrawable(R.drawable.msg_emotion_1);
-		emotionDrawables[2]  = r.getDrawable(R.drawable.msg_emotion_2);
-		emotionDrawables[3]  = r.getDrawable(R.drawable.msg_emotion_3);
-		emotionDrawables[4]  = r.getDrawable(R.drawable.msg_emotion_4);
-		
-		cravingDrawables = new Drawable[10];
-		cravingDrawables[0]  = r.getDrawable(R.drawable.msg_craving_0);
-		cravingDrawables[1]  = r.getDrawable(R.drawable.msg_craving_1);
-		cravingDrawables[2]  = r.getDrawable(R.drawable.msg_craving_2);
-		cravingDrawables[3]  = r.getDrawable(R.drawable.msg_craving_3);
-		cravingDrawables[4]  = r.getDrawable(R.drawable.msg_craving_4);
-		cravingDrawables[5]  = r.getDrawable(R.drawable.msg_craving_5);
-		cravingDrawables[6]  = r.getDrawable(R.drawable.msg_craving_6);
-		cravingDrawables[7]  = r.getDrawable(R.drawable.msg_craving_7);
-		cravingDrawables[8]  = r.getDrawable(R.drawable.msg_craving_8);
-		cravingDrawables[9]  = r.getDrawable(R.drawable.msg_craving_9);
-		
 		emotionSeekBar.setProgress(2);
 		emotionSeekBar.setProgress(0);
 		cravingSeekBar.setProgress(2);
@@ -217,14 +195,17 @@ public class TestQuestionMsgBox implements TestQuestionMsgBoxInterface{
 			mainLayout.removeView(boxLayout);
 	}
 	
+	private int text_color = App.context.getResources().getColor(R.color.dark_gray);
+	private int highlight_color = App.context.getResources().getColor(R.color.lite_orange);
+	
 	private void enableSend(boolean enable){
 		if (enable){
-			send.setTextColor(0xFFf39800);
-			notSend.setTextColor(0xFFf39800);
+			send.setTextColor(highlight_color);
+			notSend.setTextColor(highlight_color);
 		}
 		else{
-			send.setTextColor(0xFF898989);
-			notSend.setTextColor(0xFF898989);
+			send.setTextColor(text_color);
+			notSend.setTextColor(text_color);
 		}
 		done = enable;
 		doneByDoubleClick = false;
@@ -232,12 +213,12 @@ public class TestQuestionMsgBox implements TestQuestionMsgBoxInterface{
 	
 	private void enableSend(boolean enable,boolean click){
 		if (enable){
-			send.setTextColor(0xFFf39800);
-			notSend.setTextColor(0xFFf39800);
+			send.setTextColor(highlight_color);
+			notSend.setTextColor(highlight_color);
 		}
 		else{
-			send.setTextColor(0xFF898989);
-			notSend.setTextColor(0xFF898989);
+			send.setTextColor(text_color);
+			notSend.setTextColor(text_color);
 		}
 		done = enable;
 		doneByDoubleClick = click;
@@ -320,9 +301,9 @@ public class TestQuestionMsgBox implements TestQuestionMsgBoxInterface{
 	private class EmotionListener implements SeekBar.OnSeekBarChangeListener{
 		@Override
 		public void onProgressChanged(SeekBar seekBar, int progress, 	boolean fromUser) {
-			if (emotionShow == null || emotionDrawables==null)
+			if (emotionShow == null || emotionResIds==null)
 				return;
-			emotionShow.setImageDrawable(emotionDrawables[progress]);
+			emotionShow.setImageResource(emotionResIds[progress]);
 			emotionShowText.setText(emotionStr[progress]);
 			for (int i=0;i<eNum.length;++i)
 				eNum[i].setVisibility(View.INVISIBLE);
@@ -340,9 +321,9 @@ public class TestQuestionMsgBox implements TestQuestionMsgBoxInterface{
 	private class CravingListener implements SeekBar.OnSeekBarChangeListener{
 		@Override
 		public void onProgressChanged(SeekBar seekBar, int progress, 	boolean fromUser) {
-			if (cravingShow == null || cravingDrawables==null)
+			if (cravingShow == null || cravingResIds==null)
 				return;
-			cravingShow.setImageDrawable(cravingDrawables[progress]);
+			cravingShow.setImageResource(cravingResIds[progress]);
 			cravingShowText.setText(cravingStr[progress]);
 			for (int i=0;i<cNum.length;++i)
 				cNum[i].setVisibility(View.INVISIBLE);
@@ -361,6 +342,8 @@ public class TestQuestionMsgBox implements TestQuestionMsgBoxInterface{
 	private class EndOnTouchListener implements View.OnTouchListener{
 
 		private Rect rect;
+		private final int normalSize = App.context.getResources().getDimensionPixelSize(R.dimen.normal_title_size);
+		private int largeSize = App.context.getResources().getDimensionPixelSize(R.dimen.large_title_size);
 		
 		@Override
 		public boolean onTouch(View v, MotionEvent event) {
@@ -369,13 +352,13 @@ public class TestQuestionMsgBox implements TestQuestionMsgBoxInterface{
 			switch(e){
 				case MotionEvent.ACTION_MOVE:
 					if(!rect.contains(v.getLeft() + (int) event.getX(), v.getTop() + (int) event.getY()))
-						tv.setTextSize(21.3f);
+						tv.setTextSize(normalSize);
 					break;
 				case MotionEvent.ACTION_UP:
-					tv.setTextSize(21.3f);
+					tv.setTextSize(normalSize);
 					break;
 				case MotionEvent.ACTION_DOWN:
-					tv.setTextSize(32f);
+					tv.setTextSize(largeSize);
 					rect = new Rect(v.getLeft(), v.getTop(), v.getRight(), v.getBottom());
 					break;
 			}

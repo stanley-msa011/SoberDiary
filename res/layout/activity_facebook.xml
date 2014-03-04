@@ -23,7 +23,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:scaleType="fitXY"
-                android:layout_marginLeft="17.3dp"
+                android:layout_marginLeft="16dp"
                 android:src="@drawable/titlebar_icon" />
 
             <TextView
@@ -34,8 +34,8 @@
                 android:layout_toRightOf="@+id/fb_logo"
                 android:text="@string/fb_title"
                 android:textSize="@dimen/large_text_size"
-                android:layout_marginLeft="18dp"
-                android:textColor="#FFFFFFFF" />
+                android:layout_marginLeft="10dp"
+                android:textColor="@color/gray" />
 
             <com.facebook.widget.LoginButton
                 xmlns:fb="http://schemas.android.com/apk/res-auto"
@@ -93,7 +93,7 @@
                     android:gravity="center"
                     android:text="@string/fb_login_message"
                     android:textSize="@dimen/normal_text_size"
-                    android:textColor="#FF000000" />
+                    android:textColor="@color/gray" />
             </RelativeLayout>
         </RelativeLayout>
     </LinearLayout>

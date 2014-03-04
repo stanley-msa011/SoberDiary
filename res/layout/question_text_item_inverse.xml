@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal" 
-    android:background="@drawable/questionnaire_background_large"
+    android:background="@drawable/bar_bg_large"
     >
 
     <ImageView
@@ -24,7 +24,7 @@
         android:layout_gravity="top"
         android:layout_weight="3" 
         android:textSize="@dimen/large_text_size"
-        android:textColor="#FF5c5c5c"
+        android:textColor="@color/text_gray"
         android:layout_marginTop="25dp"
         android:layout_marginBottom="25dp"
         android:layout_marginLeft="24dp"

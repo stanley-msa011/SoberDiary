@@ -7,11 +7,10 @@ import ubicomp.soberdiary.main.R;
 import ubicomp.soberdiary.main.MainActivity;
 import ubicomp.soberdiary.main.ui.LoadingDialogControl;
 import ubicomp.soberdiary.main.ui.ScaleOnTouchListener;
-import ubicomp.soberdiary.main.ui.ScreenSize;
+import ubicomp.soberdiary.statistic.ui.DetailChart;
 import ubicomp.soberdiary.statistic.ui.QuestionnaireBox;
 import ubicomp.soberdiary.statistic.ui.QuestionnaireBoxUpdater;
-import ubicomp.soberdiary.statistic.ui.RadarChart4;
-import ubicomp.soberdiary.statistic.ui.RankDetailChart;
+import ubicomp.soberdiary.statistic.ui.RadarChart;
 import ubicomp.soberdiary.statistic.ui.ShowRadarChart;
 import ubicomp.soberdiary.statistic.ui.block.AnalysisCounterView;
 import ubicomp.soberdiary.statistic.ui.block.AnalysisRankView;
@@ -24,7 +23,6 @@ import ubicomp.soberdiary.system.config.PreferenceControl;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -39,6 +37,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.ImageView;
@@ -66,12 +65,16 @@ public class StatisticFragment extends Fragment implements ShowRadarChart, Quest
 	private AlphaAnimation questionAnimation;
 
 	private QuestionnaireBox msgBox;
-	private View shadowView;
 
+	private RadarChart radarChart;
+	private DetailChart detailChart;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		activity = this.getActivity();
+		activity = getActivity();
+		radarChart = new RadarChart(activity);
+		detailChart = new DetailChart(activity);
 		dot_on = getResources().getDrawable(R.drawable.statistic_dot_on);
 		dot_off = getResources().getDrawable(R.drawable.statistic_dot_off);
 	}
@@ -89,10 +92,6 @@ public class StatisticFragment extends Fragment implements ShowRadarChart, Quest
 		dots[0] = (ImageView) view.findViewById(R.id.brac_statistic_dot0);
 		dots[1] = (ImageView) view.findViewById(R.id.brac_statistic_dot1);
 		dots[2] = (ImageView) view.findViewById(R.id.brac_statistic_dot2);
-		shadowView = new View(activity);
-		shadowView.setBackgroundColor(0x99000000);
-		allLayout.addView(shadowView);
-		shadowView.setVisibility(View.GONE);
 
 		questionButton.setOnTouchListener(new ScaleOnTouchListener());
 		loadHandler = new LoadingHandler();
@@ -266,63 +265,65 @@ public class StatisticFragment extends Fragment implements ShowRadarChart, Quest
 		}
 	}
 
-	private RadarChart4 rv;
-	private RankDetailChart dv;
+	private View rv;
+	private View dv;
 
 	public void showRadarChart(ArrayList<Double> scoreList) {
-		ArrayList<String> labelList = new ArrayList<String>();
-		labelList.add(getString(R.string.radar_label0));
-		labelList.add(getString(R.string.radar_label1));
-		labelList.add(getString(R.string.radar_label2));
-		labelList.add(getString(R.string.radar_label3));
-
 		removeRadarChart();
 		removeDetailChart();
 
-		rv = new RadarChart4(activity, scoreList, labelList, getString(R.string.radar_title));
-		shadowView.setVisibility(View.VISIBLE);
+		rv = radarChart.getView();
+		
+		View.OnClickListener[] onClickListeners = new OnClickListener[4];
+		for (int i=0;i<4;++i){
+			onClickListeners[i] = new RadarOnClickListener(i);
+		}
+		radarChart.setting(scoreList,onClickListeners);
 		allLayout.addView(rv);
-		Point screen = ScreenSize.getScreenSize();
 		RelativeLayout.LayoutParams rvParam = (RelativeLayout.LayoutParams) rv.getLayoutParams();
-		rvParam.height = rvParam.width = screen.x * 9 / 10;
-		rvParam.addRule(RelativeLayout.CENTER_IN_PARENT);
+		rvParam.width = rvParam.height = LayoutParams.MATCH_PARENT;
 		allLayout.invalidate();
 		rv.invalidate();
-		rv.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				ClickLog.Log(ClickLogId.STATISTIC_RADAR_CHART_CLOSE);
-				removeRadarChart();
-				int type = rv.getType();
-				if (type >= 0) {
-					ClickLog.Log(ClickLogId.STATISTIC_DETAIL_CHART_OPEN + type);
-					addDetailChart(rv.getType());
-				}
-			}
-		});
+		rv.setOnClickListener(new RadarOnClickListener(-1));
 		ClickLog.Log(ClickLogId.STATISTIC_RADAR_CHART_OPEN);
 		enablePage(false);
+	}
+	
+	private class RadarOnClickListener implements View.OnClickListener{
+
+		private int type;
+		
+		public RadarOnClickListener(int type){
+			this.type = type;
+		}
+		
+		@Override
+		public void onClick(View v) {
+			ClickLog.Log(ClickLogId.STATISTIC_RADAR_CHART_CLOSE);
+			removeRadarChart();
+			if (type >= 0) {
+				ClickLog.Log(ClickLogId.STATISTIC_DETAIL_CHART_OPEN + type);
+				addDetailChart(type);
+			}			
+		}
+		
 	}
 
 	public void removeRadarChart() {
 		if (rv != null && rv.getParent() != null && rv.getParent().equals(allLayout))
 			allLayout.removeView(rv);
-		shadowView.setVisibility(View.GONE);
 		enablePage(true);
 	}
 
 	public void addDetailChart(int type) {
 		removeRadarChart();
 		removeDetailChart();
-		dv = new RankDetailChart(activity);
-		shadowView.setVisibility(View.VISIBLE);
+		
+		dv = detailChart.getView();
 		allLayout.addView(dv);
-		Point screen = ScreenSize.getScreenSize();
 		RelativeLayout.LayoutParams dvParam = (RelativeLayout.LayoutParams) dv.getLayoutParams();
-		dvParam.width = screen.x * 9 / 10;
-		dvParam.addRule(RelativeLayout.CENTER_IN_PARENT);
-		dv.setRank(new DatabaseControl().getMyRank(), type);
-		dv.invalidate();
+		dvParam.width = dvParam.height = LayoutParams.MATCH_PARENT;
+		detailChart.setting(type, new DatabaseControl().getMyRank());
 		dv.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -337,7 +338,7 @@ public class StatisticFragment extends Fragment implements ShowRadarChart, Quest
 	public void removeDetailChart() {
 		if (dv != null && dv.getParent() != null && dv.getParent().equals(allLayout))
 			allLayout.removeView(dv);
-		shadowView.setVisibility(View.GONE);
+		detailChart.hide();
 		enablePage(true);
 	}
 

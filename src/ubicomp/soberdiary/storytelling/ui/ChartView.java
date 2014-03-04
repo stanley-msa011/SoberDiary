@@ -26,7 +26,6 @@ public class ChartView extends View {
 
 	private Paint paint_pass = new Paint();
 	private Paint paint_fail = new Paint();
-	private Paint paint_none = new Paint();
 
 	private Paint paint_highlight = new Paint();
 	private Paint text_paint_small = new Paint();
@@ -34,8 +33,6 @@ public class ChartView extends View {
 	private Paint focus_paint_len = new Paint();
 	private Paint line_paint = new Paint();
 	private Paint axis_paint = new Paint();
-	private Paint record_paint = new Paint();
-	private Paint no_record_paint = new Paint();
 
 	private Paint emotion_paint = new Paint();
 	private Paint craving_paint = new Paint();
@@ -84,8 +81,14 @@ public class ChartView extends View {
 	private HorizontalScrollView scrollView;
 	private ChartCaller caller;
 	
-	int dataLabelX, dataLabelY;
-	int addLabelX, addLabelY;
+	private int dataLabelX, dataLabelY;
+	private int addLabelX, addLabelY;
+	
+	private static final int axis_color = App.context.getResources().getColor(R.color.chart_axis);
+	private static final int green = App.context.getResources().getColor(R.color.green);
+	private static final int orange = App.context.getResources().getColor(R.color.lite_orange);
+	private static final int white = App.context.getResources().getColor(R.color.white);
+	private static final int xaxis_color = App.context.getResources().getColor(R.color.chart_x_axis);
 	
 	public ChartView(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -93,50 +96,54 @@ public class ChartView extends View {
 		if (chartCircleBmp == null || chartCircleBmp.isRecycled())
 			chartCircleBmp = BitmapFactory.decodeResource(getResources(), R.drawable.chart_button);
 		if (chartDataBmp == null || chartDataBmp.isRecycled())
-			chartDataBmp = BitmapFactory.decodeResource(getResources(), R.drawable.chart_data_label);
+			chartDataBmp = BitmapFactory.decodeResource(getResources(), R.drawable.chart_show);
 		if (chartAddBmp == null || chartAddBmp.isRecycled())
-			chartAddBmp = BitmapFactory.decodeResource(getResources(), R.drawable.chart_add_label);
+			chartAddBmp = BitmapFactory.decodeResource(getResources(), R.drawable.chart_add);
 		
 		dataLabelX = chartDataBmp.getWidth() / 2;
 		dataLabelY = chartDataBmp.getHeight() / 2;
 		addLabelX = chartAddBmp.getWidth() / 2;
 		addLabelY = chartAddBmp.getHeight() / 2;
 		
-		paint_pass.setColor(0xFF5bdebe);
-		paint_fail.setColor(0xFFf09600);
-		paint_none.setColor(0xFFc9c9ca);
+		paint_pass.setColor(green);
+		paint_fail.setColor(orange);
 
-		record_paint.setColor(0xFFff6f61);
-		no_record_paint.setColor(0xFF858585);
+		paint_highlight.setColor(white);
+		paint_highlight.setAlpha(50);
 
-		paint_highlight.setColor(0x33FFFFFF);
-
-		text_paint_button.setColor(0xFFFFFFFF);
+		text_paint_button.setColor(white);
 		text_paint_button.setTextSize(smallTextSize);
 		text_paint_button.setTextAlign(Align.CENTER);
 
-		text_paint_small.setColor(0xFF908f90);
+		text_paint_small.setColor(xaxis_color);
 		text_paint_small.setTextAlign(Align.CENTER);
 		text_paint_small.setTextSize(smallTextSize);
 
-		focus_paint_len.setColor(0x44FFFFFF);
+		focus_paint_len.setColor(white);
+		focus_paint_len.setAlpha(70);
 
-		axis_paint.setColor(0xFF5f5f5f);
+		axis_paint.setColor(axis_color);
 		axis_paint.setStrokeWidth(line_size);
 
-		line_paint.setColor(0xFFFFFFFF);
+		line_paint.setColor(white);
 		line_paint.setStrokeWidth(line_size/2);
 
-		emotion_paint.setColor(0xFF2dc7b3);
+		emotion_paint.setColor(green);
 		emotion_paint.setStrokeWidth(line_size);
-		craving_paint.setColor(0xFFf19700);
+		emotion_paint.setAlpha(180);
+		craving_paint.setColor(orange);
 		craving_paint.setStrokeWidth(line_size);
-		brac_paint.setColor(0xFFFFFFFF);
+		craving_paint.setAlpha(180);
+		brac_paint.setColor(white);
 		brac_paint.setStrokeWidth(line_size);
+		brac_paint.setAlpha(180);
 
-		emotion_paint_bg.setColor(0x772dc7b3);
-		craving_paint_bg.setColor(0x77f19700);
-		brac_paint_bg.setColor(0x77FFFFFF);
+		emotion_paint_bg.setColor(green);
+		emotion_paint_bg.setAlpha(90);
+		craving_paint_bg.setColor(orange);
+		craving_paint_bg.setAlpha(90);
+		brac_paint_bg.setColor(white);
+		brac_paint_bg.setAlpha(90);
 
 		bar_width = bar_size;
 		bar_gap = bar_width/3;
@@ -220,6 +227,14 @@ public class ChartView extends View {
 		invalidate();
 		return true;
 	}
+	
+	public void showToday(){
+		int size = bars.size();
+		if (size > 0){
+			TimeValue tv = bars.get(size-1).tv;
+			caller.openRecordBox(tv, size-1);
+		}
+	}
 
 	@SuppressLint("DrawAllocation")
 	@Override
@@ -246,8 +261,6 @@ public class ChartView extends View {
 
 		int _bottom = pageHeight - bar_bottom;
 
-		canvas.drawLine(left, _bottom, canvas.getWidth(), _bottom, emotion_paint);
-
 		if (bars.size() == 0)
 			return;
 
@@ -261,7 +274,7 @@ public class ChartView extends View {
 			float e_height, d_height, b_height;
 			e_height = bar.emotion / 5 * max_height;
 			d_height = bar.craving / 10 * max_height;
-			b_height = bar.brac / 0.3F * max_height;
+			b_height = bar.brac / 0.5F * max_height;
 			if (b_height > max_height)
 				b_height = max_height;
 
@@ -275,12 +288,12 @@ public class ChartView extends View {
 			if (i % 7 == 0) {
 				String str = bar.tv.toSimpleDateString();
 				canvas.drawLine(left, _bottom, left, _bottom - max_height, axis_paint);
-				canvas.drawText(str, left + small_radius, _bottom + bar_width * 2, text_paint_small);
+				canvas.drawText(str, left + small_radius, _bottom + bar_width + small_radius, text_paint_small);
 			}
 			// Draw bars & annotation_circles
-			Point e_center = new Point(left + small_radius, e_top - bar_gap - small_radius);
-			Point d_center = new Point(left + small_radius, d_top - bar_gap - small_radius);
-			Point b_center = new Point(left + small_radius, b_top - bar_gap - small_radius);
+			Point e_center = new Point(left + small_radius, e_top - bar_gap);
+			Point d_center = new Point(left + small_radius, d_top - bar_gap);
+			Point b_center = new Point(left + small_radius, b_top - bar_gap);
 
 			if (prev_e_center != null && prev_d_center != null && prev_b_center != null) {
 
@@ -345,8 +358,6 @@ public class ChartView extends View {
 		if (bars.size() == 0)
 			return;
 
-		
-
 		int bar_half = bar_width / 2;
 		for (int i = 0; i < bars.size(); ++i) {
 
@@ -395,7 +406,7 @@ public class ChartView extends View {
 			// Draw X axis Label
 			if (i % 7 == 0) {
 				String str = bar.tv.toSimpleDateString();
-				canvas.drawText(str, left + circle_radius, _bottom + bar_width * 2, text_paint_small);
+				canvas.drawText(str, left + circle_radius/2, _bottom + bar_width + circle_radius/2, text_paint_small);
 			}
 			left += (bar_width + bar_gap);
 		}

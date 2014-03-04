@@ -2,6 +2,7 @@ package ubicomp.soberdiary.system.config;
 
 import java.util.Calendar;
 
+import android.app.AlarmManager;
 import android.content.SharedPreferences;
 import ubicomp.soberdiary.data.database.DatabaseControl;
 import ubicomp.soberdiary.data.structure.ExchangeHistory;
@@ -62,17 +63,15 @@ public class PreferenceControl {
 		calls[2] = sp.getString("family_phone2", "");
 		return  calls;
 	}
-	public static void setFamilyCallData(String[] name, String[] phone){
+	
+	public static void setFamilyCallData(String name, String phone, int id){
+		String keyName = "family_name"+id;
+		String keyPhone = "family_phone"+id;
 		SharedPreferences.Editor edit= sp.edit();
-		edit.putString("family_name0", name[0]);
-		edit.putString("family_name1", name[1]);
-		edit.putString("family_name2", name[2]);
-		edit.putString("family_phone0", phone[0]);
-		edit.putString("family_phone1", phone[1]);
-		edit.putString("family_phone2", phone[2]);
+		edit.putString(keyName, name);
+		edit.putString(keyPhone, phone);
 		edit.commit();
 	}
-	
 	
 	public static int[] getConnectSocialHelpIdx(){
 		int[] calls = new int[3];
@@ -98,16 +97,14 @@ public class PreferenceControl {
 		recreation[4] = sp.getString("recreation4", "");
 		return recreation;
 	} 
-	public static void setRecreations(String[] recreations){
-		SharedPreferences.Editor edit = sp.edit();
-		edit.putString("recreation0", recreations[0]);
-		edit.putString("recreation1", recreations[1]);
-		edit.putString("recreation2", recreations[2]);
-		edit.putString("recreation3", recreations[3]);
-		edit.putString("recreation4", recreations[4]);
-		edit.commit();
-	}
 	
+	public static void setRecreation(String recreation, int id){
+		String key = "recreation"+id;
+		SharedPreferences.Editor edit = sp.edit();
+		edit.putString(key, recreation);
+		edit.commit();
+		
+	}
 	public static void setTestResult(int result){
 		SharedPreferences.Editor edit = sp.edit();
 		edit.putInt("testResult", result);
@@ -502,6 +499,29 @@ public class PreferenceControl {
 		edit.commit();
 		if (MainActivity.mainActivity!=null)
 			MainActivity.mainActivity.setCouponChange(change);
+	}
+	
+	public static boolean getUseNewSensor(){
+		return sp.getBoolean("useNewSensor", false);
+	}
+	
+	public static void setUseNewSensor(boolean isNew){
+		SharedPreferences.Editor edit = sp.edit();
+		edit.putBoolean("useNewSensor", isNew);
+		edit.commit();
+	}
+	
+	public static boolean showNotificationDialog(){
+		long lastTime = sp.getLong("lastShowNotification", 0);
+		long curTime = System.currentTimeMillis();
+		return (curTime - lastTime > AlarmManager.INTERVAL_DAY*2);
+	}
+	
+	public static void setShowedNotificationDialog(){
+		long curTime = System.currentTimeMillis();
+		SharedPreferences.Editor edit = sp.edit();
+		edit.putLong("lastShowNotification", curTime);
+		edit.commit();
 	}
 	
 }

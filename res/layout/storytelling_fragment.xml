@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FF3f3d3d"
+    android:background="@color/storytelling_bg"
     android:splitMotionEvents="false" >
 
     <RelativeLayout
@@ -81,7 +81,7 @@
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
             android:scaleType="fitXY"
-            android:src="@drawable/storytelling_button_selector"
+            android:src="@drawable/storytelling_button"
             android:visibility="invisible" />
 
         <ImageView
@@ -90,7 +90,7 @@
             android:layout_height="wrap_content"
             android:layout_marginRight="7dp"
             android:layout_toLeftOf="@+id/story_storytelling_button"
-            android:src="@drawable/fb_logo"
+            android:src="@drawable/fb_bookmark"
             android:visibility="invisible" />
         
         <RelativeLayout
@@ -109,7 +109,7 @@
                 android:layout_centerHorizontal="true"
                 android:gravity="center"
                 android:text="@string/storytelling_page_help"
-                android:textColor="#FF717071"
+                android:textColor="@color/page_gray"
                 android:textSize="14sp"
                 />
 
@@ -120,7 +120,7 @@
                 android:layout_below="@+id/story_stage"
                 android:layout_centerHorizontal="true"
                 android:gravity="center"
-                android:textColor="#FFe79100"
+                android:textColor="@color/lite_orange"
                 android:textScaleX="0.95"
                 android:textSize="38.7dp" />
         </RelativeLayout>
@@ -158,7 +158,7 @@
                     android:layout_weight="1"
                     android:gravity="left|center_vertical"
                     android:textAlignment="textStart"
-                    android:textColor="#FF717071"
+                    android:textColor="@color/page_gray"
                     android:textSize="14dp" />
 
                 <RelativeLayout
@@ -174,7 +174,7 @@
                         android:layout_centerVertical="true"
                         android:gravity="left|center_vertical"
                         android:text="@string/quote_next_message"
-                        android:textColor="#FF717071"
+                        android:textColor="@color/page_gray"
                         android:textSize="14dp" />
 
                     <ImageView

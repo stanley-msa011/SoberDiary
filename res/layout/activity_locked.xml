@@ -16,7 +16,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="17.3dp"
+            android:layout_marginLeft="16dp"
             android:scaleType="fitXY"
             android:src="@drawable/titlebar_icon" />
 
@@ -25,17 +25,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="18dp"
+            android:layout_marginLeft="10dp"
             android:layout_toRightOf="@+id/lock_logo"
             android:text="@string/app_name"
-            android:textColor="#FFFFFFFF" 
+            android:textColor="@color/gray" 
             android:textSize="@dimen/large_text_size"/>
     </RelativeLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/questionnaire_background_text" >
+        android:background="@drawable/bar_bg_title" >
 
         <TextView
             android:id="@+id/lock_about"
@@ -44,7 +44,7 @@
             android:layout_centerVertical="true"
             android:layout_marginLeft="16dp"
             android:text="@string/lock_about"
-            android:textColor="#FF777777" 
+            android:textColor="@color/gray" 
             android:textSize="@dimen/normal_text_size"/>
     </RelativeLayout>
 
@@ -64,14 +64,14 @@
             android:layout_marginRight="18dp"
             android:layout_marginTop="25.3dp"
             android:lineSpacingMultiplier="1.2"
-            android:textColor="#FF727171" />
+            android:textColor="@color/text_gray" />
 
         <LinearLayout
             android:id="@+id/lock_about_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:background="@drawable/about_selector"
+            android:background="@drawable/bar_button"
             android:orientation="horizontal" >
 
             <TextView
@@ -84,7 +84,7 @@
                 android:text="@string/about_title"
                 android:textSize="@dimen/large_text_size"
                 android:layout_marginLeft="16dp"
-                android:textColor="#FF5c5c5c" />
+                android:textColor="@color/text_gray" />
 
             <ImageView
                 android:id="@+id/lock_next"
@@ -95,7 +95,7 @@
                 android:layout_weight="1"
                 android:scaleX="2"
                 android:scaleY="2"
-                android:src="@drawable/questionnaire_item_ok" />
+                android:src="@drawable/ok" />
 
         </LinearLayout>
     </RelativeLayout>

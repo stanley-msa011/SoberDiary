@@ -19,7 +19,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="61.93dp"
                 android:layout_alignParentBottom="true"
-                android:background="@drawable/tabs_background"
+                android:background="@drawable/tabs_bg"
                 android:orientation="horizontal"
                 android:splitMotionEvents="false" />
 
@@ -43,7 +43,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:textColor="#FFc98123"
+            android:textColor="@color/orange"
             android:textSize="@dimen/normal_text_size"/>
     </RelativeLayout>
 

@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent" 
-    android:background="#FFFFFFFF"
+    android:background="@color/white"
     >
     <TextView 
         android:id="@+id/custom_spinner_text"
@@ -14,7 +14,7 @@
         android:paddingLeft="5dp"
         android:paddingRight="5dp"
         android:layout_centerInParent="true"
-        android:textColor="#FF777777"
+        android:textColor="@color/gray"
         />
 
 </RelativeLayout>

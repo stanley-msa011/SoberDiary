@@ -17,7 +17,7 @@
             android:layout_marginLeft="26.7dp"
             android:gravity="center"
             android:text="@string/analysis_rank"
-            android:textColor="#FFFFFFFF"
+            android:textColor="@color/white"
             android:textSize="@dimen/normal_text_size"/>
     </RelativeLayout>
 
@@ -34,14 +34,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/analysis_rank_week_help"
-            android:textColor="#FF000000"
+            android:textColor="@color/black"
             android:textSize="@dimen/normal_text_size"/>
 
         <TextView
             android:id="@+id/analysis_rank_help_week_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#FF000000"
+            android:textColor="@color/black"
             android:textSize="@dimen/normal_text_size"/>
     </LinearLayout>
 
@@ -58,7 +58,7 @@
             android:layout_marginLeft="26.7dp"
             android:gravity="center"
             android:text="@string/low"
-            android:textColor="#FF000000"
+            android:textColor="@color/black"
             android:textSize="@dimen/normal_text_size"/>
 
         <ImageView
@@ -138,14 +138,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/analysis_rank_month_help"
-            android:textColor="#FF000000"
+            android:textColor="@color/black"
             android:textSize="@dimen/normal_text_size"/>
 
         <TextView
             android:id="@+id/analysis_rank_help_month_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#FF000000"
+            android:textColor="@color/black"
             android:textSize="@dimen/normal_text_size"/>
     </LinearLayout>
 
@@ -163,7 +163,7 @@
             android:layout_marginLeft="26.7dp"
             android:gravity="center"
             android:text="@string/low"
-            android:textColor="#FF000000"
+            android:textColor="@color/black"
             android:textSize="@dimen/normal_text_size"/>
 
         <ImageView

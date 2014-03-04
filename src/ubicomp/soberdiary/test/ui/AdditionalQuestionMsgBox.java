@@ -7,17 +7,13 @@ import ubicomp.soberdiary.main.R;
 import ubicomp.soberdiary.main.ui.CustomToast;
 import ubicomp.soberdiary.main.ui.CustomToastSmall;
 import ubicomp.soberdiary.main.ui.EnablePage;
-import ubicomp.soberdiary.main.ui.ScreenSize;
 import ubicomp.soberdiary.main.ui.Typefaces;
 import ubicomp.soberdiary.system.clicklog.ClickLogId;
 import ubicomp.soberdiary.system.clicklog.ClickLog;
 import ubicomp.soberdiary.system.config.PreferenceControl;
 import android.content.Context;
-import android.content.res.Resources;
-import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -25,8 +21,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
-import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
+import android.widget.RelativeLayout.LayoutParams;
 
 public class AdditionalQuestionMsgBox{
 
@@ -51,9 +47,6 @@ public class AdditionalQuestionMsgBox{
 	
 	private LinearLayout questionLayout;
 	
-	private Resources r;
-	private Point screen;
-	
 	private EndOnClickListener endListener;
 	private CancelOnClickListener cancelListener;
 	
@@ -61,8 +54,9 @@ public class AdditionalQuestionMsgBox{
 	private Typeface wordTypeface;
 	private Typeface wordTypefaceBold;
 	
-	private Drawable[] emotionDrawables;
-	private Drawable[] cravingDrawables;
+	private int[] emotionResIds = {R.drawable.emotion_0,R.drawable.emotion_1,R.drawable.emotion_2,R.drawable.emotion_3,R.drawable.emotion_4};
+	private int[] cravingResIds = {R.drawable.craving_0,R.drawable.craving_1,R.drawable.craving_2,R.drawable.craving_3,R.drawable.craving_4,
+			R.drawable.craving_5,R.drawable.craving_6,R.drawable.craving_7,R.drawable.craving_8,R.drawable.craving_9};
 	
 	private TextView title,help;
 	private TextView send,notSend;
@@ -75,12 +69,10 @@ public class AdditionalQuestionMsgBox{
 	
 	public AdditionalQuestionMsgBox(RelativeLayout mainLayout,EnablePage enablePage){
 		this.context = App.context;
-		this.r = context.getResources();
 		this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		this.mainLayout = mainLayout;
 		emotionStr = context.getResources().getStringArray(R.array.emotion_state);
 		cravingStr = context.getResources().getStringArray(R.array.craving_state);
-		screen = ScreenSize.getScreenSize();
 		digitTypeface = Typefaces.getDigitTypeface();
 		wordTypeface = Typefaces.getWordTypeface();
 		wordTypefaceBold = Typefaces.getWordTypefaceBold();
@@ -163,53 +155,23 @@ public class AdditionalQuestionMsgBox{
 		notSend.setTypeface(wordTypefaceBold);
 	}
 	
-	public void gen(){
-		
-		RelativeLayout.LayoutParams boxParam = (LayoutParams) boxLayout.getLayoutParams();
-		boxParam.addRule(RelativeLayout.CENTER_HORIZONTAL,RelativeLayout.TRUE);
-		boxParam.topMargin = screen.x * 80/480;
-		boxParam.width = screen.x * 435/480;
-		boxParam.height = screen.y * 637/762;
-		
-		RelativeLayout.LayoutParams qParam = (RelativeLayout.LayoutParams) questionLayout.getLayoutParams();
-		qParam.leftMargin = qParam.rightMargin = screen.x * 44/480;
-		qParam.width = screen.x * 400/480;
-		
-		emotionDrawables = new Drawable[5];
-		emotionDrawables[0]  = r.getDrawable(R.drawable.msg_emotion_0);
-		emotionDrawables[1]  = r.getDrawable(R.drawable.msg_emotion_1);
-		emotionDrawables[2]  = r.getDrawable(R.drawable.msg_emotion_2);
-		emotionDrawables[3]  = r.getDrawable(R.drawable.msg_emotion_3);
-		emotionDrawables[4]  = r.getDrawable(R.drawable.msg_emotion_4);
-		
-		cravingDrawables = new Drawable[10];
-		cravingDrawables[0]  = r.getDrawable(R.drawable.msg_craving_0);
-		cravingDrawables[1]  = r.getDrawable(R.drawable.msg_craving_1);
-		cravingDrawables[2]  = r.getDrawable(R.drawable.msg_craving_2);
-		cravingDrawables[3]  = r.getDrawable(R.drawable.msg_craving_3);
-		cravingDrawables[4]  = r.getDrawable(R.drawable.msg_craving_4);
-		cravingDrawables[5]  = r.getDrawable(R.drawable.msg_craving_5);
-		cravingDrawables[6]  = r.getDrawable(R.drawable.msg_craving_6);
-		cravingDrawables[7]  = r.getDrawable(R.drawable.msg_craving_7);
-		cravingDrawables[8]  = r.getDrawable(R.drawable.msg_craving_8);
-		cravingDrawables[9]  = r.getDrawable(R.drawable.msg_craving_9);
-		
-	}
-	
 	public void clear(){
 		if (mainLayout!=null && boxLayout!=null && boxLayout.getParent()!=null && boxLayout.getParent().equals(mainLayout))
 			mainLayout.removeView(boxLayout);
 		enablePage.enablePage(true);
 	}
 	
+	private int text_color = App.context.getResources().getColor(R.color.dark_gray);
+	private int highlight_color = App.context.getResources().getColor(R.color.lite_orange);
+	
 	private void enableSend(boolean enable){
 		if (enable){
-			send.setTextColor(0xFFf39800);
-			notSend.setTextColor(0xFFf39800);
+			send.setTextColor(highlight_color);
+			notSend.setTextColor(highlight_color);
 		}
 		else{
-			send.setTextColor(0xFF898989);
-			notSend.setTextColor(0xFF898989);
+			send.setTextColor(text_color);
+			notSend.setTextColor(text_color);
 		}
 		done = enable;
 		doneByDoubleClick = false;
@@ -217,18 +179,21 @@ public class AdditionalQuestionMsgBox{
 	
 	private void enableSend(boolean enable,boolean click){
 		if (enable){
-			send.setTextColor(0xFFf39800);
-			notSend.setTextColor(0xFFf39800);
+			send.setTextColor(highlight_color);
+			notSend.setTextColor(highlight_color);
 		}
 		else{
-			send.setTextColor(0xFF898989);
-			notSend.setTextColor(0xFF898989);
+			send.setTextColor(text_color);
+			notSend.setTextColor(text_color);
 		}
 		done = enable;
 		doneByDoubleClick = click;
 	}
 	
 	public void generateAdditionalBox(){
+		RelativeLayout.LayoutParams boxParam = (LayoutParams) boxLayout.getLayoutParams();
+		boxParam.addRule(RelativeLayout.CENTER_IN_PARENT,RelativeLayout.TRUE);
+		
 		emotionSeekBar.setProgress(1);
 		emotionSeekBar.setProgress(0);
 		cravingSeekBar.setProgress(1);
@@ -292,7 +257,9 @@ public class AdditionalQuestionMsgBox{
 	private class EmotionListener implements SeekBar.OnSeekBarChangeListener{
 		@Override
 		public void onProgressChanged(SeekBar seekBar, int progress, 	boolean fromUser) {
-			emotionShow.setImageDrawable(emotionDrawables[progress]);
+			if (emotionShow == null || emotionResIds==null)
+				return;
+			emotionShow.setImageResource(emotionResIds[progress]);
 			emotionShowText.setText(emotionStr[progress]);
 			for (int i=0;i<eNum.length;++i)
 				eNum[i].setVisibility(View.INVISIBLE);
@@ -309,7 +276,9 @@ public class AdditionalQuestionMsgBox{
 	private class DesireListener implements SeekBar.OnSeekBarChangeListener{
 		@Override
 		public void onProgressChanged(SeekBar seekBar, int progress, 	boolean fromUser) {
-			cravingShow.setImageDrawable(cravingDrawables[progress]);
+			if (cravingShow == null || cravingResIds==null)
+				return;
+			cravingShow.setImageResource(cravingResIds[progress]);
 			cravingShowText.setText(cravingStr[progress]);
 			for (int i=0;i<cNum.length;++i)
 				cNum[i].setVisibility(View.INVISIBLE);
@@ -327,6 +296,8 @@ public class AdditionalQuestionMsgBox{
 	private class EndOnTouchListener implements View.OnTouchListener{
 
 		private Rect rect;
+		private final int normalSize = App.context.getResources().getDimensionPixelSize(R.dimen.normal_title_size);
+		private int largeSize = App.context.getResources().getDimensionPixelSize(R.dimen.large_title_size);
 		
 		@Override
 		public boolean onTouch(View v, MotionEvent event) {
@@ -335,13 +306,13 @@ public class AdditionalQuestionMsgBox{
 			switch(e){
 				case MotionEvent.ACTION_MOVE:
 					if(!rect.contains(v.getLeft() + (int) event.getX(), v.getTop() + (int) event.getY()))
-						tv.setTextSize(21.3f);
+						tv.setTextSize(normalSize);
 					break;
 				case MotionEvent.ACTION_UP:
-					tv.setTextSize(21.3f);
+					tv.setTextSize(normalSize);
 					break;
 				case MotionEvent.ACTION_DOWN:
-					tv.setTextSize(32f);
+					tv.setTextSize(largeSize);
 					rect = new Rect(v.getLeft(), v.getTop(), v.getRight(), v.getBottom());
 					break;
 			}

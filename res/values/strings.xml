@@ -116,6 +116,9 @@
         <item>進入測試頁面按下開始按鈕</item>
         <item>對準吹氣口持續吹氣五秒鐘</item>
     </string-array>
+    <string name="tutorial_step1">按下開關，使指示燈亮起</string>
+    <string name="tutorial_step2">進入測試頁面按下開始按鈕</string>
+    <string name="tutorial_step3">對準吹氣口持續吹氣五秒鐘</string>
 
     <string name="year">年</string>
     <string name="month">月</string>
@@ -173,6 +176,11 @@
     <string name="about_help">詳細資料：</string>
     <string name="about_setting">設定：</string>
     <string name="about_time_gap">提醒時間間隔為：</string>
+    <string-array name="setting_time_gap">
+        <item>提醒時間間隔設為30分鐘</item>
+        <item>提醒時間間隔設為60分鐘</item>
+        <item>提醒時間間隔設為120分鐘</item>
+    </string-array>
 
     <string-array name="about_message">
         <item>此應用程式由</item>
@@ -216,31 +224,31 @@
     <string name="email_reject">非本實驗受試者煩請不要寄送信件</string>
     <string name="email_fail">手機端未安裝信件寄送程式</string>
 
-    <string-array name="notification_box_message">
-        <item>點擊選單內的心情DIY\n可以協助紓解酒癮，\n請問是否要現在使用？\n(完成後可獲得點數)</item>
-        <item>點擊選單內的情緒管理\n可以協助調理情緒，\n請問是否要現在使用？\n(完成後可獲得點數)</item>
-        <item>您可以分享戒酒歷程，\n請問是否要現在分享？\n(完成後可獲得點數)</item>
-        <item>用戒酒歷程記錄心情，\n請問是否要現在記錄？\n(完成後可獲得點數)</item>
-    </string-array>
-
     <string name="know">了解</string>
     <string name="bonus">特殊獎勵</string>
 
     <string name="lock_message">恭喜您已完成戒酒小幫手的療程，感謝您於療程期間的協助，希望您之後繼續保持並遠離酒精！\n\n因為研究需求，將暫停使用戒酒小幫手三個月。 這段期間，請定期回診進行追蹤觀察，再次感謝你對本研究的幫忙。\n\n您現在可以選擇移除掉戒酒小幫手，或是暫時將戒酒小幫手保留在手機內。三個月後，若是有需要再次啟用戒酒小幫手，請點選最下面的"關於"以聯絡戒酒小幫手團隊。謝謝！\n\n戒酒小幫手團隊　敬上</string>
     <string name="lock_about">完成訊息：</string>
-    <string name="radar_title">詳細評比</string>
-    <string name="radar_label0">酒測表現</string>
-    <string name="radar_label1">自我調適</string>
+    <string name="radar_title">我的表現分析</string>
+    <string name="radar_label0">酒測\n表現</string>
+    <string name="radar_label0_full">酒測功能　完成度</string>
+    <string name="radar_label0_0">酒測表現</string>
+    <string name="radar_label1">自我\n調適</string>
+    <string name="radar_label1_full">自我調適功能　完成度</string>
     <string name="radar_label1_0">諮詢建議</string>
     <string name="radar_label1_1">心情DIY</string>
-    <string name="radar_label2">自我管理</string>
+    <string name="radar_label2">自我\n管理</string>
+    <string name="radar_label2_full">自我管理功能　完成度</string>
     <string name="radar_label2_0">心情紀錄</string>
     <string name="radar_label2_1">情緒管理</string>
     <string name="radar_label2_2">即時自我評量</string>
-    <string name="radar_label3">歷程分享</string>
+    <string name="radar_label3">歷程\n分享</string>
+    <string name="radar_label3_full">歷程分享功能　完成度</string>
     <string name="radar_label3_0">故事分享</string>
     <string name="radar_label3_1">自我測試</string>
     <string name="radar_label3_2">臉書分享</string>
+    
+    <string name="score">分</string>
     
     <string-array name="radar_0">
         <item>每天進行酒測是成功的第一步</item>
@@ -336,4 +344,26 @@
 	
 	<string name="facebook_no_network">分享至臉書需先啟用網路功能</string>
 	
+	<string name="goto_">前往</string>
+	
+	<string name="notification_title">小提醒</string>
+	<string-array name="notification_subtitles">
+	    <item>自我酒測</item>
+	    <item>即時自我評量</item>
+	    <item>心情DIY</item>
+	    <item>心情紀錄</item>
+	    <item>情緒管理</item>
+	    <item>故事分享</item>
+	</string-array>
+	<string-array name="notification_comments">
+	    <item>點選\"開始\"進行酒測是邁向成功的第一步</item>
+	    <item>每日晚間出現的\"即時自我評量\"幫助您更了解自己</item>
+	    <item>使用\"心情DIY\"可以幫助您紓解壓力</item>
+	    <item>用聲音記錄下您的心情，讓自己更了解自己</item>
+	    <item>使用情緒管理記錄心情，供自己日後思索</item>
+	    <item>每天翻閱細讀圖畫，會有小發現喔</item>
+	</string-array>
+	
+	<string name="edit">編輯</string>
+	<string name="setting_limit">抱歉！最多只能選擇三項</string>
 </resources>

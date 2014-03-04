@@ -38,7 +38,7 @@ public class DatabaseControl {
 		dbHelper = new DBHelper(App.context);
 	}
 
-	Object sqlLock = new Object();
+	static final Object sqlLock = new Object();
 
 	// Detection
 
@@ -112,6 +112,7 @@ public class DatabaseControl {
 				addScore += isPrime && data.isPass() ? 1 : 0;
 				if (!StartDateCheck.afterStartDate())
 					addScore = 0;
+				
 				ContentValues content = new ContentValues();
 				content.put("brac", data.brac);
 				content.put("year", data.tv.year);
@@ -1398,6 +1399,9 @@ public class DatabaseControl {
 			int addScore = data.addedScore ? 1 : 0;
 			if (!StartDateCheck.afterStartDate())
 				addScore = 0;
+			if (prev_data.tv.isSameDay(data.tv))
+				addScore = 0;
+			
 			db = dbHelper.getWritableDatabase();
 			ContentValues content = new ContentValues();
 			content.put("year", data.tv.year);

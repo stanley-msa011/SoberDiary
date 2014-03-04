@@ -2,12 +2,12 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#99000000" >
+    android:background="@color/shadow" >
     
     <RelativeLayout 
         android:layout_width="232.7dp"
     	android:layout_height="126dp"
-    	android:background="@drawable/record_bg"
+    	android:background="@drawable/dialog_bg"
     	android:splitMotionEvents="false"
     	android:layout_centerInParent="true"
         >
@@ -15,7 +15,7 @@
         android:id="@+id/call_help"
         android:layout_width="232.7dp"
         android:layout_height="76dp"
-        android:textColor="#FF8a8b8b"
+        android:textColor="@color/dark_gray"
         android:layout_centerHorizontal="true"
         android:textSize="@dimen/normal_text_size"
         android:gravity="center"
@@ -32,7 +32,7 @@
         android:gravity="center"
         android:text="@string/cancel"
         android:textSize="@dimen/normal_text_size"
-        android:textColor="#FF8a8b8b" />
+        android:textColor="@color/dark_gray" />
     
     <TextView
         android:id="@+id/call_ok_button"
@@ -45,6 +45,6 @@
         android:gravity="center"
         android:text="@string/ok"
         android:textSize="@dimen/normal_text_size"
-        android:textColor="#FF8a8b8b" />
+        android:textColor="@color/dark_gray" />
 </RelativeLayout>
 </RelativeLayout>

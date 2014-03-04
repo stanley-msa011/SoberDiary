@@ -38,15 +38,15 @@ public class EmotionManageActivity extends Activity {
 	private String reason;
 	private EditText r_texts;
 
-	private static final int[] EMOTION_DRAWABLE_ID = { R.drawable.questionnaire_item_e0,
-			R.drawable.questionnaire_item_e1, R.drawable.questionnaire_item_e2, R.drawable.questionnaire_item_e3,
-			R.drawable.questionnaire_item_e4, R.drawable.questionnaire_item_e5, R.drawable.questionnaire_item_e6,
-			R.drawable.questionnaire_item_e7, R.drawable.questionnaire_item_e8, R.drawable.questionnaire_item_e9, };
+	private static final int[] EMOTION_DRAWABLE_ID = { R.drawable.emotion_type_0,
+			R.drawable.emotion_type_1, R.drawable.emotion_type_2, R.drawable.emotion_type_3,
+			R.drawable.emotion_type_4, R.drawable.emotion_type_5, R.drawable.emotion_type_6,
+			R.drawable.emotion_type_7, R.drawable.emotion_type_8, R.drawable.emotion_type_9, };
 
 	private static String[] emotion_texts;
 
-	private static final int[] RELATED_DRAWABLE_ID = { R.drawable.questionnaire_item_relation_0,
-			R.drawable.questionnaire_item_relation_1, R.drawable.questionnaire_item_relation_2, R.drawable.questionnaire_item_relation_3 };
+	private static final int[] RELATED_DRAWABLE_ID = { R.drawable.reason_type_0,
+			R.drawable.reason_type_1, R.drawable.reason_type_2, R.drawable.reason_type_3 };
 
 	private static String[] related_texts;
 
@@ -83,8 +83,8 @@ public class EmotionManageActivity extends Activity {
 
 		mainLayout.removeAllViews();
 
-		upDrawable = getResources().getDrawable(R.drawable.questionnaire_hide_list_selection);
-		downDrawable = getResources().getDrawable(R.drawable.questionnaire_show_list_selection);
+		upDrawable = getResources().getDrawable(R.drawable.list_hide);
+		downDrawable = getResources().getDrawable(R.drawable.list_show);
 
 		View title = BarGen.createTitleView(getString(R.string.emotion_manage_title0) + curTV.toSimpleDateString()
 				+ getString(R.string.emotion_manage_title1));
@@ -157,7 +157,7 @@ public class EmotionManageActivity extends Activity {
 		View ev = BarGen.createTextView(R.string.emotion_manage_help4);
 		mainLayout.addView(ev);
 
-		View vv = BarGen.createIconView(R.string.ok, R.drawable.questionnaire_item_ok, new EditedOnClickListener());
+		View vv = BarGen.createIconView(R.string.ok, R.drawable.ok, new EditedOnClickListener());
 		mainLayout.addView(vv);
 
 	}
@@ -172,7 +172,7 @@ public class EmotionManageActivity extends Activity {
 		View tv = BarGen.createTextView(R.string.emotion_end_message);
 		titleLayout.addView(tv);
 
-		View vv = BarGen.createIconView(R.string.done, R.drawable.questionnaire_item_ok, new EndOnClickListener());
+		View vv = BarGen.createIconView(R.string.done, R.drawable.ok, new EndOnClickListener());
 		mainLayout.addView(vv);
 
 	}

@@ -48,11 +48,11 @@ public class CustomToast {
 			toastCounter = (TextView) layout.findViewById(R.id.custom_toast_counter);
 			toastCounter.setTypeface(Typefaces.getWordTypefaceBold());
 			toastImage = (ImageView) layout.findViewById(R.id.custom_toast_main_picture);
-			c1Drawable = context.getResources().getDrawable(R.drawable.toast_counter_1);
-			c2Drawable = context.getResources().getDrawable(R.drawable.toast_counter_2);
-			c3Drawable = context.getResources().getDrawable(R.drawable.toast_counter_3);
-			okDrawable = context.getResources().getDrawable(R.drawable.statistic_show_pass);
-			failDrawable = context.getResources().getDrawable(R.drawable.statistic_show_fail);
+			c1Drawable = context.getResources().getDrawable(R.drawable.toast_add_1);
+			c2Drawable = context.getResources().getDrawable(R.drawable.toast_add_2);
+			c3Drawable = context.getResources().getDrawable(R.drawable.toast_add_3);
+			okDrawable = context.getResources().getDrawable(R.drawable.toast_pass);
+			failDrawable = context.getResources().getDrawable(R.drawable.toast_fail);
 		}
 		if (soundpool == null){
 			soundpool = new SoundPool(1,AudioManager.STREAM_MUSIC,1);

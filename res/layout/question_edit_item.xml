@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/questionnaire_button"
+    android:background="@drawable/bar_button"
     >
 
     <EditText
@@ -10,9 +10,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="6.7dp"
-        android:background="@drawable/questionnaire_edit_text"
+        android:background="@drawable/bar_edittext_bg"
         android:hint="@string/emotion_manage_input"
-        android:textColor="#FF000000"
+        android:textColor="@color/black"
         android:layout_centerVertical="true"
         android:maxLength="255"
         android:paddingLeft="10dp"
@@ -24,7 +24,7 @@
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/question_edit"
         android:layout_centerVertical="true"
-        android:src="@drawable/questionnaire_show_list_selection"
+        android:src="@drawable/list_show"
         android:visibility="invisible" />
 
 </RelativeLayout>

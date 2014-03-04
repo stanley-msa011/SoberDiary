@@ -57,8 +57,8 @@ public class MainActivity extends FragmentActivity {
 	static private CustomTab[] customTabs;
 
 	private static final String[] tabName = { "Test", "Statistic", "Storytelling" };
-	private static final int[] iconId = { R.drawable.tabs_test_selector, R.drawable.tabs_statistic_selector,
-			R.drawable.tabs_history_selector };
+	private static final int[] iconId = { R.drawable.tab_test_selector, R.drawable.tab_statistic_selector,
+			R.drawable.tab_storytelling_selector };
 	private static final int[] iconOnId = { R.drawable.tab_test_selected, R.drawable.tab_statistic_selected,
 			R.drawable.tab_storytelling_selected };
 
@@ -89,6 +89,10 @@ public class MainActivity extends FragmentActivity {
 	private static SoundPool soundpool;
 	private static int timer_sound_id;
 
+	private static int notify_action = 0;
+	
+	public static final int ACTION_RECORD = 1;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -243,6 +247,15 @@ public class MainActivity extends FragmentActivity {
 			tabHost.setCurrentTab(pos);
 		}
 	}
+	
+	public static void changeTab(int pos, int action) {
+		TabWidget tabWidget = tabHost.getTabWidget();
+		int count = tabWidget.getChildCount();
+		if (pos >= 0 && pos < count) {
+			notify_action = action;
+			tabHost.setCurrentTab(pos);
+		}
+	}
 
 	public void setCouponChange(boolean change){
 		customTabs[1].showHighlight(change);
@@ -301,6 +314,12 @@ public class MainActivity extends FragmentActivity {
 			}
 			for (int i = 0; i < tabName.length; ++i) {
 				if (tabId.equals(tabName[i])) {
+					if (notify_action  == ACTION_RECORD){
+						Bundle data = new Bundle();
+						data.putInt("action", notify_action);
+						fragments[i].setArguments(data);
+						notify_action = 0;
+					}
 					ft.add(android.R.id.tabcontent, fragments[i], tabName[i]);
 					break;
 				}

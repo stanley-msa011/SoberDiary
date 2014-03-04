@@ -36,16 +36,16 @@ public class EmotionManageRecordBlock implements RecorderCallee {
 	private LinearLayout listLayout;
 	
 	private static final int[] emotionBgs={
-		R.drawable.questionnaire_item_e0,
-		R.drawable.questionnaire_item_e1,
-		R.drawable.questionnaire_item_e2,
-		R.drawable.questionnaire_item_e3,
-		R.drawable.questionnaire_item_e4,
-		R.drawable.questionnaire_item_e5,
-		R.drawable.questionnaire_item_e6,
-		R.drawable.questionnaire_item_e7,
-		R.drawable.questionnaire_item_e8,
-		R.drawable.questionnaire_item_e9,
+		R.drawable.emotion_type_0,
+		R.drawable.emotion_type_1,
+		R.drawable.emotion_type_2,
+		R.drawable.emotion_type_3,
+		R.drawable.emotion_type_4,
+		R.drawable.emotion_type_5,
+		R.drawable.emotion_type_6,
+		R.drawable.emotion_type_7,
+		R.drawable.emotion_type_8,
+		R.drawable.emotion_type_9,
 	};
 	
 	private Drawable historyDrawable,historyOffDrawable;
@@ -62,7 +62,7 @@ public class EmotionManageRecordBlock implements RecorderCallee {
 		topButton = (RelativeLayout) contentLayout.findViewById(R.id.em_record_top_button);
 		bottomButton = (RelativeLayout) contentLayout.findViewById(R.id.em_record_bottom_button);
 
-		historyDrawable = context.getResources().getDrawable(R.drawable.record_history);
+		historyDrawable = context.getResources().getDrawable(R.drawable.emotion_manage_history);
 		historyOffDrawable = null;
 		
 		bottomIcon = (ImageView) contentLayout.findViewById(R.id.em_record_bottom_icon);
@@ -83,11 +83,11 @@ public class EmotionManageRecordBlock implements RecorderCallee {
 				listLayout.addView(im);
 			}
 			bottomIcon.setImageDrawable(historyDrawable);
-			bottomButton.setBackgroundResource(R.drawable.record_box_right_bottom_button);
+			bottomButton.setBackgroundResource(R.drawable.record_box_bottom_button);
 			bottomButton.setOnClickListener(historyOnClickListener);
 		}else{
 			bottomIcon.setImageDrawable(historyOffDrawable);
-			bottomButton.setBackgroundResource(R.drawable.record_bg_right_bottom);
+			bottomButton.setBackgroundResource(R.drawable.record_button_bottom);
 			bottomButton.setOnClickListener(null);
 		}
 		enableRecordBox(true);

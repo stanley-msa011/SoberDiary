@@ -169,9 +169,9 @@ public class FeedbackMsgBox{
 			
 			leftImg.setVisibility(View.VISIBLE);
 			barLayout.setVisibility(View.GONE);
-			topLayout.setBackgroundResource(R.drawable.feedback_bg_top_small);
-			leftLayout.setBackgroundResource(R.drawable.feedback_bg_left_small);
-			rightLayout.setBackgroundResource(R.drawable.feedback_bg_right_small);
+			topLayout.setBackgroundResource(R.drawable.feedback_dialog_top_small);
+			leftLayout.setBackgroundResource(R.drawable.feedback_button_left_small);
+			rightLayout.setBackgroundResource(R.drawable.feedback_button_right_small);
 			topLayout.invalidate();
 			leftLayout.invalidate();
 			rightLayout.invalidate();
@@ -188,9 +188,9 @@ public class FeedbackMsgBox{
 			leftLayout.setOnClickListener(endRecListener);
 			help.setText(R.string.audio_box_recording);
 			barLayout.setVisibility(View.VISIBLE);
-			topLayout.setBackgroundResource(R.drawable.feedback_bg_top);
-			leftLayout.setBackgroundResource(R.drawable.feedback_bg_left);
-			rightLayout.setBackgroundResource(R.drawable.feedback_bg_right);
+			topLayout.setBackgroundResource(R.drawable.feedback_dialog_top);
+			leftLayout.setBackgroundResource(R.drawable.feedback_button_left);
+			rightLayout.setBackgroundResource(R.drawable.feedback_button_right);
 			topLayout.invalidate();
 			leftLayout.invalidate();
 			rightLayout.invalidate();
@@ -203,9 +203,9 @@ public class FeedbackMsgBox{
 			
 			leftImg.setVisibility(View.VISIBLE);
 			barLayout.setVisibility(View.GONE);
-			topLayout.setBackgroundResource(R.drawable.feedback_bg_top_small);
-			leftLayout.setBackgroundResource(R.drawable.feedback_bg_left_small);
-			rightLayout.setBackgroundResource(R.drawable.feedback_bg_right_small);
+			topLayout.setBackgroundResource(R.drawable.feedback_dialog_top_small);
+			leftLayout.setBackgroundResource(R.drawable.feedback_button_left_small);
+			rightLayout.setBackgroundResource(R.drawable.feedback_button_right_small);
 			topLayout.invalidate();
 			leftLayout.invalidate();
 			rightLayout.invalidate();
@@ -218,9 +218,9 @@ public class FeedbackMsgBox{
 			
 			leftImg.setVisibility(View.VISIBLE);
 			barLayout.setVisibility(View.GONE);
-			topLayout.setBackgroundResource(R.drawable.feedback_bg_top_small);
-			leftLayout.setBackgroundResource(R.drawable.feedback_bg_left_small);
-			rightLayout.setBackgroundResource(R.drawable.feedback_bg_right_small);
+			topLayout.setBackgroundResource(R.drawable.feedback_dialog_top_small);
+			leftLayout.setBackgroundResource(R.drawable.feedback_button_left_small);
+			rightLayout.setBackgroundResource(R.drawable.feedback_button_right_small);
 			topLayout.invalidate();
 			leftLayout.invalidate();
 			rightLayout.invalidate();

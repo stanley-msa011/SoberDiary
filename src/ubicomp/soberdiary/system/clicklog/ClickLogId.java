@@ -20,6 +20,7 @@ public class ClickLogId {
 	public final static long SETTING_CHECK								= 1200000;
 	public final static long SETTING_EDIT										= 1300000;
 	public final static long SETTING_SPINNER							=	1400000;
+	public final static long SETTING_SELECT								=	1500000;
 	
 	public final static long TEST_ENTER											= 10000000;
 	public final static long TEST_LEAVE											= 10010000;
@@ -37,6 +38,9 @@ public class ClickLogId {
 	public final static long TEST_FEEDBACK_REC_BUTTON	= 13000000;
 	public final static long TEST_FEEDBACK_STOP_REC_BUTTON	= 13100000;
 	public final static long TEST_FEEDBACK_DONE					= 13200000;
+	
+	public final static long TEST_NOTIFICATION_CANCEL	= 14000000;
+	public final static long TEST_NOTIFICATION_GOTO		= 14100000;
 	
 	public final static long STATISTIC_ENTER								= 20000000;
 	public final static long STATISTIC_LEAVE								=	20010000;

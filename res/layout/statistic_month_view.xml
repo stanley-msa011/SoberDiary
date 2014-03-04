@@ -12,7 +12,7 @@
         android:textSize="@dimen/small_title_size"
         android:layout_marginTop="36dp"
         android:layout_marginLeft="60dp"
-        android:textColor="#FF000000" />
+        android:textColor="@color/black" />
     
     <LinearLayout
         android:id="@+id/statistic_month_timeblock_label_layout"
@@ -44,7 +44,7 @@
             android:textSize="@dimen/normal_text_size"
             android:layout_toRightOf="@+id/statistic_month_timeblock_label_layout"
             android:layout_below="@+id/statistic_month_block_layout"
-            android:textColor="#FF727171"
+            android:textColor="@color/text_gray"
             android:gravity="center" 
             />
       <TextView
@@ -54,7 +54,7 @@
             android:layout_marginRight="21dp"
             android:textSize="@dimen/normal_text_size"
             android:layout_below="@+id/statistic_month_block_layout"
-            android:textColor="#FF727171" 
+            android:textColor="@color/text_gray" 
             android:gravity="center"
             android:layout_toRightOf="@+id/statistic_month_0"
             />
@@ -65,7 +65,7 @@
             android:layout_marginRight="21dp"
             android:textSize="@dimen/normal_text_size"
             android:layout_below="@+id/statistic_month_block_layout"
-            android:textColor="#FF727171" 
+            android:textColor="@color/text_gray" 
             android:gravity="center"
             android:layout_toRightOf="@+id/statistic_month_1"
             />
@@ -75,7 +75,7 @@
             android:layout_height="32dp"
             android:textSize="@dimen/normal_text_size"
             android:layout_below="@+id/statistic_month_block_layout"
-            android:textColor="#FF727171" 
+            android:textColor="@color/text_gray" 
             android:gravity="center"
             android:layout_toRightOf="@+id/statistic_month_2"
             />

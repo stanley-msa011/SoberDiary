@@ -22,7 +22,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:layout_marginLeft="17.3dp"
+                android:layout_marginLeft="16dp"
                 android:scaleType="fitXY"
                 android:src="@drawable/titlebar_icon" />
 
@@ -31,10 +31,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:layout_marginLeft="18dp"
+                android:layout_marginLeft="10dp"
                 android:layout_toRightOf="@+id/st_logo"
                 android:text="@string/storytelling_test_title"
-                android:textColor="#FFFFFFFF"
+                android:textColor="@color/gray"
                 android:textSize="@dimen/large_text_size" />
         </RelativeLayout>
 

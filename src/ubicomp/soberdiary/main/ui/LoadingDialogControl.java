@@ -25,7 +25,7 @@ public class LoadingDialogControl {
 			try{
 				dialog.show();
 				if (type == 0)
-					dialog.setContentView(R.layout.loading_box_theme);
+					dialog.setContentView(R.layout.loading_dialog);
 				else if (type == 1)
 					dialog.setContentView(R.layout.upload_box_dialog);
 			}catch(Exception e){}

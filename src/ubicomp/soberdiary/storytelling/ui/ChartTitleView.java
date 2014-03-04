@@ -32,14 +32,17 @@ public class ChartTitleView extends View {
 	
 	private int chart_type = 0;
 	
+	private static final int text_color = App.context.getResources().getColor(R.color.chart_text);
+	private static final int orange = App.context.getResources().getColor(R.color.lite_orange);
+	
 	public ChartTitleView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		text_paint_large.setColor(0xFFAAAAAA);
+		text_paint_large.setColor(text_color);
 		int textSize = App.context.getResources().getDimensionPixelSize(R.dimen.normal_text_size);
 		text_paint_large.setTextSize(textSize);
 		text_paint_large.setTextAlign(Align.LEFT);
 		text_paint_large.setTypeface(Typefaces.getWordTypefaceBold());
-		text_paint_large_2.setColor(0xFFf09600);
+		text_paint_large_2.setColor(orange);
 		text_paint_large_2.setTextSize(textSize);
 		text_paint_large_2.setTextAlign(Align.LEFT);
 		text_paint_large_2.setTypeface(Typefaces.getWordTypefaceBold());

@@ -82,7 +82,7 @@ public class StorytellingTestActivity extends Activity {
 		View agreementView = createSeekBarView();
 		inputLayout.addView(agreementView);
 
-		View submitView = BarGen.createIconView(R.string.done, R.drawable.questionnaire_item_ok,
+		View submitView = BarGen.createIconView(R.string.done, R.drawable.ok,
 				new SubmitOnClickListener());
 		inputLayout.addView(submitView);
 	}

@@ -153,15 +153,17 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 	private QuoteMsgBox quoteMsgBox;
 
 	private final static int[] PAGE_ARROW_RES = {
-		R.drawable.page_arrow_left_up, R.drawable.page_arrow_up, R.drawable.page_arrow_up, R.drawable.page_arrow_right_up,
-		R.drawable.page_arrow_left, R.drawable.page_arrow_left, R.drawable.page_arrow_right, R.drawable.page_arrow_right,
-		R.drawable.page_arrow_left, R.drawable.page_arrow_left, R.drawable.page_arrow_right, R.drawable.page_arrow_right,
-		R.drawable.page_arrow_left_down, R.drawable.page_arrow_down, R.drawable.page_arrow_down, R.drawable.page_arrow_right_down
+		R.drawable.small_arrow_left_up, R.drawable.small_arrow_up, R.drawable.small_arrow_up, R.drawable.small_arrow_right_up,
+		R.drawable.small_arrow_left, R.drawable.small_arrow_left, R.drawable.small_arrow_right, R.drawable.small_arrow_right,
+		R.drawable.small_arrow_left, R.drawable.small_arrow_left, R.drawable.small_arrow_right, R.drawable.small_arrow_right,
+		R.drawable.small_arrow_left_down, R.drawable.small_arrow_down, R.drawable.small_arrow_down, R.drawable.small_arrow_right_down
 	};
 	private Point[] page_update_pos = new Point[16];
 	
 	//private static final String TAG = "STORYTELLING";
 
+	private int notify_action = 0;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -195,6 +197,10 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 					@Override
 					public void onAnimationEnd(Animation animation) {
 						isAnimation = false;
+						if (notify_action == MainActivity.ACTION_RECORD){
+							showToday();
+							notify_action = 0;
+						}
 					}
 					@Override
 					public void onAnimationRepeat(Animation animation) {
@@ -258,6 +264,15 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 		settingBars();
 		checkHasRecorder();
 		reopenRecordBox();
+		
+		Bundle data = getArguments();
+		if (data != null) {
+			int action = data.getInt("action");
+			data.putInt("action", 0);
+			if (action == MainActivity.ACTION_RECORD){
+				notify_action = action;
+			}
+		}
 	}
 
 	@Override
@@ -327,6 +342,9 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 		}
 	}
 
+	private int text_color = App.context.getResources().getColor(R.color.page_gray);
+	private int value_color = App.context.getResources().getColor(R.color.lite_orange);
+	
 	private void setStorytellingTexts() {
 
 		Integer score = page_states[page_week];
@@ -335,9 +353,9 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 		stageMessageText.setText(stageText);
 		String progress_str = format.format(progress) + "%\n";
 		Spannable p_str = new SpannableString(progress_str + doneStr);
-		p_str.setSpan(new CustomTypefaceSpan("c1", digitTypefaceBold, 0xFFE79100), 0, progress_str.length(),
+		p_str.setSpan(new CustomTypefaceSpan("c1", digitTypefaceBold, value_color), 0, progress_str.length(),
 				Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-		p_str.setSpan(new CustomTypefaceSpan("c2", wordTypefaceBold, 0xFF717071), progress_str.length(),
+		p_str.setSpan(new CustomTypefaceSpan("c2", wordTypefaceBold, text_color), progress_str.length(),
 				progress_str.length() + doneStr.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
 		stageRateText.setText(p_str);
 		quoteText.setText(QUOTE_STR[page_week]);
@@ -371,6 +389,11 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 			arrowAnimation.start();
 			PreferenceControl.setPrevShowWeekState(page_week, curState);
 			PreferenceControl.setPageChange(false);
+		}else{
+			if (notify_action == MainActivity.ACTION_RECORD){
+				showToday();
+				notify_action = 0;
+			}
 		}
 	}
 
@@ -521,6 +544,10 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 				resetPage(0);
 				pageWidget.invalidate();
 				showUpdateAnimation();
+				if (notify_action == MainActivity.ACTION_RECORD){
+					showToday();
+					notify_action = 0;
+				}
 			} else {
 				startAnim();
 			}
@@ -737,16 +764,16 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 		chart_type = type;
 		switch(chart_type){
 		case 0:
-			chartAreaLayout.setBackgroundResource(R.drawable.chart_bg_0);
+			chartAreaLayout.setBackgroundResource(R.drawable.chart_tab_0);
 			 break;
 		case 1:
-			chartAreaLayout.setBackgroundResource(R.drawable.chart_bg_1);
+			chartAreaLayout.setBackgroundResource(R.drawable.chart_tab_1);
 			break;
 		case 2:
-			chartAreaLayout.setBackgroundResource(R.drawable.chart_bg_2);
+			chartAreaLayout.setBackgroundResource(R.drawable.chart_tab_2);
 			break;
 		case 3:
-			chartAreaLayout.setBackgroundResource(R.drawable.chart_bg_3);
+			chartAreaLayout.setBackgroundResource(R.drawable.chart_tab_3);
 			break;
 		}
 		chartYAxis.setChartType(chart_type);
@@ -1022,6 +1049,14 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 			if (from != null)
 				pageWidget.setTouchPosition(from);
 			pageWidget.invalidate();
+		}
+	}
+	
+	private void showToday(){
+		int size = bars.size();
+		if (size > 0){
+			TimeValue tv = bars.get(size-1).tv;
+			openRecordBox(tv, size-1);
 		}
 	}
 	
