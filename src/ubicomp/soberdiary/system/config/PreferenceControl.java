@@ -381,6 +381,14 @@ public class PreferenceControl {
 		db.insertExchangeHistory(new ExchangeHistory(System.currentTimeMillis(),exchangeCounter));
 	}
 	
+	public static void cleanCoupon(){
+		int currentCounter = getTotalCounter();
+		int usedCounter = sp.getInt("usedCounter", 0);
+		SharedPreferences.Editor edit = sp.edit();
+		edit.putInt("usedCounter", usedCounter+currentCounter);
+		edit.commit();
+	}
+	
 	public static int getUsedCounter(){
 		return sp.getInt("usedCounter", 0);
 	}

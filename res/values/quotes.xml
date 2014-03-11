@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <string name="quote_title">延伸學習</string>
     <string-array name="quote_message">
         <item>酒精是一位可畏的敵人，但您相信不會被\n敵人擺布，也決不低頭認輸。</item>
         <item>想踏上戒酒這條路已經很久了，您正在這\n路上。珍惜每一天，會感覺愈來愈好。</item>

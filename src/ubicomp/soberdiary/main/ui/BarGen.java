@@ -6,8 +6,6 @@ import android.content.Context;
 import android.graphics.Typeface;
 import android.text.Spannable;
 import android.text.SpannableString;
-import android.text.TextPaint;
-import android.text.style.TypefaceSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -47,38 +45,19 @@ public class BarGen {
 		int firstIdx = textStr.indexOf(quoteBlank);
 		int lastIdx = textStr.lastIndexOf(quoteBlank);
 		Spannable spannable=new SpannableString(textStr);
-		spannable.setSpan(new CustomTypefaceSpan("c1",wordTypeface), 0, firstIdx, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-		spannable.setSpan(new CustomTypefaceSpan("c2",wordTypefaceBold), firstIdx, lastIdx+1, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
-		spannable.setSpan(new CustomTypefaceSpan("c1",wordTypeface), lastIdx+1, textStr.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+		int text_color = App.context.getResources().getColor(R.color.text_gray);
+		int o_color = App.context.getResources().getColor(R.color.lite_orange);
+		spannable.setSpan(new CustomTypefaceSpan("c1",wordTypeface,text_color), 0, firstIdx, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+		spannable.setSpan(new CustomTypefaceSpan("c2",wordTypefaceBold,o_color), firstIdx, lastIdx+1, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+		spannable.setSpan(new CustomTypefaceSpan("c1",wordTypeface,text_color), lastIdx+1, textStr.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 		text.setText(spannable);
 		return layout;
-	}
-	
-	public static class CustomTypefaceSpan extends TypefaceSpan {
-
-		private final Typeface type;
-		
-		public CustomTypefaceSpan(String family,Typeface type) {
-			super(family);
-			this.type = type;
-		}
-		
-		@Override
-		public void updateDrawState(TextPaint ds){
-			ds.setTypeface(type);
-		}
-		
-		@Override
-		public void updateMeasureState(TextPaint paint){
-			paint.setTypeface(type);
-		}
-
 	}
 	
 	
 	public static View createIconView(String textStr, int DrawableId, OnClickListener listener) {
 
-		LinearLayout layout = (LinearLayout) inflater.inflate(R.layout.question_select_item, null);
+		RelativeLayout layout = (RelativeLayout) inflater.inflate(R.layout.question_select_item, null);
 		TextView text = (TextView) layout.findViewById(R.id.question_description);
 		text.setTypeface(wordTypefaceBold);
 		text.setText(textStr);
@@ -94,7 +73,7 @@ public class BarGen {
 
 	public static View createIconView(int textStr, int DrawableId, OnClickListener listener) {
 
-		LinearLayout layout = (LinearLayout) inflater.inflate(R.layout.question_select_item, null);
+		RelativeLayout layout = (RelativeLayout) inflater.inflate(R.layout.question_select_item, null);
 		TextView text = (TextView) layout.findViewById(R.id.question_description);
 		text.setTypeface(wordTypefaceBold);
 		text.setText(textStr);
@@ -110,7 +89,7 @@ public class BarGen {
 
 	public static View createIconViewInverse(String textStr, int DrawableId, OnClickListener listener) {
 
-		LinearLayout layout = (LinearLayout) inflater.inflate(R.layout.question_select_item_inverse, null);
+		RelativeLayout layout = (RelativeLayout) inflater.inflate(R.layout.question_select_item_inverse, null);
 		TextView text = (TextView) layout.findViewById(R.id.question_description);
 		text.setTypeface(wordTypefaceBold);
 		text.setText(textStr);
@@ -126,7 +105,7 @@ public class BarGen {
 	
 	public static View createTextAreaViewInverse(String textStr, int DrawableId) {
 
-		LinearLayout layout = (LinearLayout) inflater.inflate(R.layout.question_text_item_inverse, null);
+		RelativeLayout layout = (RelativeLayout) inflater.inflate(R.layout.question_text_item_inverse, null);
 		TextView text = (TextView) layout.findViewById(R.id.question_description);
 		text.setTypeface(wordTypefaceBold);
 		text.setText(textStr);
@@ -186,6 +165,21 @@ public class BarGen {
 		img.setImageResource(anim_id);
 		TextView text = (TextView)layout.findViewById(R.id.question_animation_right_button);
 		text.setTypeface(wordTypefaceBold);
+		return layout;
+	}
+	
+	public static View createTwoButtonView(int leftTextId, int rightTextId, OnClickListener leftListener, OnClickListener rightListener){
+		LinearLayout layout = (LinearLayout) inflater.inflate(R.layout.question_two_button_item, null);
+		TextView textLeft = (TextView) layout.findViewById(R.id.bar_button_left);
+		textLeft.setText(leftTextId);
+		textLeft.setTypeface(wordTypefaceBold);
+		textLeft.setOnClickListener(leftListener);
+		
+		TextView textRight = (TextView) layout.findViewById(R.id.bar_button_right);
+		textRight.setText(rightTextId);
+		textRight.setTypeface(wordTypefaceBold);
+		textRight.setOnClickListener(rightListener);
+		
 		return layout;
 	}
 	

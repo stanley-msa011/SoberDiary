@@ -48,6 +48,16 @@ public class EmotionManageRecordBlock implements RecorderCallee {
 		R.drawable.emotion_type_9,
 	};
 	
+	private static final int[] emotionVer1Bgs={
+		R.drawable.emotion_ver1_0,
+		R.drawable.emotion_ver1_1,
+		R.drawable.emotion_ver1_2,
+		R.drawable.emotion_ver1_3,
+		R.drawable.emotion_ver1_4,
+		R.drawable.emotion_ver1_5,
+		R.drawable.emotion_ver1_6,
+	};
+	
 	private Drawable historyDrawable,historyOffDrawable;
 	
 	public EmotionManageRecordBlock(RecordBlockCaller recordCaller,Context context) {
@@ -79,7 +89,10 @@ public class EmotionManageRecordBlock implements RecorderCallee {
 			int len = Math.min(ems.length,5);
 			for (int i=0;i<len;++i){
 				ImageView im = new ImageView(context);
-				im.setImageResource(emotionBgs[ems[i].emotion]);
+				if (ems[i].emotion < 100)
+					im.setImageResource(emotionBgs[ems[i].emotion]);
+				else
+					im.setImageResource(emotionVer1Bgs[ems[i].emotion-100]);
 				listLayout.addView(im);
 			}
 			bottomIcon.setImageDrawable(historyDrawable);

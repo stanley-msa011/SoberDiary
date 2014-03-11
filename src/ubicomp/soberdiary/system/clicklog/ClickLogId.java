@@ -95,8 +95,9 @@ public class ClickLogId {
 	public final static long STORYTELLING_RECORD_EM_HISTORY	= 31200000;
 	public final static long STORYTELLING_RECORD_BACK	= 31300000;
 	
-	public final static long STORYTELLING_READ						= 31300000;
+	public final static long STORYTELLING_READ						= 31600000;
 	public final static long STORYTELLING_READ_OK				= 31400000;
+	public final static long STORYTELLING_READ_CANCEL	= 31500000;
 	
 	public final static long EMOTION_DIY_ENTER					= 40000000;
 	public final static long EMOTION_DIY_LEAVE					= 40010000;
@@ -132,6 +133,7 @@ public class ClickLogId {
 	public final static long STORYTELLING_TEST_SELECT		= 70100000;
 	public final static long STORYTELLING_TEST_SUBMIT		= 70200000;	// change on agreement
 	public final static long STORYTELLING_TEST_SUBMIT_EMPTY= 70210000; // no change on agreement
+	public final static long STORYTELLING_TEST_CANCEL	= 70300000; 
 	
 	public final static long FACEBOOK_ENTER							= 80000000;
 	public final static long FACEBOOK_LEAVE							= 80010000;

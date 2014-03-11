@@ -354,6 +354,9 @@
 	    <item>心情紀錄</item>
 	    <item>情緒管理</item>
 	    <item>故事分享</item>
+	    <item>臉書分享</item>
+	    <item>諮詢建議</item>
+	    <item>自我測試</item>
 	</string-array>
 	<string-array name="notification_comments">
 	    <item>點選\"開始\"進行酒測是邁向成功的第一步</item>
@@ -362,8 +365,13 @@
 	    <item>用聲音記錄下您的心情，讓自己更了解自己</item>
 	    <item>使用情緒管理記錄心情，供自己日後思索</item>
 	    <item>每天翻閱細讀圖畫，會有小發現喔</item>
+	    <item>想要將您的戒酒歷程給朋友嗎？</item>
+	    <item>完成酒測後點選諮詢建議能帶給您更多幫助</item>
+	    <item>測試看看自己記不記得每周名言</item>
 	</string-array>
 	
 	<string name="edit">編輯</string>
 	<string name="setting_limit">抱歉！最多只能選擇三項</string>
+	<string name="story_test_cancel">下次再做</string>
+	<string name="story_test_ok">確定送出</string>
 </resources>

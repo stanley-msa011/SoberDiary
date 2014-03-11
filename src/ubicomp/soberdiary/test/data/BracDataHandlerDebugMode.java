@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import ubicomp.soberdiary.main.R;
-import ubicomp.soberdiary.main.ui.CustomToast;
+import ubicomp.soberdiary.main.ui.toast.CustomToast;
 import ubicomp.soberdiary.system.config.PreferenceControl;
 
 import android.content.Context;

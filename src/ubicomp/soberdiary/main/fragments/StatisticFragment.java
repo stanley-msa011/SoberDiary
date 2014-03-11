@@ -69,6 +69,10 @@ public class StatisticFragment extends Fragment implements ShowRadarChart, Quest
 	private RadarChart radarChart;
 	private DetailChart detailChart;
 	
+	private int notify_action = 0;
+	
+	//private static final String TAG = "STATISTIC";
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -119,6 +123,15 @@ public class StatisticFragment extends Fragment implements ShowRadarChart, Quest
 		statisticViewAdapter = new StatisticPagerAdapter();
 		msgBox = new QuestionnaireBox(this, (RelativeLayout) view);
 
+		Bundle data = getArguments();
+		if (data != null) {
+			int action = data.getInt("action");
+			data.putInt("action", 0);
+			if (action == MainActivity.ACTION_QUESTIONNAIRE){
+				notify_action = action;
+			}
+		}
+		
 		loadHandler.sendEmptyMessage(0);
 	}
 
@@ -211,27 +224,36 @@ public class StatisticFragment extends Fragment implements ShowRadarChart, Quest
 
 			MainActivity.enableTabAndClick(true);
 			LoadingDialogControl.dismiss();
+			
+			if (notify_action == MainActivity.ACTION_QUESTIONNAIRE){
+				openQuestionnaire();
+				notify_action = 0;
+			}
 		}
 	}
 
+	private void openQuestionnaire(){
+		int result = PreferenceControl.getTestResult();
+		if (msgBox == null)
+			return;
+		if (result == 0)
+			msgBox.generateType0Box();
+		else if (result == 1)
+			msgBox.generateType1Box();
+		else if (result == 2)
+			msgBox.generateType2Box();
+		else if (result == 3)
+			msgBox.generateType3Box();
+		else
+			msgBox.generateNormalBox();
+	}
+	
 	private class QuestionOnClickListener implements View.OnClickListener {
 
 		@Override
 		public void onClick(View v) {
-			int result = PreferenceControl.getTestResult();
 			ClickLog.Log(ClickLogId.STATISTIC_QUESTION_BUTTON);
-			if (msgBox == null)
-				return;
-			if (result == 0)
-				msgBox.generateType0Box();
-			else if (result == 1)
-				msgBox.generateType1Box();
-			else if (result == 2)
-				msgBox.generateType2Box();
-			else if (result == 3)
-				msgBox.generateType3Box();
-			else
-				msgBox.generateNormalBox();
+			openQuestionnaire();
 		}
 	}
 

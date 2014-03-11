@@ -13,11 +13,11 @@ import ubicomp.soberdiary.main.App;
 import ubicomp.soberdiary.main.FacebookActivity;
 import ubicomp.soberdiary.main.MainActivity;
 import ubicomp.soberdiary.main.StorytellingTestActivity;
-import ubicomp.soberdiary.main.ui.CustomToastSmall;
 import ubicomp.soberdiary.main.ui.CustomTypefaceSpan;
 import ubicomp.soberdiary.main.ui.EnablePage;
 import ubicomp.soberdiary.main.ui.LoadingDialogControl;
 import ubicomp.soberdiary.main.ui.Typefaces;
+import ubicomp.soberdiary.main.ui.toast.CustomToastSmall;
 import ubicomp.soberdiary.storytelling.ui.ChartCaller;
 import ubicomp.soberdiary.storytelling.ui.ChartLabelView;
 import ubicomp.soberdiary.storytelling.ui.ChartTitleView;
@@ -78,9 +78,7 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 
 	private View view;
 
-	private RelativeLayout topLayout;
-	private RelativeLayout pageLayout;
-	private RelativeLayout chartAreaLayout;
+	private RelativeLayout topLayout, pageLayout, chartAreaLayout;
 	private PageWidgetVertical pageWidget;
 	private ImageView prevPageImage, pageArrow;
 	private PageAnimationTaskVertical pageAnimationTask;
@@ -93,8 +91,7 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 	private ChartLabelView chartLabel;
 	private ScrollView quoteScrollView;
 	private RelativeLayout quoteHiddenLayout;
-	private TextView quoteHiddenText;
-	private TextView quoteText;
+	private TextView quoteHiddenText, quoteText;
 	private RelativeLayout stageLayout;
 	private TextView stageMessageText, stageMessage, stageRateText;
 	
@@ -103,30 +100,20 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 	private ArrayList<BarInfo> bars = new ArrayList<BarInfo>();
 	private ArrayList<Boolean> hasAudio = new ArrayList<Boolean>();
 
-	private int NUM_OF_BARS;
-	private int page_week;
+	private int NUM_OF_BARS, page_week;
 
 	private GestureListener gListener = new GestureListener();
 	private GestureDetector gDetector = new GestureDetector(App.context, gListener);
 	private PageTouchListener gtListener = new PageTouchListener();
-
 	private boolean isAnimation = false;
-
-	private int page_width, page_height;
-
+	private static int page_width = 0, page_height = 0;
 	private Bitmap cur_bg_bmp, next_bg_bmp;
-
 	private PointF from, to;
 	private StorytellingFragment storytellingFragment;
-
 	private LoadingHandler loadHandler = new LoadingHandler();
-
 	private Typeface wordTypefaceBold,  digitTypefaceBold;
-
 	private DecimalFormat format;
-
-	private Calendar from_cal;
-	private Calendar to_cal;
+	private Calendar from_cal, to_cal;
 
 	private static final int MAX_PAGE_WEEK = 11;
 	private int max_week;
@@ -144,11 +131,10 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 	private FacebookOnClickListener facebookOnClickListener = new FacebookOnClickListener();
 	private final RecordBoxOnKeyListener recordBoxOnKeyListener = new RecordBoxOnKeyListener();
 	private QuoteScrollListener quoteScrollListener = new QuoteScrollListener();
-	private Animation animation;
-	private Animation arrowAnimation;
-	
+	private Animation animation, arrowAnimation;
+	private int text_color = App.context.getResources().getColor(R.color.page_gray);
+	private int value_color = App.context.getResources().getColor(R.color.lite_orange);
 	private static final long READING_PAGE_TIME = Config.READING_PAGE_TIME;
-
 	private RecordBox recordBox;
 	private QuoteMsgBox quoteMsgBox;
 
@@ -342,9 +328,6 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 		}
 	}
 
-	private int text_color = App.context.getResources().getColor(R.color.page_gray);
-	private int value_color = App.context.getResources().getColor(R.color.lite_orange);
-	
 	private void setStorytellingTexts() {
 
 		Integer score = page_states[page_week];
@@ -477,8 +460,8 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 
 		public void handleMessage(Message msg) {
 
-			page_width = topLayout.getWidth();
-			page_height = topLayout.getHeight();
+			page_width = page_width==0?topLayout.getWidth():page_width;
+			page_height = page_height==0?topLayout.getHeight():page_height;
 			
 			for (int i=0; i<4;++i){
 				int pos_y = page_height * (1+i*2)/8;

@@ -11,8 +11,12 @@
     <string name="fb_login">登入</string>
     <string name="fb_logout">登出</string>
     <string name="fb_check">確定分享至臉書？</string>
-    <string name="fb_privacy">分享對象為：</string>
+    <string name="fb_cancel">放棄貼文</string>
+    <string name="fb_ok">確定上傳</string>
+    <string name="fb_privacy">分享對象</string>
 
+    <string name="fb_friend">朋友</string>
+    <string name="fb_self">自己</string>
     <string-array name="fb_selection">
         <item>朋友</item>
         <item>自己</item>

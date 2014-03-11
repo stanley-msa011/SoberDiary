@@ -1,7 +1,8 @@
-package ubicomp.soberdiary.main.ui;
+package ubicomp.soberdiary.main.ui.toast;
 
 import ubicomp.soberdiary.main.App;
 import ubicomp.soberdiary.main.R;
+import ubicomp.soberdiary.main.ui.Typefaces;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;

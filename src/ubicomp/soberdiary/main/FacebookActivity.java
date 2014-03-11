@@ -11,11 +11,11 @@ import ubicomp.soberdiary.main.R;
 import ubicomp.soberdiary.data.database.DatabaseControl;
 import ubicomp.soberdiary.data.structure.FacebookInfo;
 import ubicomp.soberdiary.main.ui.BarGen;
-import ubicomp.soberdiary.main.ui.CustomToast;
-import ubicomp.soberdiary.main.ui.CustomToastSmall;
 import ubicomp.soberdiary.main.ui.LoadingDialogControl;
-import ubicomp.soberdiary.main.ui.ScreenSize;
 import ubicomp.soberdiary.main.ui.Typefaces;
+import ubicomp.soberdiary.main.ui.spinnergroup.SingleIconRadioGroup;
+import ubicomp.soberdiary.main.ui.toast.CustomToast;
+import ubicomp.soberdiary.main.ui.toast.CustomToastSmall;
 import ubicomp.soberdiary.storytelling.facebook.BitmapGenerator;
 import ubicomp.soberdiary.system.clicklog.ClickLogId;
 import ubicomp.soberdiary.system.clicklog.ClickLog;
@@ -35,30 +35,25 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
-import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.RelativeLayout.LayoutParams;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Point;
 import android.graphics.Typeface;
 
 public class FacebookActivity extends Activity {
 
 	private static final String TAG = "FACEBOOK";
 
-	private RelativeLayout loginLayout, callLayout;
+	private RelativeLayout loginLayout, checkLayout;
 	private RelativeLayout bgLayout;
 	private ScrollView inputScrollview;
 	private LinearLayout inputLayout;
@@ -75,14 +70,18 @@ public class FacebookActivity extends Activity {
 	private int image_week, image_score;
 
 	private EditText texts;
-	private int sendGroup = 0;
 
-	private View shareButton, inputMessage, guideMessage, privacySelection;
+	private View shareButton, inputMessage, privacySelection;
 
 	private Bitmap state_bmp;
 
 	private UiLifecycleHelper uiHelper;
+	
+	private static final int[] choices = {R.string.fb_friend,R.string.fb_self};
+	private static final int[] icons = {R.drawable.fb_friend,R.drawable.fb_self};
 
+	private SingleIconRadioGroup sendRadioGroup =new SingleIconRadioGroup(App.context,choices,icons,0,ClickLogId.FACEBOOK_PRIVACY);
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -104,35 +103,32 @@ public class FacebookActivity extends Activity {
 		inputScrollview = (ScrollView) this.findViewById(R.id.facebook_scrollview);
 		loginText = (TextView) this.findViewById(R.id.fb_login_message);
 
-		fb_array = getResources().getStringArray(R.array.fb_selection);
-
 		titleText.setTypeface(wordTypefaceBold);
 		loginText.setTypeface(wordTypeface);
 
 		authButton = (LoginButton) this.findViewById(R.id.authButton);
 		authButton.setReadPermissions(Arrays.asList("basic_info", "read_friendlists"));
 		authButton.setTypeface(wordTypefaceBold);
+		authButton.setTextColor(App.context.getResources().getColor(R.color.lite_orange));
+		authButton.setBackgroundResource(R.drawable.fb_login_bg);
 
 		state_bmp = BitmapGenerator.generateBitmap(image_week, image_score);
 
-		Point screen = ScreenSize.getScreenSize();
-		LinearLayout.LayoutParams imageParam = (android.widget.LinearLayout.LayoutParams) image.getLayoutParams();
-		imageParam.width = screen.x;
-		imageParam.height = screen.x * 597 / 567;
-
 		image.setImageBitmap(state_bmp);
-
-		guideMessage = BarGen.createTextView(R.string.fb_message);
-		inputLayout.addView(guideMessage);
 
 		inputMessage = createEditView();
 		inputLayout.addView(inputMessage);
 
-		privacySelection = createSendGroupView();
+		View privacyTextView = BarGen.createTextView(R.string.fb_privacy);
+		inputLayout.addView(privacyTextView);
+		LinearLayout.LayoutParams privacyParam = (LinearLayout.LayoutParams) privacyTextView.getLayoutParams();
+		privacyParam.topMargin=(int) App.context.getResources().getDimension(R.dimen.fb_gap);
+		
+		privacySelection = sendRadioGroup.getView();//createSendGroupView();
 		inputLayout.addView(privacySelection);
+		
 
-		shareButton = BarGen.createIconView(R.string.fb_share, R.drawable.ok,
-				new SendOnClickListener());
+		shareButton = BarGen.createIconView(R.string.fb_share, 0, new SendOnClickListener());
 
 		inputLayout.addView(shareButton);
 
@@ -160,8 +156,8 @@ public class FacebookActivity extends Activity {
 	@Override
 	public void onPause() {
 		ClickLog.Log(ClickLogId.FACEBOOK_LEAVE);
-		if (callLayout != null && callLayout.getParent() != null)
-			bgLayout.removeView(callLayout);
+		if (checkLayout != null && checkLayout.getParent() != null)
+			bgLayout.removeView(checkLayout);
 		enablePage(true);
 		uiHelper.onPause();
 		super.onPause();
@@ -271,7 +267,7 @@ public class FacebookActivity extends Activity {
 					if (result) {
 						Log.d(TAG, "upload success");
 						info = new FacebookInfo(System.currentTimeMillis(), image_week, image_score, text_msg, false,
-								true, sendGroup, 0);
+								true, sendRadioGroup.getResult(), 0);
 						int addScore = db.insertFacebookInfo(info);
 						if (PreferenceControl.checkCouponChange())
 							PreferenceControl.setCouponChange(true);
@@ -280,7 +276,7 @@ public class FacebookActivity extends Activity {
 					} else {
 						Log.d(TAG, "upload failed");
 						info = new FacebookInfo(System.currentTimeMillis(), image_week, image_score, text_msg, false,
-								false, sendGroup, 0);
+								false, sendRadioGroup.getResult(), 0);
 						db.insertFacebookInfo(info);
 						CustomToastSmall.generateToast(R.string.fb_fail_toast);
 					}
@@ -300,7 +296,7 @@ public class FacebookActivity extends Activity {
 
 			JSONObject privacy = new JSONObject();
 			try {
-				switch (sendGroup) {
+				switch (sendRadioGroup.getResult()) {
 				case 0:
 					privacy.put("value", "ALL_FRIENDS");
 					break;
@@ -308,8 +304,9 @@ public class FacebookActivity extends Activity {
 					privacy.put("value", "SELF");
 					break;
 				}
-			} catch (JSONException e1) {
+			} catch (JSONException e) {
 			}
+
 			params.putString("privacy", privacy.toString());
 
 			request.setParameters(params);
@@ -321,46 +318,9 @@ public class FacebookActivity extends Activity {
 
 	private View createEditView() {
 
-		RelativeLayout layout = (RelativeLayout) inflater.inflate(R.layout.question_edit_item, null);
+		RelativeLayout layout = (RelativeLayout) inflater.inflate(R.layout.question_edit_large_item, null);
 		texts = (EditText) layout.findViewById(R.id.question_edit);
 		texts.setTypeface(wordTypefaceBold);
-		return layout;
-	}
-
-	private Spinner privacySpinner;
-
-	private String[] fb_array;
-
-	private View createSendGroupView() {
-
-		RelativeLayout layout = (RelativeLayout) inflater.inflate(R.layout.facebook_send_group, null);
-
-		TextView text = (TextView) layout.findViewById(R.id.fb_privacy_text);
-		text.setTypeface(wordTypefaceBold);
-
-		privacySpinner = (Spinner) layout.findViewById(R.id.fb_privacy_spinner);
-
-		ArrayAdapter<CharSequence> timeAdapter = new ArrayAdapter<CharSequence>(getBaseContext(),
-				R.layout.time_spinner, R.id.custom_spinner_text, fb_array);
-
-		privacySpinner.setAdapter(timeAdapter);
-		sendGroup = FacebookInfo.FRIEND;
-		privacySpinner.setSelection(0);
-
-		privacySpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
-			@Override
-			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				if (sendGroup != position) {
-					sendGroup = position;
-					ClickLog.Log(ClickLogId.FACEBOOK_PRIVACY);
-				}
-			}
-
-			@Override
-			public void onNothingSelected(AdapterView<?> parent) {
-			}
-		});
-
 		return layout;
 	}
 
@@ -372,22 +332,21 @@ public class FacebookActivity extends Activity {
 			enablePage(false);
 
 			ClickLog.Log(ClickLogId.FACEBOOK_SUBMIT);
-			if (callLayout == null) {
-				callLayout = (RelativeLayout) inflater.inflate(R.layout.call_check_layout, null);
-				TextView callOK = (TextView) callLayout.findViewById(R.id.call_ok_button);
-				TextView callCancel = (TextView) callLayout.findViewById(R.id.call_cancel_button);
-				TextView callHelp = (TextView) callLayout.findViewById(R.id.call_help);
-				callHelp.setTypeface(wordTypefaceBold);
-				callOK.setTypeface(wordTypefaceBold);
-				callCancel.setTypeface(wordTypefaceBold);
+			if (checkLayout == null) {
+				checkLayout = (RelativeLayout) inflater.inflate(R.layout.fb_check_layout, null);
+				TextView fbOK = (TextView) checkLayout.findViewById(R.id.fb_ok_button);
+				TextView fbCancel = (TextView) checkLayout.findViewById(R.id.fb_cancel_button);
+				TextView fbHelp = (TextView) checkLayout.findViewById(R.id.fb_help);
+				fbHelp.setTypeface(wordTypefaceBold);
+				fbOK.setTypeface(wordTypefaceBold);
+				fbCancel.setTypeface(wordTypefaceBold);
 
-				callHelp.setText(R.string.fb_check);
-				callOK.setOnClickListener(new CallOnClickListener());
-				callCancel.setOnClickListener(new CallCancelOnClickListener());
+				fbOK.setOnClickListener(new CallOnClickListener());
+				fbCancel.setOnClickListener(new CallCancelOnClickListener());
 			}
 
-			bgLayout.addView(callLayout);
-			RelativeLayout.LayoutParams boxParam = (RelativeLayout.LayoutParams) callLayout.getLayoutParams();
+			bgLayout.addView(checkLayout);
+			RelativeLayout.LayoutParams boxParam = (RelativeLayout.LayoutParams) checkLayout.getLayoutParams();
 			boxParam.width = LayoutParams.MATCH_PARENT;
 			boxParam.height = LayoutParams.MATCH_PARENT;
 			boxParam.addRule(RelativeLayout.CENTER_IN_PARENT);
@@ -400,7 +359,7 @@ public class FacebookActivity extends Activity {
 		public void onClick(View v) {
 			ClickLog.Log(ClickLogId.FACEBOOK_SUBMIT_OK);
 			publishStory();
-			bgLayout.removeView(callLayout);
+			bgLayout.removeView(checkLayout);
 			enablePage(true);
 		}
 	}
@@ -409,7 +368,7 @@ public class FacebookActivity extends Activity {
 		@Override
 		public void onClick(View v) {
 			ClickLog.Log(ClickLogId.FACEBOOK_SUBMIT_CANCEL);
-			bgLayout.removeView(callLayout);
+			bgLayout.removeView(checkLayout);
 			enablePage(true);
 		}
 	}
@@ -424,8 +383,8 @@ public class FacebookActivity extends Activity {
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
 			ClickLog.Log(ClickLogId.FACEBOOK_RETURN);
-			if (callLayout != null && callLayout.getParent() != null){
-				bgLayout.removeView(callLayout);
+			if (checkLayout != null && checkLayout.getParent() != null) {
+				bgLayout.removeView(checkLayout);
 				enablePage(true);
 				return false;
 			}

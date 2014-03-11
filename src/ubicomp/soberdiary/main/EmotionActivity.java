@@ -5,9 +5,10 @@ import ubicomp.soberdiary.data.database.DatabaseControl;
 import ubicomp.soberdiary.data.structure.EmotionDIY;
 import ubicomp.soberdiary.data.structure.Questionnaire;
 import ubicomp.soberdiary.main.ui.BarGen;
-import ubicomp.soberdiary.main.ui.CustomToast;
-import ubicomp.soberdiary.main.ui.CustomToastSmall;
+import ubicomp.soberdiary.main.ui.ScreenSize;
 import ubicomp.soberdiary.main.ui.Typefaces;
+import ubicomp.soberdiary.main.ui.toast.CustomToast;
+import ubicomp.soberdiary.main.ui.toast.CustomToastSmall;
 import ubicomp.soberdiary.statistic.ui.questionnaire.content.ConnectSocialInfo;
 import ubicomp.soberdiary.system.clicklog.ClickLogId;
 import ubicomp.soberdiary.system.clicklog.ClickLog;
@@ -85,6 +86,8 @@ public class EmotionActivity extends Activity {
 	
 	private int anim_id, media_id;
 
+	private static final int MIN_BARS = ScreenSize.getMinBars();
+	
 	private Runnable animRunnable = new AnimationRunnable();
 	
 	@Override
@@ -183,6 +186,12 @@ public class EmotionActivity extends Activity {
 			View v = BarGen.createIconView(texts[i], DRAWABLE_ID[i], ClickListeners[i]);
 			mainLayout.addView(v);
 		}
+		
+		int from = mainLayout.getChildCount();
+		for (int i=from;i<MIN_BARS;++i){
+			View v = BarGen.createBlankView();
+			mainLayout.addView(v);
+		}
 
 	}
 
@@ -228,6 +237,11 @@ public class EmotionActivity extends Activity {
 			mainLayout.addView(tv2);
 		}
 
+		int from = mainLayout.getChildCount();
+		for (int i=from;i<MIN_BARS;++i){
+			View v = BarGen.createBlankView();
+			mainLayout.addView(v);
+		}
 	}
 
 	private void setAnimationEnd(int selection) {
@@ -395,6 +409,11 @@ public class EmotionActivity extends Activity {
 				selected));
 		mainLayout.addView(vv);
 
+		int from = mainLayout.getChildCount();
+		for (int i=from;i<MIN_BARS;++i){
+			View v = BarGen.createBlankView();
+			mainLayout.addView(v);
+		}
 	}
 
 	private void setQuestionRecreation() {
@@ -435,6 +454,11 @@ public class EmotionActivity extends Activity {
 			}
 		}
 
+		int from = mainLayout.getChildCount();
+		for (int i=from;i<MIN_BARS;++i){
+			View v = BarGen.createBlankView();
+			mainLayout.addView(v);
+		}
 	}
 
 	private class EndOnClickListener implements View.OnClickListener {

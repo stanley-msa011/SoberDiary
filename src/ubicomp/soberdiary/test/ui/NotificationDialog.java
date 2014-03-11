@@ -6,8 +6,10 @@ import ubicomp.soberdiary.data.database.DatabaseControl;
 import ubicomp.soberdiary.data.structure.TimeValue;
 import ubicomp.soberdiary.main.App;
 import ubicomp.soberdiary.main.EmotionActivity;
+import ubicomp.soberdiary.main.FacebookActivity;
 import ubicomp.soberdiary.main.MainActivity;
 import ubicomp.soberdiary.main.R;
+import ubicomp.soberdiary.main.StorytellingTestActivity;
 import ubicomp.soberdiary.main.ui.EnablePage;
 import ubicomp.soberdiary.main.ui.Typefaces;
 import ubicomp.soberdiary.system.check.StartDateCheck;
@@ -42,7 +44,10 @@ public class NotificationDialog {
 			R.drawable.notification_emotion_diy,
 			R.drawable.notification_voice_record,
 			R.drawable.notification_emotion_management,
-			R.drawable.notification_storytelling};
+			R.drawable.notification_storytelling,
+			R.drawable.notification_fb,
+			R.drawable.notification_questionnaire,
+			R.drawable.notification_storytelling_test};
 	
 	
 	private DatabaseControl db = new DatabaseControl();
@@ -113,6 +118,9 @@ public class NotificationDialog {
 		tvs[3] = db.getLatestUserVoiceRecord().tv;
 		tvs[4] = db.getLatestEmotionManagement().tv;
 		tvs[5] = db.getLatestStorytellingRead().tv;
+		tvs[6] = db.getLatestFacebookInfo().tv;
+		tvs[7] = db.getLatestQuestionnaire().tv;
+		tvs[8] = db.getLatestStorytellingTest().tv;
 		
 		if (curTv.week <= 0)//StorytellingReading
 			tvs[5] = curTv;
@@ -121,8 +129,11 @@ public class NotificationDialog {
 		
 		int mod = 0;
 		for (int i=0;i<tvs.length;++i){
-			show_dialog[i] = tvs[i].showNotificationDialog(curTime);
-			if (show_dialog[i] && i!=5)
+			if (i != 6)
+				show_dialog[i] = tvs[i].showNotificationDialog(curTime,false);
+			else
+				show_dialog[i] = tvs[i].showNotificationDialog(curTime,true);
+			if (show_dialog[i])
 				++mod;
 		}
 		
@@ -190,6 +201,8 @@ public class NotificationDialog {
 		public void onClick(View v) {
 			ClickLog.Log(ClickLogId.TEST_NOTIFICATION_GOTO);
 			removeView();
+			Integer[] page_states = new DatabaseControl().getDetectionScoreByWeek();
+			int page_week = page_states.length - 1;
 			switch (showType){
 			case 0:
 				notificationInterface.notifyStartButton();
@@ -198,8 +211,8 @@ public class NotificationDialog {
 				notificationInterface.notifyAdditionalQuestionnaire();
 				break;
 			case 2:
-				Intent intent = new Intent(context, EmotionActivity.class);
-				context.startActivity(intent);
+				Intent intentEmotionActivity = new Intent(context, EmotionActivity.class);
+				context.startActivity(intentEmotionActivity);
 				break;
 			case 3:
 				MainActivity.changeTab(2, MainActivity.ACTION_RECORD);
@@ -210,6 +223,20 @@ public class NotificationDialog {
 			case 5:
 				MainActivity.changeTab(2);
 				break;
+			case 6:
+				Intent intentFB = new Intent(context, FacebookActivity.class);
+				intentFB.putExtra("image_week", page_week);
+				intentFB.putExtra("image_score", page_states[page_week]);
+				context.startActivity(intentFB);
+				break;
+			case 7:
+				MainActivity.changeTab(1, MainActivity.ACTION_QUESTIONNAIRE);
+				break;
+			case 8:
+				Intent intentStorytellingTest = new Intent(context, StorytellingTestActivity.class);
+				intentStorytellingTest.putExtra("image_week", page_week);
+				intentStorytellingTest.putExtra("image_score", page_states[page_week]);
+				context.startActivity(intentStorytellingTest);
 			}
 			
 		}

@@ -80,17 +80,19 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
-            android:scaleType="fitXY"
-            android:src="@drawable/storytelling_button"
+            android:layout_marginTop="42dp"
+            android:layout_marginRight="15dp"
+            android:src="@drawable/storytelling_test_button"
             android:visibility="invisible" />
 
         <ImageView
             android:id="@+id/story_fb_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="7dp"
+            android:layout_marginRight="6dp"
+            android:layout_marginTop="42dp"
             android:layout_toLeftOf="@+id/story_storytelling_button"
-            android:src="@drawable/fb_bookmark"
+            android:src="@drawable/fb_button"
             android:visibility="invisible" />
         
         <RelativeLayout

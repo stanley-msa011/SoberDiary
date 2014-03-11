@@ -1,43 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/bar_bg_normal"
-    android:orientation="horizontal" >
+    android:background="@drawable/bar_bg_button" >
 
-    <TextView
-        android:id="@+id/question_select0"
+    <RadioGroup
+        android:id="@+id/question_radiogroup"
         android:layout_width="match_parent"
-        android:layout_height= "match_parent"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_weight="1" 
-        android:maxLines="2"
-        android:textSize="@dimen/large_text_size"
-        android:textColor="@color/text_gray"
         android:gravity="center"
-        />
-    
-    <TextView
-        android:id="@+id/question_select1"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:layout_weight="1" 
-        android:maxLines="2"
-        android:textSize="@dimen/large_text_size"
-        android:textColor="@color/text_gray"
-        android:gravity="center"
-        />
-    
-    <TextView
-        android:id="@+id/question_select2"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:layout_weight="1" 
-        android:maxLines="2"
-        android:textSize="@dimen/large_text_size"
-        android:textColor="@color/text_gray"
-        android:gravity="center"
-        />
-</LinearLayout>
+        android:orientation="horizontal"
+        android:weightSum="3" >
+
+        <RadioButton
+            android:id="@+id/question_select0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:background="@color/transparent"
+            android:button="@null"
+            android:drawablePadding="7dp"
+            android:drawableRight="@drawable/radio_button"
+            android:gravity="center"
+            android:padding="7dp"
+            android:textColor="@color/text_gray" />
+
+        <RadioButton
+            android:id="@+id/question_select1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:background="@color/transparent"
+            android:button="@null"
+            android:drawablePadding="7dp"
+            android:drawableRight="@drawable/radio_button"
+            android:gravity="center"
+            android:padding="7dp"
+            android:textColor="@color/text_gray" />
+
+        <RadioButton
+            android:id="@+id/question_select2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:background="@color/transparent"
+            android:button="@null"
+            android:drawablePadding="7dp"
+            android:drawableRight="@drawable/radio_button"
+            android:gravity="center"
+            android:padding="7dp"
+            android:textColor="@color/text_gray" />
+    </RadioGroup>
+
+</FrameLayout>

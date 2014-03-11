@@ -2,6 +2,7 @@ package ubicomp.soberdiary.main;
 
 import ubicomp.soberdiary.main.R;
 import ubicomp.soberdiary.data.database.DatabaseRestore;
+import ubicomp.soberdiary.data.database.DatabaseRestoreVer1;
 import ubicomp.soberdiary.system.config.PreferenceControl;
 
 import android.os.Bundle;
@@ -24,7 +25,7 @@ public class PreSettingActivity extends Activity {
 
 	private EditText uid, target_good, target, drink;
 
-	private Button ok_button, clean_button, restoreButton, debugButton;
+	private Button ok_button, clean_button, restoreButton, debugButton, restoreVer1Button;
 	boolean debug;
 	private Activity activity;
 	private static final int MIN_NAME_LENGTH = 3;
@@ -61,7 +62,7 @@ public class PreSettingActivity extends Activity {
 
 		developer_switch = (CheckBox) this.findViewById(R.id.developer_switch);
 		developer_switch.setChecked(PreferenceControl.isDeveloper());
-		
+
 		sensor_switch = (CheckBox) this.findViewById(R.id.sensor_switch);
 		sensor_switch.setChecked(PreferenceControl.getUseNewSensor());
 
@@ -73,7 +74,6 @@ public class PreSettingActivity extends Activity {
 
 		drink = (EditText) this.findViewById(R.id.target_drink_edit);
 		drink.setText(String.valueOf(PreferenceControl.getSavingDrinkCost()));
-
 
 		mDateDisplay = (TextView) findViewById(R.id.date);
 		mPickDate = (Button) findViewById(R.id.date_button);
@@ -140,6 +140,15 @@ public class PreSettingActivity extends Activity {
 		restoreButton = (Button) this.findViewById(R.id.restore);
 		restoreButton.setOnClickListener(new AlertOnClickListener(resotreAlertDialog));
 
+		builder = new AlertDialog.Builder(this);
+		builder.setTitle("Restore Ver1?");
+		builder.setMessage("確定?");
+		builder.setPositiveButton("確定", new RestoreVer1OnClickListener());
+		builder.setNegativeButton("取消", null);
+		AlertDialog resotreAlertDialogVer1 = builder.create();
+		restoreVer1Button = (Button) this.findViewById(R.id.restore_ver1);
+		restoreVer1Button.setOnClickListener(new AlertOnClickListener(resotreAlertDialogVer1));
+
 		debug = PreferenceControl.isDebugMode();
 		debugButton = (Button) this.findViewById(R.id.debug_normal_switch);
 
@@ -156,6 +165,14 @@ public class PreSettingActivity extends Activity {
 		@Override
 		public void onClick(DialogInterface dialog, int which) {
 			DatabaseRestore rd = new DatabaseRestore(uid.getText().toString(), activity);
+			rd.execute();
+		}
+	}
+	
+	private class RestoreVer1OnClickListener implements DialogInterface.OnClickListener {
+		@Override
+		public void onClick(DialogInterface dialog, int which) {
+			DatabaseRestoreVer1 rd = new DatabaseRestoreVer1(uid.getText().toString(), activity);
 			rd.execute();
 		}
 	}
@@ -214,12 +231,9 @@ public class PreSettingActivity extends Activity {
 				if (lDateCheckBox.isChecked()) {
 					PreferenceControl.setLockDate(lYear, lMonth, lDay);
 				}
-
 				activity.finish();
 			}
-
 		}
-
 	}
 
 	private class AlertOnClickListener implements View.OnClickListener {

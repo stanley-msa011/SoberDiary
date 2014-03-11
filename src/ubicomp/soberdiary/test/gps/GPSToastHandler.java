@@ -1,7 +1,7 @@
 package ubicomp.soberdiary.test.gps;
 
 import ubicomp.soberdiary.main.R;
-import ubicomp.soberdiary.main.ui.CustomToastSmall;
+import ubicomp.soberdiary.main.ui.toast.CustomToastSmall;
 import android.os.Handler;
 import android.os.Message;
 

@@ -13,7 +13,7 @@ import ubicomp.soberdiary.data.file.MainStorage;
 import ubicomp.soberdiary.data.structure.Detection;
 import ubicomp.soberdiary.main.App;
 import ubicomp.soberdiary.main.R;
-import ubicomp.soberdiary.main.ui.CustomToast;
+import ubicomp.soberdiary.main.ui.toast.CustomToast;
 import ubicomp.soberdiary.storytelling.ui.StorytellingGraphics;
 import ubicomp.soberdiary.system.config.PreferenceControl;
 

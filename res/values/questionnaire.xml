@@ -4,9 +4,9 @@
     <string name="question_type1_help">重新整理浮動的心，堅持持續戒酒的決心，建議您可以：</string>
     <string name="question_type2_help">您似乎開始喝酒了，建議您可以：</string>
     <string name="question_type3_help">您似乎喝了不少酒，建議您可以：</string>
-    <string name="breath_help">閉眼專注觀察呼吸 30 秒</string>
+    <string name="breath_help">閉眼專注觀察呼吸30秒</string>
     <string name= "breath_check_help">我會完成閉眼專注觀察呼吸</string>
-    <string name="inspire_help">默念勵志短句 30 秒</string>
+    <string name="inspire_help">默念勵志短句30秒</string>
     <string name="start_emotion_diy_help">使用心情DIY自我處理 </string>
     <string name="read_sentence">閱讀心情小語轉換心境</string>
     <string name="try_again">酒測器回復後再重試</string>

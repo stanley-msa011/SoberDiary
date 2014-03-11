@@ -7,6 +7,7 @@ import ubicomp.soberdiary.data.database.DatabaseControl;
 import ubicomp.soberdiary.data.structure.EmotionManagement;
 import ubicomp.soberdiary.data.structure.TimeValue;
 import ubicomp.soberdiary.main.ui.BarGen;
+import ubicomp.soberdiary.main.ui.ScreenSize;
 import ubicomp.soberdiary.system.clicklog.ClickLog;
 import ubicomp.soberdiary.system.clicklog.ClickLogId;
 import android.os.Bundle;
@@ -29,11 +30,23 @@ public class EmotionManageHistoryActivity extends Activity {
 			R.drawable.emotion_type_6, R.drawable.emotion_type_7,
 			R.drawable.emotion_type_8, R.drawable.emotion_type_9,
 	};
+	
+	private static final int[] EMOTION_VER1_ID={
+		R.drawable.emotion_ver1_0,
+		R.drawable.emotion_ver1_1,
+		R.drawable.emotion_ver1_2,
+		R.drawable.emotion_ver1_3,
+		R.drawable.emotion_ver1_4,
+		R.drawable.emotion_ver1_5,
+		R.drawable.emotion_ver1_6,
+	};
 
 	private DatabaseControl db;
 
 	private long timeInMillis;
 	private TimeValue curTV;
+	
+	private static final int MIN_BARS = ScreenSize.getMinBars()-1;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -83,15 +96,27 @@ public class EmotionManageHistoryActivity extends Activity {
 			list.add(ems[i]);
 			main.addView(createItem(ems[i],i));
 		}
+		
+		int from = main.getChildCount();
+		for (int i=from;i<MIN_BARS;++i){
+			View v = BarGen.createBlankView();
+			main.addView(v);
+		}
 	}
 	
 	
 	private View createItem(EmotionManagement em,int idx){
-		return BarGen.createIconViewInverse(em.reason, EMOTION_DRAWABLE_ID[em.emotion], new CustomOnItemSelectListener(idx));
+		if (em.emotion<100)
+			return BarGen.createIconViewInverse(em.reason, EMOTION_DRAWABLE_ID[em.emotion], new CustomOnItemSelectListener(idx));
+		else
+			return BarGen.createIconViewInverse(em.reason, EMOTION_VER1_ID[em.emotion-100], new CustomOnItemSelectListener(idx));
 	}
 	
 	private View selectItem(EmotionManagement em){
-		return BarGen.createTextAreaViewInverse(em.reason, EMOTION_DRAWABLE_ID[em.emotion]);
+		if (em.emotion < 100)
+			return BarGen.createTextAreaViewInverse(em.reason, EMOTION_DRAWABLE_ID[em.emotion]);
+		else
+			return BarGen.createTextAreaViewInverse(em.reason, EMOTION_VER1_ID[em.emotion-100]);
 	}
 
 	private int prevPosition = -1;

@@ -22,6 +22,16 @@ public class Detection{
 		this.score = score;
 	}
 	
+	public Detection(float brac, long timestamp, int emotion, int craving, boolean isPrime,int weeklyScore, int score,boolean ver1) {
+		this.brac = brac;
+		this.tv = TimeValueVer1.generate(timestamp);
+		this.emotion = emotion;
+		this.craving = craving;
+		this.isPrime = isPrime;
+		this.weeklyScore = weeklyScore;
+		this.score = score;
+	}
+	
 	public boolean isSameTimeBlock(Detection d){
 		return d!=null && tv!=null && tv.isSameTimeBlock(d.tv);
 	}
@@ -35,6 +45,23 @@ public class Detection{
 		if (progress > 100.f)
 			return 100.f;
 		return progress;
+	}
+	
+	@Override
+	public String toString(){
+		StringBuilder sb = new StringBuilder();
+		sb.append(tv.toString());
+		sb.append(' ');
+		sb.append(emotion);
+		sb.append(' ');
+		sb.append(craving);
+		sb.append(' ');
+		sb.append(isPrime);
+		sb.append(' ');
+		sb.append(weeklyScore);
+		sb.append(' ');
+		sb.append(score);
+		return sb.toString();
 	}
 	
 }

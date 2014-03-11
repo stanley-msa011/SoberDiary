@@ -830,7 +830,7 @@ public class DatabaseControl {
 
 	public String[] getEmotionManagementString(int type) {
 		db = dbHelper.getReadableDatabase();
-		String sql = "SELECT DISTINCT reason FROM EmotionManagement WHERE type = " + type + " ORDER BY ts DESC LIMIT 5";
+		String sql = "SELECT DISTINCT reason FROM EmotionManagement WHERE type = " + type + " ORDER BY ts DESC LIMIT 4";
 		String[] out = null;
 
 		Cursor cursor = db.rawQuery(sql, null);

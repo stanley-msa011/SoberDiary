@@ -6,10 +6,10 @@ import ubicomp.soberdiary.main.fragments.StatisticFragment;
 import ubicomp.soberdiary.main.fragments.TestFragment;
 import ubicomp.soberdiary.main.ui.CustomMenu;
 import ubicomp.soberdiary.main.ui.CustomTab;
-import ubicomp.soberdiary.main.ui.CustomToast;
 import ubicomp.soberdiary.main.ui.LoadingDialogControl;
 import ubicomp.soberdiary.main.ui.ScreenSize;
 import ubicomp.soberdiary.main.ui.Typefaces;
+import ubicomp.soberdiary.main.ui.toast.CustomToast;
 import ubicomp.soberdiary.system.check.LockCheck;
 import ubicomp.soberdiary.system.clicklog.ClickLogId;
 import ubicomp.soberdiary.system.clicklog.ClickLog;
@@ -92,6 +92,7 @@ public class MainActivity extends FragmentActivity {
 	private static int notify_action = 0;
 	
 	public static final int ACTION_RECORD = 1;
+	public static final int ACTION_QUESTIONNAIRE = 2;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -315,6 +316,11 @@ public class MainActivity extends FragmentActivity {
 			for (int i = 0; i < tabName.length; ++i) {
 				if (tabId.equals(tabName[i])) {
 					if (notify_action  == ACTION_RECORD){
+						Bundle data = new Bundle();
+						data.putInt("action", notify_action);
+						fragments[i].setArguments(data);
+						notify_action = 0;
+					}else if(notify_action == ACTION_QUESTIONNAIRE){
 						Bundle data = new Bundle();
 						data.putInt("action", notify_action);
 						fragments[i].setArguments(data);

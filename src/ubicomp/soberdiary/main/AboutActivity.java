@@ -1,9 +1,9 @@
 package ubicomp.soberdiary.main;
 
 import ubicomp.soberdiary.main.R;
-import ubicomp.soberdiary.main.ui.CustomToastSmall;
 import ubicomp.soberdiary.main.ui.CustomTypefaceSpan;
 import ubicomp.soberdiary.main.ui.Typefaces;
+import ubicomp.soberdiary.main.ui.toast.CustomToastSmall;
 import ubicomp.soberdiary.system.clicklog.ClickLogId;
 import ubicomp.soberdiary.system.clicklog.ClickLog;
 import ubicomp.soberdiary.system.config.PreferenceControl;

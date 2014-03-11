@@ -34,7 +34,7 @@ public class TimeValue {
 		return new TimeValue(year,month,day,hour,timeslot,timestamp,week);
 	}
 	
-	private TimeValue(int year, int month, int day,int hour,int timeslot,long timestamp,int week){
+	protected TimeValue(int year, int month, int day,int hour,int timeslot,long timestamp,int week){
 		this.year = year;
 		this.month = month;
 		this.day = day;
@@ -91,8 +91,10 @@ public class TimeValue {
 		return cYear == year && cMonth == month && cDay == day;
 	}
 	
-	public boolean showNotificationDialog(long curTime){
+	public boolean showNotificationDialog(long curTime, boolean long_time){
 		long gap = curTime - timestamp;
+		if (long_time)
+			return gap > AlarmManager.INTERVAL_DAY*7;
 		return gap > AlarmManager.INTERVAL_DAY*3;
 	}
 }

@@ -5,9 +5,10 @@ import ubicomp.soberdiary.data.database.DatabaseControl;
 import ubicomp.soberdiary.data.structure.EmotionManagement;
 import ubicomp.soberdiary.data.structure.TimeValue;
 import ubicomp.soberdiary.main.ui.BarGen;
-import ubicomp.soberdiary.main.ui.CustomToast;
-import ubicomp.soberdiary.main.ui.CustomToastSmall;
+import ubicomp.soberdiary.main.ui.ScreenSize;
 import ubicomp.soberdiary.main.ui.Typefaces;
+import ubicomp.soberdiary.main.ui.toast.CustomToast;
+import ubicomp.soberdiary.main.ui.toast.CustomToastSmall;
 import ubicomp.soberdiary.system.clicklog.ClickLogId;
 import ubicomp.soberdiary.system.clicklog.ClickLog;
 import ubicomp.soberdiary.system.config.PreferenceControl;
@@ -59,6 +60,8 @@ public class EmotionManageActivity extends Activity {
 	private long timeInMillis;
 	private TimeValue curTV;
 
+	private static final int MIN_BARS = ScreenSize.getMinBars();
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -133,6 +136,11 @@ public class EmotionManageActivity extends Activity {
 			View vv = BarGen.createIconView(related_texts[i], RELATED_DRAWABLE_ID[i], new RelatedOnClickListener(i));
 			mainLayout.addView(vv);
 		}
+		int from = mainLayout.getChildCount();
+		for (int i=from;i<MIN_BARS;++i){
+			View v = BarGen.createBlankView();
+			mainLayout.addView(v);
+		}
 
 	}
 
@@ -159,6 +167,12 @@ public class EmotionManageActivity extends Activity {
 
 		View vv = BarGen.createIconView(R.string.ok, R.drawable.ok, new EditedOnClickListener());
 		mainLayout.addView(vv);
+		
+		int from = mainLayout.getChildCount();
+		for (int i=from;i<MIN_BARS;++i){
+			View v = BarGen.createBlankView();
+			mainLayout.addView(v);
+		}
 
 	}
 
@@ -175,6 +189,11 @@ public class EmotionManageActivity extends Activity {
 		View vv = BarGen.createIconView(R.string.done, R.drawable.ok, new EndOnClickListener());
 		mainLayout.addView(vv);
 
+		int from = mainLayout.getChildCount();
+		for (int i=from;i<MIN_BARS-1;++i){
+			View v = BarGen.createBlankView();
+			mainLayout.addView(v);
+		}
 	}
 
 	private View createEditView(int type) {
@@ -211,6 +230,13 @@ public class EmotionManageActivity extends Activity {
 				mainLayout.removeViews(3, select_item.length);
 				updown.setImageDrawable(downDrawable);
 			}
+			int from = mainLayout.getChildCount();
+			for (int i=from;i<MIN_BARS;++i){
+				View vb = BarGen.createBlankView();
+				mainLayout.addView(vb);
+			}
+			for (int i=MIN_BARS+1;i<from;++i)
+				mainLayout.removeViewAt(MIN_BARS+1);
 		}
 
 	}
@@ -323,6 +349,14 @@ public class EmotionManageActivity extends Activity {
 				}
 				updown.setImageDrawable(upDrawable);
 			}
+			int from = mainLayout.getChildCount();
+			for (int i=from;i<MIN_BARS;++i){
+				View vb = BarGen.createBlankView();
+				mainLayout.addView(vb);
+			}
+			for (int i=MIN_BARS+1;i<from;++i)
+				mainLayout.removeViewAt(MIN_BARS+1);
+			
 			isShow = !isShow;
 
 		}

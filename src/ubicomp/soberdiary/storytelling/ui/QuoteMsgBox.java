@@ -4,9 +4,9 @@ import ubicomp.soberdiary.data.database.DatabaseControl;
 import ubicomp.soberdiary.data.structure.StorytellingRead;
 import ubicomp.soberdiary.main.App;
 import ubicomp.soberdiary.main.R;
-import ubicomp.soberdiary.main.ui.CustomToast;
 import ubicomp.soberdiary.main.ui.EnablePage;
 import ubicomp.soberdiary.main.ui.Typefaces;
+import ubicomp.soberdiary.main.ui.toast.CustomToast;
 import ubicomp.soberdiary.system.clicklog.ClickLog;
 import ubicomp.soberdiary.system.clicklog.ClickLogId;
 import ubicomp.soberdiary.system.config.PreferenceControl;
@@ -14,10 +14,10 @@ import ubicomp.soberdiary.system.uploader.DataUploader;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Typeface;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -27,10 +27,10 @@ public class QuoteMsgBox {
 	
 	private EnablePage enablePage;
 	private LayoutInflater inflater;
-	private RelativeLayout boxLayout = null;
+	private FrameLayout boxLayout = null;
 	
 	private RelativeLayout mainLayout;
-	private TextView help,end;
+	private TextView title,help,end,cancel;
 	private Typeface wordTypefaceBold;
 	private int page;
 	private DatabaseControl db;
@@ -49,11 +49,13 @@ public class QuoteMsgBox {
 		
 		wordTypefaceBold = Typefaces.getWordTypefaceBold();
 		
-		boxLayout = (RelativeLayout) inflater.inflate(R.layout.quote_box_layout,null);
+		boxLayout = (FrameLayout) inflater.inflate(R.layout.quote_box_layout,null);
 		boxLayout.setVisibility(View.INVISIBLE);
 		
+		title = (TextView) boxLayout.findViewById(R.id.quote_title);
 		help = (TextView) boxLayout.findViewById(R.id.quote_text);
 		end = (TextView) boxLayout.findViewById(R.id.quote_enter);
+		cancel = (TextView) boxLayout.findViewById(R.id.quote_cancel);
 		
 		mainLayout.addView(boxLayout);
 		
@@ -62,9 +64,11 @@ public class QuoteMsgBox {
 		
 		
 		help.setTypeface(wordTypefaceBold);
-		
 		end.setTypeface(wordTypefaceBold);
+		title.setTypeface(wordTypefaceBold);
+		cancel.setTypeface(wordTypefaceBold);
 		
+		cancel.setOnClickListener(new CancelListener());
 		end.setOnClickListener(new EndListener());
 	}
 	
@@ -82,6 +86,16 @@ public class QuoteMsgBox {
 		return;
 }
 	
+	private class CancelListener implements View.OnClickListener{
+
+		@Override
+		public void onClick(View v) {
+			closeBox();
+			ClickLog.Log(ClickLogId.STORYTELLING_READ_CANCEL);
+		}
+		
+	}
+	
 	private class EndListener implements View.OnClickListener{
 
 		@Override
@@ -90,7 +104,6 @@ public class QuoteMsgBox {
 			ClickLog.Log(ClickLogId.STORYTELLING_READ_OK);
 			int addScore = db.insertStorytellingRead(
 					new StorytellingRead(System.currentTimeMillis(),false,page,0));
-			Log.d("STORYTELLING_READ","addScore "+addScore);
 			if (PreferenceControl.checkCouponChange())
 				PreferenceControl.setCouponChange(true);
 			CustomToast.generateToast(R.string.bonus, addScore);

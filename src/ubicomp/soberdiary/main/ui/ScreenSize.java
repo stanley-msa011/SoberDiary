@@ -1,6 +1,7 @@
 package ubicomp.soberdiary.main.ui;
 
 import ubicomp.soberdiary.main.App;
+import ubicomp.soberdiary.main.R;
 import android.content.Context;
 import android.graphics.Point;
 import android.os.Build;
@@ -10,21 +11,21 @@ import android.view.WindowManager;
 public class ScreenSize {
 
 	private static Point screen = null;
-
-	public static int getScreenX(){
-		if (screen != null)
-			return screen.x;
-		getSize();
-		return screen.x;
-	}
+	
+	private static int title_height=(int) App.context.getResources().getDimension(R.dimen.title_bar_height);
+	private static int drawable_height = (int) App.context.getResources().getDimension(R.dimen.bar_height);
 	
 	public static Point getScreenSize(){
-		if (screen != null)
-			return screen;
-		getSize();
+		if (screen == null)
+			getSize();
 		return screen;
 	}
 	
+	public static int getMinBars(){
+		if (screen ==null)
+			getSize();
+		return (screen.y - title_height)/drawable_height;
+	}
 	@SuppressWarnings("deprecation")
 	private static void getSize(){
 		WindowManager wm = (WindowManager) App.context.getSystemService(Context.WINDOW_SERVICE);
@@ -43,6 +44,5 @@ public class ScreenSize {
 			screen.x = screen.y;
 			screen.y = tmp;
 		}
-		//screen.y = screen.y - screen.x * 209/1080;
 	}
 }

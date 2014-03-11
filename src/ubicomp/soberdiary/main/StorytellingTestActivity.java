@@ -6,9 +6,10 @@ import ubicomp.soberdiary.data.database.DatabaseControl;
 import ubicomp.soberdiary.data.structure.StorytellingTest;
 import ubicomp.soberdiary.main.R;
 import ubicomp.soberdiary.main.ui.BarGen;
-import ubicomp.soberdiary.main.ui.CustomToast;
-import ubicomp.soberdiary.main.ui.CustomToastSmall;
+import ubicomp.soberdiary.main.ui.ScreenSize;
 import ubicomp.soberdiary.main.ui.Typefaces;
+import ubicomp.soberdiary.main.ui.toast.CustomToast;
+import ubicomp.soberdiary.main.ui.toast.CustomToastSmall;
 import ubicomp.soberdiary.system.clicklog.ClickLog;
 import ubicomp.soberdiary.system.clicklog.ClickLogId;
 import ubicomp.soberdiary.system.config.PreferenceControl;
@@ -19,7 +20,10 @@ import android.view.View;
 import android.view.Window;
 import android.view.View.OnClickListener;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
@@ -43,12 +47,17 @@ public class StorytellingTestActivity extends Activity {
 	private String answer = "";
 	private String selectedAnswer = "";
 
-	private TextView[] selections = new TextView[3];
+	private RadioGroup selectionGroup;
+	private RadioButton[] selections = new RadioButton[3];
 
 	private SeekBar agreementSeekbar;
 	private TextView agreementText;
 	private String[] agreementLevel;
 
+	private static final String[] labels = { "A.", "B.", "C." };
+
+	private static final int MIN_BARS = ScreenSize.getMinBars();
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -82,9 +91,15 @@ public class StorytellingTestActivity extends Activity {
 		View agreementView = createSeekBarView();
 		inputLayout.addView(agreementView);
 
-		View submitView = BarGen.createIconView(R.string.done, R.drawable.ok,
-				new SubmitOnClickListener());
+		View submitView = BarGen.createTwoButtonView(R.string.story_test_cancel, R.string.story_test_ok, new CancelOnClickListener(), new SubmitOnClickListener());
+		
 		inputLayout.addView(submitView);
+		
+		int from = inputLayout.getChildCount();
+		for (int i=from;i<MIN_BARS;++i){
+			View v = BarGen.createBlankView();
+			inputLayout.addView(v);
+		}
 	}
 
 	private String[] settingQuestion() {
@@ -176,14 +191,16 @@ public class StorytellingTestActivity extends Activity {
 	}
 
 	private View createSelectionView(String[] selectionStrs) {
-		LinearLayout layout = (LinearLayout) inflater.inflate(R.layout.question_multi_select_item, null);
-		selections[0] = (TextView) layout.findViewById(R.id.question_select0);
-		selections[1] = (TextView) layout.findViewById(R.id.question_select1);
-		selections[2] = (TextView) layout.findViewById(R.id.question_select2);
+		FrameLayout layout = (FrameLayout) inflater.inflate(R.layout.question_multi_select_item, null);
+		selections[0] = (RadioButton) layout.findViewById(R.id.question_select0);
+		selections[1] = (RadioButton) layout.findViewById(R.id.question_select1);
+		selections[2] = (RadioButton) layout.findViewById(R.id.question_select2);
+
+		selectionGroup = (RadioGroup) layout.findViewById(R.id.question_radiogroup);
+		selectionGroup.setOnCheckedChangeListener(new SelectionChangeListener());
 
 		for (int i = 0; i < selectionStrs.length; ++i) {
-			selections[i].setText(selectionStrs[i]);
-			selections[i].setOnClickListener(new SelectionOnClickListener());
+			selections[i].setText(labels[i] + selectionStrs[i]);
 			selections[i].setTypeface(wordTypefaceBold);
 		}
 
@@ -218,14 +235,20 @@ public class StorytellingTestActivity extends Activity {
 		return layout;
 	}
 
-	private class SelectionOnClickListener implements OnClickListener {
+	private class SelectionChangeListener implements RadioGroup.OnCheckedChangeListener {
+		@Override
+		public void onCheckedChanged(RadioGroup group, int checkedId) {
+			ClickLog.Log(ClickLogId.STORYTELLING_TEST_SELECT);
+			TextView tv = (TextView) group.findViewById(checkedId);
+			selectedAnswer = tv.getText().toString().substring(2);
+		}
+	}
+
+	private class CancelOnClickListener implements OnClickListener {
 		@Override
 		public void onClick(View v) {
-			selectedAnswer = ((TextView) v).getText().toString();
-			for (int i = 0; i < selections.length; ++i)
-				selections[i].setBackgroundResource(0);
-			v.setBackgroundColor(0x55DDCCAA);
-			ClickLog.Log(ClickLogId.STORYTELLING_TEST_SELECT);
+			ClickLog.Log(ClickLogId.STORYTELLING_TEST_CANCEL);
+			finish();
 		}
 	}
 
@@ -244,7 +267,7 @@ public class StorytellingTestActivity extends Activity {
 						isCorrect, selectedAnswer, agreement, 0));
 				if (!isCorrect)
 					CustomToast.generateToast(R.string.storytelling_test_incorrect, -1);
-				else{
+				else {
 					if (PreferenceControl.checkCouponChange())
 						PreferenceControl.setCouponChange(true);
 					CustomToast.generateToast(R.string.storytelling_test_correct, addScore);

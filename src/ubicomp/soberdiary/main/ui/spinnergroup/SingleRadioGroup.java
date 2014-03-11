@@ -1,4 +1,4 @@
-package ubicomp.soberdiary.setting.ui;
+package ubicomp.soberdiary.main.ui.spinnergroup;
 
 import ubicomp.soberdiary.main.R;
 import ubicomp.soberdiary.main.ui.Typefaces;

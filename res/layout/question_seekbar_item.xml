@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal" 
-    android:background="@drawable/bar_bg_normal"
+    android:background="@drawable/bar_bg_button"
     >
     <RelativeLayout
     	        android:id="@+id/question_seek_bar_layout"
