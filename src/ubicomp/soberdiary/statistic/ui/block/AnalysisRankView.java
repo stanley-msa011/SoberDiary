@@ -300,18 +300,18 @@ public class AnalysisRankView extends StatisticPageView {
 			rank = ranks.length;
 			nPeople = ranks.length;
 			int tmp_rank = 0, count = 0;
-			int prev_score = ranks[0].score;
+			int prev_score = ranks[0].getScore();
 			
 			for (int i=0;i<ranks.length;++i){
-				if (ranks[i].score < prev_score){
+				if (ranks[i].getScore() < prev_score){
 					tmp_rank = count;
 				}
-				if (ranks[i].uid.equals(uid)){
+				if (ranks[i].getUid().equals(uid)){
 					rank = tmp_rank;
 					break;
 				}
 				++count;
-				prev_score = ranks[i].score;
+				prev_score = ranks[i].getScore();
 			}
 		}
 
@@ -329,18 +329,18 @@ public class AnalysisRankView extends StatisticPageView {
 			rank = ranks.length;
 			nPeople = ranks.length;
 			int tmp_rank = 0, count = 0;
-			int prev_score = ranks[0].score;
+			int prev_score = ranks[0].getScore();
 			
 			for (int i=0;i<ranks.length;++i){
-				if (ranks[i].score < prev_score){
+				if (ranks[i].getScore() < prev_score){
 					tmp_rank = count;
 				}
-				if (ranks[i].uid.equals(uid)){
+				if (ranks[i].getUid().equals(uid)){
 					rank = tmp_rank;
 					break;
 				}
 				++count;
-				prev_score = ranks[i].score;
+				prev_score = ranks[i].getScore();
 			}
 		}
 		
@@ -435,11 +435,11 @@ public class AnalysisRankView extends StatisticPageView {
 		String uid = PreferenceControl.getUID();
 		int test = 0,advice = 0,manage = 0,story = 0;
 		for (int i=0;i<ranks.length;++i){
-			if (ranks[i].uid.equals(uid)){
-				test = ranks[i].test;
-				advice = ranks[i].advice;
-				manage = ranks[i].manage;
-				story = ranks[i].story;
+			if (ranks[i].getUid().equals(uid)){
+				test = ranks[i].getTest();
+				advice = ranks[i].getAdvice();
+				manage = ranks[i].getManage();
+				story = ranks[i].getStory();
 				break;
 			}
 		}

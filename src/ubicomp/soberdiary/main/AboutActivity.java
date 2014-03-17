@@ -192,7 +192,7 @@ public class AboutActivity extends Activity {
 		aboutText.setText(helpSpannable);
 		
 		inflater = LayoutInflater.from(this);
-		callLayout = (RelativeLayout) inflater.inflate(R.layout.call_check_layout, null);
+		callLayout = (RelativeLayout) inflater.inflate(R.layout.dialog_callout_check, null);
 		setCallCheckBox();
 		
 		phone_number.setOnClickListener(new CallCheckOnClickListener());

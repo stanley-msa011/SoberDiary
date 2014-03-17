@@ -20,10 +20,10 @@ import android.view.View;
 import android.view.Window;
 import android.view.View.OnClickListener;
 import android.view.WindowManager;
+import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
@@ -47,7 +47,6 @@ public class StorytellingTestActivity extends Activity {
 	private String answer = "";
 	private String selectedAnswer = "";
 
-	private RadioGroup selectionGroup;
 	private RadioButton[] selections = new RadioButton[3];
 
 	private SeekBar agreementSeekbar;
@@ -105,7 +104,7 @@ public class StorytellingTestActivity extends Activity {
 	private String[] settingQuestion() {
 		String[] questions = null;
 		String[] answers = null;
-		Resources r = App.context.getResources();
+		Resources r = App.getContext().getResources();
 		switch (image_week) {
 		case 0:
 			questions = r.getStringArray(R.array.quote_question_0);
@@ -191,16 +190,14 @@ public class StorytellingTestActivity extends Activity {
 	}
 
 	private View createSelectionView(String[] selectionStrs) {
-		FrameLayout layout = (FrameLayout) inflater.inflate(R.layout.question_multi_select_item, null);
+		FrameLayout layout = (FrameLayout) inflater.inflate(R.layout.bar_multi_select_item, null);
 		selections[0] = (RadioButton) layout.findViewById(R.id.question_select0);
 		selections[1] = (RadioButton) layout.findViewById(R.id.question_select1);
 		selections[2] = (RadioButton) layout.findViewById(R.id.question_select2);
 
-		selectionGroup = (RadioGroup) layout.findViewById(R.id.question_radiogroup);
-		selectionGroup.setOnCheckedChangeListener(new SelectionChangeListener());
-
 		for (int i = 0; i < selectionStrs.length; ++i) {
 			selections[i].setText(labels[i] + selectionStrs[i]);
+			selections[i].setOnCheckedChangeListener(new SelectionChangeListener());
 			selections[i].setTypeface(wordTypefaceBold);
 		}
 
@@ -210,10 +207,10 @@ public class StorytellingTestActivity extends Activity {
 	private boolean agreementChange = false;
 
 	private View createSeekBarView() {
-		LinearLayout layout = (LinearLayout) inflater.inflate(R.layout.question_seekbar_item, null);
+		LinearLayout layout = (LinearLayout) inflater.inflate(R.layout.bar_seekbar_item, null);
 		agreementSeekbar = (SeekBar) layout.findViewById(R.id.question_seek_bar);
 		agreementText = (TextView) layout.findViewById(R.id.question_seekbar_message);
-		agreementLevel = App.context.getResources().getStringArray(R.array.agreement);
+		agreementLevel = App.getContext().getResources().getStringArray(R.array.agreement);
 		agreementText.setText(agreementLevel[2]);
 		agreementText.setTypeface(wordTypefaceBold);
 		agreementSeekbar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
@@ -235,12 +232,28 @@ public class StorytellingTestActivity extends Activity {
 		return layout;
 	}
 
+	/*
 	private class SelectionChangeListener implements RadioGroup.OnCheckedChangeListener {
 		@Override
 		public void onCheckedChanged(RadioGroup group, int checkedId) {
 			ClickLog.Log(ClickLogId.STORYTELLING_TEST_SELECT);
 			TextView tv = (TextView) group.findViewById(checkedId);
 			selectedAnswer = tv.getText().toString().substring(2);
+		}
+	}
+	*/
+	
+	private class SelectionChangeListener implements CompoundButton.OnCheckedChangeListener {
+
+		@Override
+		public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+			if (isChecked){
+				ClickLog.Log(ClickLogId.STORYTELLING_TEST_SELECT);
+				for (int i=0;i<selections.length;++i)
+					if (selections[i].getId()!= buttonView.getId())
+						selections[i].setChecked(false);
+				selectedAnswer = buttonView.getText().toString().substring(2);
+			}
 		}
 	}
 

@@ -9,7 +9,7 @@
         android:id="@+id/lock_title_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/titlebar" >
+        android:background="@drawable/bar_titlebar_bg" >
 
         <ImageView
             android:id="@+id/lock_logo"
@@ -18,7 +18,7 @@
             android:layout_centerVertical="true"
             android:layout_marginLeft="16dp"
             android:scaleType="fitXY"
-            android:src="@drawable/titlebar_icon" />
+            android:src="@drawable/bar_titlebar_icon" />
 
         <TextView
             android:id="@+id/lock_title"
@@ -51,7 +51,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/activities_background" >
+        android:background="@drawable/activity_bg" >
 
         <TextView
             android:id="@+id/lock_message"
@@ -95,7 +95,7 @@
                 android:layout_weight="1"
                 android:scaleX="2"
                 android:scaleY="2"
-                android:src="@drawable/ok" />
+                android:src="@drawable/icon_ok" />
 
         </LinearLayout>
     </RelativeLayout>

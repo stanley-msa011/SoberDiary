@@ -107,8 +107,8 @@ public class EmotionActivity extends Activity {
 		mainLayout = (LinearLayout) this.findViewById(R.id.emotion_main_layout);
 		mainTop = (LinearLayout) this.findViewById(R.id.emotion_main_top);
 		inflater = LayoutInflater.from(this);
-		callLayout = (RelativeLayout) inflater.inflate(R.layout.call_check_layout, null);
-		animEndLayout = (RelativeLayout) inflater.inflate(R.layout.check_end_layout, null);
+		callLayout = (RelativeLayout) inflater.inflate(R.layout.dialog_callout_check, null);
+		animEndLayout = (RelativeLayout) inflater.inflate(R.layout.dialog_end_animation, null);
 		wordTypefaceBold = Typefaces.getWordTypefaceBold();
 		setCallCheckBox();
 		setAnimEndBox();
@@ -225,7 +225,7 @@ public class EmotionActivity extends Activity {
 			OnClickListener listener = new CallCheckOnClickListener(type, names[i], calls[i]);
 			String text = names[i];
 			if (names[i].length() > 0) {
-				View vv = BarGen.createIconView(text, R.drawable.call, listener);
+				View vv = BarGen.createIconView(text, R.drawable.icon_call, listener);
 				mainLayout.addView(vv);
 				++counter;
 			}
@@ -254,23 +254,23 @@ public class EmotionActivity extends Activity {
 		switch (selection) {
 		case 0:
 			tv = BarGen.createTextView(R.string.emotionDIY_help_case0);
-			anim_id = R.anim.music_animation;
-			media_id = R.raw.music;
+			anim_id = R.anim.animation_music;
+			media_id = R.raw.emotion_0;
 			break;
 		case 1:
 			tv = BarGen.createTextView(R.string.emotionDIY_help_case1);
-			anim_id = R.anim.breath_animation;
-			media_id = R.raw.emotion1;
+			anim_id = R.anim.animation_breath;
+			media_id = R.raw.emotion_1;
 			break;
 		case 2:
 			tv = BarGen.createTextView(R.string.emotionDIY_help_case2);
-			anim_id = R.anim.walk_animation;
-			media_id = R.raw.emotion2;
+			anim_id = R.anim.animation_walk;
+			media_id = R.raw.emotion_2;
 			break;
 		default:
 			tv = BarGen.createTextView(R.string.emotionDIY_help_case1);
-			anim_id = R.anim.breath_animation;
-			media_id = R.raw.emotion1;
+			anim_id = R.anim.animation_breath;
+			media_id = R.raw.emotion_1;
 			break;
 		}
 		mainTop.addView(tv);
@@ -316,8 +316,8 @@ public class EmotionActivity extends Activity {
 		animLeft = (ImageView) av.findViewById(R.id.question_animation_left_button);
 		animCenter = (ImageView) av.findViewById(R.id.question_animation_center_button);
 
-		animCenter.setImageResource(R.drawable.stop);
-		animLeft.setImageResource(R.drawable.pause);
+		animCenter.setImageResource(R.drawable.icon_stop);
+		animLeft.setImageResource(R.drawable.icon_pause);
 		animCenter.setOnClickListener(animationStopClickListener);
 		animLeft.setOnClickListener(animationPlayClickListener);
 
@@ -338,7 +338,7 @@ public class EmotionActivity extends Activity {
 			}
 			if (mediaPlayer.isPlaying()) {
 				mediaPlayer.pause();
-				animLeft.setImageResource(R.drawable.play);
+				animLeft.setImageResource(R.drawable.icon_play);
 				animLeft.setOnClickListener(animationPlayClickListener);
 				animCenter.setImageResource(0);
 				animCenter.setOnClickListener(null);
@@ -348,9 +348,9 @@ public class EmotionActivity extends Activity {
 				musicTimer = new MusicTimer(mediaPlayer.getDuration()-mediaPlayer.getCurrentPosition());
 				mediaPlayer.start();
 				musicTimer.start();
-				animLeft.setImageResource(R.drawable.pause);
+				animLeft.setImageResource(R.drawable.icon_pause);
 				animLeft.setOnClickListener(animationPlayClickListener);
-				animCenter.setImageResource(R.drawable.stop);
+				animCenter.setImageResource(R.drawable.icon_stop);
 				animCenter.setOnClickListener(animationStopClickListener);
 				animation.start();
 				ClickLog.Log(ClickLogId.EMOTION_DIY_PLAY);
@@ -368,7 +368,7 @@ public class EmotionActivity extends Activity {
 			if (mediaPlayer.isPlaying()) {
 				mediaPlayer.pause();
 				mediaPlayer.seekTo(0);
-				animLeft.setImageResource(R.drawable.play);
+				animLeft.setImageResource(R.drawable.icon_play);
 				animLeft.setOnClickListener(animationPlayClickListener);
 				animCenter.setImageResource(0);
 				animCenter.setOnClickListener(null);
@@ -387,7 +387,7 @@ public class EmotionActivity extends Activity {
 				musicTimer = null;
 			}
 			mp.seekTo(0);
-			animLeft.setImageResource(R.drawable.play);
+			animLeft.setImageResource(R.drawable.icon_play);
 			animLeft.setOnClickListener(animationPlayClickListener);
 			animCenter.setImageResource(0);
 			animCenter.setOnClickListener(null);
@@ -405,7 +405,7 @@ public class EmotionActivity extends Activity {
 		View tv;
 		tv = BarGen.createTextView(text);
 		mainLayout.addView(tv);
-		View vv = BarGen.createIconView(R.string.try_to_do, R.drawable.ok, new EndOnClickListener(3,
+		View vv = BarGen.createIconView(R.string.try_to_do, R.drawable.icon_ok, new EndOnClickListener(3,
 				selected));
 		mainLayout.addView(vv);
 
@@ -506,7 +506,7 @@ public class EmotionActivity extends Activity {
 					musicTimer = null;
 				}
 				mediaPlayer.pause();
-				animLeft.setImageResource(R.drawable.play);
+				animLeft.setImageResource(R.drawable.icon_play);
 				animLeft.setOnClickListener(animationPlayClickListener);
 				animCenter.setImageResource(0);
 				animCenter.setOnClickListener(null);

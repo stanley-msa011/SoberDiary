@@ -2,10 +2,10 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android" >
     <item 
         android:state_pressed="false"
-        android:drawable="@drawable/bar_bg_button"
+        android:drawable="@drawable/bar_bg_button_normal"
         />
     <item 
         android:state_pressed="true"
-        android:drawable="@drawable/bar_bg_selected"
+        android:drawable="@drawable/bar_bg_button_pressed"
         />
 </selector>

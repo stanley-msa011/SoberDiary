@@ -26,7 +26,7 @@ public class PreSettingActivity extends Activity {
 	private EditText uid, target_good, target, drink;
 
 	private Button ok_button, clean_button, restoreButton, debugButton, restoreVer1Button;
-	boolean debug;
+	private boolean debug;
 	private Activity activity;
 	private static final int MIN_NAME_LENGTH = 3;
 

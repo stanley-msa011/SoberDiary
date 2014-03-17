@@ -29,12 +29,12 @@ public class CustomToast {
 	
 	public static void settingSoundPool(){
 		soundpool = new SoundPool(1,AudioManager.STREAM_MUSIC,1);
-		soundId = soundpool.load(App.context, R.raw.ding, 1);
+		soundId = soundpool.load(App.getContext(), R.raw.ding, 1);
 	}
 	
 	
 	public static void generateToast(int str_id, int counter){
-		Context context = App.context;
+		Context context = App.getContext();
 		if (toast!=null){
 			toast.cancel();
 			toast = null;
@@ -43,7 +43,7 @@ public class CustomToast {
 		
 		if (layout==null){
 			LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			layout = inflater.inflate(R.layout.custom_toast,null);
+			layout = inflater.inflate(R.layout.toast_full_screen,null);
 			toastText = (TextView) layout.findViewById(R.id.custom_toast_text);
 			toastText.setTypeface(Typefaces.getWordTypefaceBold());
 			toastCounter = (TextView) layout.findViewById(R.id.custom_toast_counter);

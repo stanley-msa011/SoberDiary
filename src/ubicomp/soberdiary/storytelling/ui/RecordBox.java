@@ -11,28 +11,27 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-public class RecordBox implements RecordBlockCaller,RecorderCallee{
+public class RecordBox implements RecordBlockCaller, RecorderCallee {
 
 	private RecorderCaller recorderCaller;
 	private LinearLayout contentLayout;
-	private RelativeLayout mainLayout; 
-	
+	private RelativeLayout mainLayout;
+
 	private VoiceRecordBlock voiceRecordBlock;
 	private EmotionManageRecordBlock emRecordBlock;
 	private TextView title;
-	
-	public RecordBox(RecorderCaller recorderCaller,Context context){
+
+	public RecordBox(RecorderCaller recorderCaller, Context context) {
 		this.recorderCaller = recorderCaller;
-		
+
 		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		this.mainLayout = (RelativeLayout) inflater.inflate(R.layout.record_box, null);
+		this.mainLayout = (RelativeLayout) inflater.inflate(R.layout.storytelling_record_box, null);
 		this.title = (TextView) mainLayout.findViewById(R.id.record_title);
 		title.setTypeface(Typefaces.getWordTypefaceBold());
 		this.contentLayout = (LinearLayout) mainLayout.findViewById(R.id.record_content_layout);
 		this.voiceRecordBlock = new VoiceRecordBlock(this);
-		this.emRecordBlock = new EmotionManageRecordBlock(this,context);
+		this.emRecordBlock = new EmotionManageRecordBlock(this, context);
 	}
-	
 
 	@Override
 	public void updateHasRecorder(int idx) {
@@ -47,22 +46,20 @@ public class RecordBox implements RecordBlockCaller,RecorderCallee{
 
 	@Override
 	public View getRecordBox(TimeValue tv, int selected_button) {
-		title.setText(App.context.getString(R.string.record_title)+"  "+tv.toSimpleDateString());
+		title.setText(App.getContext().getString(R.string.record_title) + "  " + tv.toSimpleDateString());
 		contentLayout.removeAllViews();
 		contentLayout.addView(voiceRecordBlock.getRecordBox(tv, selected_button));
 		contentLayout.addView(emRecordBlock.getRecordBox(tv, selected_button));
 		return mainLayout;
 	}
 
-
 	@Override
 	public void enablePage(boolean enable, int CalleeId) {
-		if (CalleeId == 0){//voice
+		if (CalleeId == 0) {// voice
 			recorderCaller.enablePage(enable);
 			emRecordBlock.enableRecordBox(enable);
 		}
 	}
-
 
 	@Override
 	public void enableRecordBox(boolean enable) {

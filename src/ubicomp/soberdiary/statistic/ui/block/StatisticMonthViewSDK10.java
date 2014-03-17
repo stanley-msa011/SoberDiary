@@ -46,7 +46,7 @@ public class StatisticMonthViewSDK10 extends StatisticPageView {
 	private Typeface digitTypefaceBold;
 	private Typeface wordTypefaceBold;
 	
-	private static final int text_color = App.context.getResources().getColor(R.color.text_gray);
+	private static final int text_color = App.getContext().getResources().getColor(R.color.text_gray);
 	
 	public StatisticMonthViewSDK10() {
 		super(R.layout.statistic_month_view_sdk10);
@@ -86,7 +86,7 @@ public class StatisticMonthViewSDK10 extends StatisticPageView {
 		
 		time_labels = new TextView[nBlocks];
 		
-		int textSize = (int) App.context.getResources().getDimensionPixelSize(R.dimen.normal_text_size);
+		int textSize = (int) App.getContext().getResources().getDimensionPixelSize(R.dimen.normal_text_size);
 		for (int i=0;i<nBlocks;++i){
 			time_labels[i] = new TextView(context);
 			time_labels[i].setTextSize(TypedValue.COMPLEX_UNIT_PX,textSize);

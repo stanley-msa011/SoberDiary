@@ -80,7 +80,7 @@ public class FacebookActivity extends Activity {
 	private static final int[] choices = {R.string.fb_friend,R.string.fb_self};
 	private static final int[] icons = {R.drawable.fb_friend,R.drawable.fb_self};
 
-	private SingleIconRadioGroup sendRadioGroup =new SingleIconRadioGroup(App.context,choices,icons,0,ClickLogId.FACEBOOK_PRIVACY);
+	private SingleIconRadioGroup sendRadioGroup =new SingleIconRadioGroup(App.getContext(),choices,icons,0,ClickLogId.FACEBOOK_PRIVACY);
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -109,8 +109,8 @@ public class FacebookActivity extends Activity {
 		authButton = (LoginButton) this.findViewById(R.id.authButton);
 		authButton.setReadPermissions(Arrays.asList("basic_info", "read_friendlists"));
 		authButton.setTypeface(wordTypefaceBold);
-		authButton.setTextColor(App.context.getResources().getColor(R.color.lite_orange));
-		authButton.setBackgroundResource(R.drawable.fb_login_bg);
+		authButton.setTextColor(App.getContext().getResources().getColor(R.color.lite_orange));
+		authButton.setBackgroundResource(R.drawable.transparent_bg);
 
 		state_bmp = BitmapGenerator.generateBitmap(image_week, image_score);
 
@@ -122,7 +122,7 @@ public class FacebookActivity extends Activity {
 		View privacyTextView = BarGen.createTextView(R.string.fb_privacy);
 		inputLayout.addView(privacyTextView);
 		LinearLayout.LayoutParams privacyParam = (LinearLayout.LayoutParams) privacyTextView.getLayoutParams();
-		privacyParam.topMargin=(int) App.context.getResources().getDimension(R.dimen.fb_gap);
+		privacyParam.topMargin=(int) App.getContext().getResources().getDimension(R.dimen.fb_gap);
 		
 		privacySelection = sendRadioGroup.getView();//createSendGroupView();
 		inputLayout.addView(privacySelection);
@@ -318,7 +318,7 @@ public class FacebookActivity extends Activity {
 
 	private View createEditView() {
 
-		RelativeLayout layout = (RelativeLayout) inflater.inflate(R.layout.question_edit_large_item, null);
+		RelativeLayout layout = (RelativeLayout) inflater.inflate(R.layout.bar_large_edit_item, null);
 		texts = (EditText) layout.findViewById(R.id.question_edit);
 		texts.setTypeface(wordTypefaceBold);
 		return layout;
@@ -333,7 +333,7 @@ public class FacebookActivity extends Activity {
 
 			ClickLog.Log(ClickLogId.FACEBOOK_SUBMIT);
 			if (checkLayout == null) {
-				checkLayout = (RelativeLayout) inflater.inflate(R.layout.fb_check_layout, null);
+				checkLayout = (RelativeLayout) inflater.inflate(R.layout.dialog_facebook_check, null);
 				TextView fbOK = (TextView) checkLayout.findViewById(R.id.fb_ok_button);
 				TextView fbCancel = (TextView) checkLayout.findViewById(R.id.fb_cancel_button);
 				TextView fbHelp = (TextView) checkLayout.findViewById(R.id.fb_help);

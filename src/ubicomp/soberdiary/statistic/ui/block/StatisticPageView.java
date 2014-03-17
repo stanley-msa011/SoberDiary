@@ -11,7 +11,7 @@ public abstract class StatisticPageView {
 	private LayoutInflater inflater;
 	
 	public StatisticPageView(int layout_id){
-		this.context = App.context;
+		this.context = App.getContext();
 		inflater = LayoutInflater.from(context);
 		view = inflater.inflate(layout_id,null);
 	}

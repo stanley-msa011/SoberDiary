@@ -29,7 +29,7 @@ public class RadarChart {
 	
 	public RadarChart(Context context){
 		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		layout = (FrameLayout) inflater.inflate(R.layout.radar_chart, null);
+		layout = (FrameLayout) inflater.inflate(R.layout.dialog_radar_chart, null);
 		rcv = (RadarChartView) layout.findViewById(R.id.radar_chart);
 		
 		format = new DecimalFormat();

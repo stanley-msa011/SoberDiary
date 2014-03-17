@@ -12,7 +12,7 @@ public class PageAnimationTaskVerticalFling extends AsyncTask<Void, Void, Void> 
 	private PointF from,to;
 	private float width_gap;
 	private float height_gap;
-	public static final int gaps = 20;
+	private static final int gaps = 20;
 	private static final int clip_time = 400;
 	private static final int sleep_time = clip_time/gaps;
 	private int[] bgs;
@@ -47,7 +47,7 @@ public class PageAnimationTaskVerticalFling extends AsyncTask<Void, Void, Void> 
 		int curC = startImageIdx;
 		
 		if  (type == 1){// cur to next ()
-			cur = pageWidget.curPageBmp;
+			cur = pageWidget.getCurPageBmp();
 			tmp = BitmapFactory.decodeResource(pageWidget.getResources(), bgs[curC+1]);
 			next = Bitmap.createScaledBitmap(tmp, width, height, true);
 			tmp.recycle();
@@ -70,7 +70,7 @@ public class PageAnimationTaskVerticalFling extends AsyncTask<Void, Void, Void> 
 			
 			
 		}else{ //next to cur (DOWN)
-			next=pageWidget.curPageBmp;
+			next=pageWidget.getCurPageBmp();
 			tmp = BitmapFactory.decodeResource(pageWidget.getResources(), bgs[curC-1]);
 			cur = Bitmap.createScaledBitmap(tmp, width, height, true);
 			tmp.recycle();
@@ -101,7 +101,7 @@ public class PageAnimationTaskVerticalFling extends AsyncTask<Void, Void, Void> 
     }
 	@Override
 	protected void onCancelled(){
-		MainActivity.enableTabAndClick(true);
+		MainActivity.getMainActivity().enableTabAndClick(true);
 		if (cur!=null && !cur.isRecycled()){
 			cur.recycle();
 			cur = null;

@@ -15,7 +15,6 @@ public class StatisticPagerAdapter extends PagerAdapter {
 	private ArrayList<View> viewsList;
 	private StatisticPageView[] statisticViews;
 	
-	
 	public StatisticPagerAdapter(){
 		viewsList = new ArrayList<View>();
 		

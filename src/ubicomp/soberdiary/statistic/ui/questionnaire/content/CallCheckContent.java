@@ -8,13 +8,14 @@ import ubicomp.soberdiary.statistic.ui.questionnaire.listener.CallDialOnClickLis
 public class CallCheckContent extends QuestionnaireContent {
 
 	private String name,phone;
+	private boolean isEmotion = false;
 	
 	public CallCheckContent(QuestionnaireBox msgBox,String name, String phone) {
 		super(msgBox);
 		this.name = name;
 		this.phone = phone;
 	}
-	private boolean isEmotion = false;
+	
 	public CallCheckContent(QuestionnaireBox msgBox,String name, String phone,boolean isEmotion) {
 		super(msgBox);
 		this.name = name;

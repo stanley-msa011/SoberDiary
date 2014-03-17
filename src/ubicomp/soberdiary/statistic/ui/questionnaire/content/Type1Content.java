@@ -21,11 +21,16 @@ public class Type1Content extends QuestionnaireContent {
 		seq.clear();
 		msgBox.openBox();
 		setHelp(R.string.question_type1_help);
-		setSelectItem(R.string.read_sentence, new SelectedListener(msgBox,new ReadingOnClickListener(msgBox),R.string.next));
-		setSelectItem(R.string.connect_to_family, new SelectedListener (msgBox,new FamilyCallOnClickListener(msgBox),R.string.next));
-		setSelectItem(R.string.connect_to_emotion_hot_line, new SelectedListener(msgBox,new HotLineOnClickListener(msgBox),R.string.next));
-		setSelectItem(R.string.connect_for_social_help, new SelectedListener(msgBox,new SocialCallOnClickListener(msgBox),R.string.next));
-		setSelectItem(R.string.start_emotion_diy_help,new SelectedListener(msgBox,new EmotionDIYOnClickListener(msgBox),R.string.next));
+		setSelectItem(R.string.read_sentence, new SelectedListener(msgBox, new ReadingOnClickListener(msgBox),
+				R.string.next));
+		setSelectItem(R.string.connect_to_family, new SelectedListener(msgBox, new FamilyCallOnClickListener(msgBox),
+				R.string.next));
+		setSelectItem(R.string.connect_to_emotion_hot_line, new SelectedListener(msgBox, new HotLineOnClickListener(
+				msgBox), R.string.next));
+		setSelectItem(R.string.connect_for_social_help, new SelectedListener(msgBox, new SocialCallOnClickListener(
+				msgBox), R.string.next));
+		setSelectItem(R.string.start_emotion_diy_help, new SelectedListener(msgBox, new EmotionDIYOnClickListener(
+				msgBox), R.string.next));
 		msgBox.showQuestionnaireLayout(true);
 	}
 

@@ -12,8 +12,8 @@ public class ScreenSize {
 
 	private static Point screen = null;
 	
-	private static int title_height=(int) App.context.getResources().getDimension(R.dimen.title_bar_height);
-	private static int drawable_height = (int) App.context.getResources().getDimension(R.dimen.bar_height);
+	private static int title_height=(int) App.getContext().getResources().getDimension(R.dimen.title_bar_height);
+	private static int drawable_height = (int) App.getContext().getResources().getDimension(R.dimen.bar_height);
 	
 	public static Point getScreenSize(){
 		if (screen == null)
@@ -28,7 +28,7 @@ public class ScreenSize {
 	}
 	@SuppressWarnings("deprecation")
 	private static void getSize(){
-		WindowManager wm = (WindowManager) App.context.getSystemService(Context.WINDOW_SERVICE);
+		WindowManager wm = (WindowManager) App.getContext().getSystemService(Context.WINDOW_SERVICE);
 		Display display = wm.getDefaultDisplay();
 		screen = new Point();
 		

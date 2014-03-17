@@ -2,11 +2,20 @@ package ubicomp.soberdiary.data.structure;
 
 public class ExchangeHistory {
 
-	public TimeValue tv;
-	public int exchangeNum;
-	
-	public ExchangeHistory(long ts,int exchangeNum){
+	private TimeValue tv;
+	private int exchangeNum;
+
+	public ExchangeHistory(long ts, int exchangeNum) {
 		this.tv = TimeValue.generate(ts);
 		this.exchangeNum = exchangeNum;
 	}
+
+	public TimeValue getTv() {
+		return tv;
+	}
+
+	public int getExchangeNum() {
+		return exchangeNum;
+	}
+
 }

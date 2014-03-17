@@ -79,13 +79,13 @@ public class StatisticFragment extends Fragment implements ShowRadarChart, Quest
 		activity = getActivity();
 		radarChart = new RadarChart(activity);
 		detailChart = new DetailChart(activity);
-		dot_on = getResources().getDrawable(R.drawable.statistic_dot_on);
-		dot_off = getResources().getDrawable(R.drawable.statistic_dot_off);
+		dot_on = getResources().getDrawable(R.drawable.dot_on);
+		dot_off = getResources().getDrawable(R.drawable.dot_off);
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		view = inflater.inflate(R.layout.statistic_fragment, container, false);
+		view = inflater.inflate(R.layout.fragment_statistic, container, false);
 
 		allLayout = (RelativeLayout) view.findViewById(R.id.statistic_fragment_layout);
 		analysisLayout = (LinearLayout) view.findViewById(R.id.brac_analysis_layout);
@@ -190,7 +190,7 @@ public class StatisticFragment extends Fragment implements ShowRadarChart, Quest
 	@SuppressLint("HandlerLeak")
 	private class LoadingHandler extends Handler {
 		public void handleMessage(Message msg) {
-			MainActivity.enableTabAndClick(false);
+			MainActivity.getMainActivity().enableTabAndClick(false);
 			statisticView.setAdapter(statisticViewAdapter);
 			statisticView.setOnPageChangeListener(new StatisticOnPageChangeListener());
 			statisticView.setSelected(true);
@@ -222,7 +222,7 @@ public class StatisticFragment extends Fragment implements ShowRadarChart, Quest
 
 			setQuestionAnimation();
 
-			MainActivity.enableTabAndClick(true);
+			MainActivity.getMainActivity().enableTabAndClick(true);
 			LoadingDialogControl.dismiss();
 			
 			if (notify_action == MainActivity.ACTION_QUESTIONNAIRE){
@@ -275,7 +275,7 @@ public class StatisticFragment extends Fragment implements ShowRadarChart, Quest
 		statisticView.setEnabled(enable);
 		analysisView.setEnabled(enable);
 		questionButton.setEnabled(enable);
-		MainActivity.enableTabAndClick(enable);
+		MainActivity.getMainActivity().enableTabAndClick(enable);
 	}
 
 	@Override

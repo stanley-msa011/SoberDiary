@@ -22,32 +22,32 @@ public class DatabaseRestoreControl {
     private SQLiteDatabase db = null;
     
     public DatabaseRestoreControl(){
-    	dbHelper = new DBHelper(App.context);
+    	dbHelper = new DBHelper(App.getContext());
     }
     
     public void restoreDetection(Detection data){
     	db = dbHelper.getWritableDatabase();
-    	if (data.isPrime){
+    	if (data.isPrime()){
     		String sql = "UPDATE Detection SET isPrime = 0" +
-    				" WHERE year ="+data.tv.year+
-    				" AND month="+data.tv.month+
-    				" AND day ="+data.tv.day+
-    				" AND timeslot="+data.tv.timeslot;
+    				" WHERE year ="+data.getTv().getYear()+
+    				" AND month="+data.getTv().getMonth()+
+    				" AND day ="+data.getTv().getDay()+
+    				" AND timeslot="+data.getTv().getTimeslot();
     		db.execSQL(sql);
     	}
     	ContentValues content = new ContentValues();
-    	content.put("brac", data.brac);
-    	content.put("year",data.tv.year);
-    	content.put("month",data.tv.month);
-    	content.put("day", data.tv.day);
-    	content.put("ts", data.tv.timestamp);
-    	content.put("week", data.tv.week);
-    	content.put("timeslot", data.tv.timeslot);
-    	content.put("emotion", data.emotion);
-    	content.put("craving", data.craving);
-    	content.put("isPrime", data.isPrime?1:0);
-    	content.put("weeklyScore", data.weeklyScore);
-    	content.put("score", data.score);
+    	content.put("brac", data.getBrac());
+    	content.put("year",data.getTv().getYear());
+    	content.put("month",data.getTv().getMonth());
+    	content.put("day", data.getTv().getDay());
+    	content.put("ts", data.getTv().getTimestamp());
+    	content.put("week", data.getTv().getWeek());
+    	content.put("timeslot", data.getTv().getTimeslot());
+    	content.put("emotion", data.getEmotion());
+    	content.put("craving", data.getCraving());
+    	content.put("isPrime", data.isPrime()?1:0);
+    	content.put("weeklyScore", data.getWeeklyScore());
+    	content.put("score", data.getScore());
     	content.put("upload", 1);
     	db.insert("Detection", null, content);
     	db.close();
@@ -56,15 +56,15 @@ public class DatabaseRestoreControl {
     public void restoreEmotionDIY(EmotionDIY data){
 		db = dbHelper.getWritableDatabase();
 		ContentValues content = new ContentValues();
-		content.put("year",data.tv.year);
-		content.put("month",data.tv.month);
-		content.put("day", data.tv.day);
-		content.put("ts", data.tv.timestamp);
-		content.put("week", data.tv.week);
-		content.put("timeslot", data.tv.timeslot);
-		content.put("selection", data.selection);
-		content.put("recreation", data.recreation);
-		content.put("score", data.score);
+		content.put("year",data.getTv().getYear());
+		content.put("month",data.getTv().getMonth());
+		content.put("day", data.getTv().getDay());
+		content.put("ts", data.getTv().getTimestamp());
+		content.put("week", data.getTv().getWeek());
+		content.put("timeslot", data.getTv().getTimeslot());
+		content.put("selection", data.getSelection());
+		content.put("recreation", data.getRecreation());
+		content.put("score", data.getScore());
 		content.put("upload", 1);
 		db.insert("EmotionDIY", null, content);
 		db.close();
@@ -73,15 +73,15 @@ public class DatabaseRestoreControl {
     public void restoreQuestionnaire(Questionnaire data){
 		db = dbHelper.getWritableDatabase();
 		ContentValues content = new ContentValues();
-		content.put("year",data.tv.year);
-		content.put("month",data.tv.month);
-		content.put("day", data.tv.day);
-		content.put("ts", data.tv.timestamp);
-		content.put("week", data.tv.week);
-		content.put("timeslot", data.tv.timeslot);
-		content.put("type", data.type);
-		content.put("sequence", data.seq);
-		content.put("score", data.score);
+		content.put("year",data.getTv().getYear());
+		content.put("month",data.getTv().getMonth());
+		content.put("day", data.getTv().getDay());
+		content.put("ts", data.getTv().getTimestamp());
+		content.put("week", data.getTv().getWeek());
+		content.put("timeslot", data.getTv().getTimeslot());
+		content.put("type", data.getType());
+		content.put("sequence", data.getSeq());
+		content.put("score", data.getScore());
 		content.put("upload", 1);
 		db.insert("Questionnaire", null, content);
 		db.close();
@@ -90,19 +90,19 @@ public class DatabaseRestoreControl {
     public void restoreEmotionManagement(EmotionManagement data){
 		db = dbHelper.getWritableDatabase();
 		ContentValues content = new ContentValues();
-		content.put("year",data.tv.year);
-		content.put("month",data.tv.month);
-		content.put("day", data.tv.day);
-		content.put("ts", data.tv.timestamp);
-		content.put("week", data.tv.week);
-		content.put("timeslot", data.tv.timeslot);
-		content.put("recordYear", data.recordTv.year);
-		content.put("recordMonth", data.recordTv.month);
-		content.put("recordDay", data.recordTv.day);
-		content.put("emotion", data.emotion);
-		content.put("type", data.type);
-		content.put("reason", data.reason);
-		content.put("score", data.score);
+		content.put("year",data.getTv().getYear());
+		content.put("month",data.getTv().getMonth());
+		content.put("day", data.getTv().getDay());
+		content.put("ts", data.getTv().getTimestamp());
+		content.put("week", data.getTv().getWeek());
+		content.put("timeslot", data.getTv().getTimeslot());
+		content.put("recordYear", data.getRecordTv().getYear());
+		content.put("recordMonth", data.getRecordTv().getMonth());
+		content.put("recordDay", data.getRecordTv().getDay());
+		content.put("emotion", data.getEmotion());
+		content.put("type", data.getType());
+		content.put("reason", data.getReason());
+		content.put("score", data.getScore());
 		content.put("upload", 1);
 		db.insert("EmotionManagement", null, content);
 		db.close();
@@ -111,16 +111,16 @@ public class DatabaseRestoreControl {
     public void restoreUserVoiceRecord(UserVoiceRecord data){
 		db = dbHelper.getWritableDatabase();
 		ContentValues content = new ContentValues();
-		content.put("year",data.tv.year);
-		content.put("month",data.tv.month);
-		content.put("day", data.tv.day);
-		content.put("ts", data.tv.timestamp);
-		content.put("week", data.tv.week);
-		content.put("timeSlot", data.tv.timeslot);
-		content.put("recordYear",data.recordTv.year);
-		content.put("recordMonth",data.recordTv.month);
-		content.put("recordDay", data.recordTv.day);
-		content.put("score", data.score);
+		content.put("year",data.getTv().getYear());
+		content.put("month",data.getTv().getMonth());
+		content.put("day", data.getTv().getDay());
+		content.put("ts", data.getTv().getTimestamp());
+		content.put("week", data.getTv().getWeek());
+		content.put("timeSlot", data.getTv().getTimeslot());
+		content.put("recordYear",data.getRecordTv().getYear());
+		content.put("recordMonth",data.getRecordTv().getMonth());
+		content.put("recordDay", data.getRecordTv().getDay());
+		content.put("score", data.getScore());
 		content.put("upload", 1);
 		db.insert("UserVoiceRecord", null, content);
 		db.close();
@@ -129,16 +129,16 @@ public class DatabaseRestoreControl {
     public void restoreAdditionalQuestionnaire(AdditionalQuestionnaire data){
 		db = dbHelper.getWritableDatabase();
 		ContentValues content = new ContentValues();
-		content.put("year",data.tv.year);
-		content.put("month",data.tv.month);
-		content.put("day", data.tv.day);
-		content.put("ts", data.tv.timestamp);
-		content.put("week", data.tv.week);
-		content.put("timeSlot", data.tv.timeslot);
+		content.put("year",data.getTv().getYear());
+		content.put("month",data.getTv().getMonth());
+		content.put("day", data.getTv().getDay());
+		content.put("ts", data.getTv().getTimestamp());
+		content.put("week", data.getTv().getWeek());
+		content.put("timeSlot", data.getTv().getTimeslot());
 		content.put("addedScore",1);
-		content.put("emotion",data.emotion);
-		content.put("craving", data.craving);
-		content.put("score", data.score);
+		content.put("emotion",data.getEmotion());
+		content.put("craving", data.getCraving());
+		content.put("score", data.getScore());
 		content.put("upload", 1);
 		db.insert("AdditionalQuestionnaire", null, content);
 		db.close();
@@ -147,15 +147,15 @@ public class DatabaseRestoreControl {
     public void restoreStorytellingRead(StorytellingRead data){
 		db = dbHelper.getWritableDatabase();
 		ContentValues content = new ContentValues();
-		content.put("year",data.tv.year);
-		content.put("month",data.tv.month);
-		content.put("day", data.tv.day);
-		content.put("ts", data.tv.timestamp);
-		content.put("week", data.tv.week);
-		content.put("timeSlot", data.tv.timeslot);
+		content.put("year",data.getTv().getYear());
+		content.put("month",data.getTv().getMonth());
+		content.put("day", data.getTv().getDay());
+		content.put("ts", data.getTv().getTimestamp());
+		content.put("week", data.getTv().getWeek());
+		content.put("timeSlot", data.getTv().getTimeslot());
 		content.put("addedScore",1);
-		content.put("page",data.page);
-		content.put("score", data.score);
+		content.put("page",data.getPage());
+		content.put("score", data.getScore());
 		content.put("upload", 1);
 		db.insert("StorytellingRead", null, content);
 		db.close();
@@ -164,17 +164,17 @@ public class DatabaseRestoreControl {
     public void restoreStorytellingTest(StorytellingTest data){
 		db = dbHelper.getWritableDatabase();
 		ContentValues content = new ContentValues();
-		content.put("year",data.tv.year);
-		content.put("month",data.tv.month);
-		content.put("day", data.tv.day);
-		content.put("ts", data.tv.timestamp);
-		content.put("week", data.tv.week);
-		content.put("timeslot", data.tv.timeslot);
-		content.put("questionPage", data.questionPage);
-		content.put("isCorrect", data.isCorrect?1:0);
-		content.put("selection", data.selection);
-		content.put("agreement", data.agreement);
-		content.put("score", data.score);
+		content.put("year",data.getTv().getYear());
+		content.put("month",data.getTv().getMonth());
+		content.put("day", data.getTv().getDay());
+		content.put("ts", data.getTv().getTimestamp());
+		content.put("week", data.getTv().getWeek());
+		content.put("timeslot", data.getTv().getTimeslot());
+		content.put("questionPage", data.getQuestionPage());
+		content.put("isCorrect", data.isCorrect()?1:0);
+		content.put("selection", data.getSelection());
+		content.put("agreement", data.getAgreement());
+		content.put("score", data.getScore());
 		content.put("upload", 1);
 		db.insert("StorytellingTest", null, content);
 		db.close();
@@ -183,19 +183,19 @@ public class DatabaseRestoreControl {
     public void restoreFacebookInfo(FacebookInfo data){
 		db = dbHelper.getWritableDatabase();
 		ContentValues content = new ContentValues();
-		content.put("year",data.tv.year);
-		content.put("month",data.tv.month);
-		content.put("day", data.tv.day);
-		content.put("ts", data.tv.timestamp);
-		content.put("week", data.tv.week);
-		content.put("timeslot", data.tv.timeslot);
-		content.put("pageWeek", data.pageWeek);
-		content.put("pageLevel", data.pageLevel);
-		content.put("text", data.text);
+		content.put("year",data.getTv().getYear());
+		content.put("month",data.getTv().getMonth());
+		content.put("day", data.getTv().getDay());
+		content.put("ts", data.getTv().getTimestamp());
+		content.put("week", data.getTv().getWeek());
+		content.put("timeslot", data.getTv().getTimeslot());
+		content.put("pageWeek", data.getPageWeek());
+		content.put("pageLevel", data.getPageLevel());
+		content.put("text", data.getText());
 		content.put("addedScore", 1);
 		content.put("uploadSuccess", 0);
-		content.put("privacy", data.privacy);
-		content.put("score", data.score);
+		content.put("privacy", data.getPrivacy());
+		content.put("score", data.getScore());
 		content.put("upload", 1);
 		db.insert("FacebookInfo", null, content);
 		db.close();

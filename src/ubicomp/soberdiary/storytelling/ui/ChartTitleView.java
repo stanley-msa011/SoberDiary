@@ -21,24 +21,24 @@ public class ChartTitleView extends View {
 	
 	private boolean chartTouchable = true;
 	
-	private int title_0 = App.context.getResources().getDimensionPixelSize(R.dimen.chart_title_0);
-	private int title_1 = App.context.getResources().getDimensionPixelSize(R.dimen.chart_title_1);
-	private int title_2 = App.context.getResources().getDimensionPixelSize(R.dimen.chart_title_2);
-	private int title_3 = App.context.getResources().getDimensionPixelSize(R.dimen.chart_title_3);
+	private int title_0 = App.getContext().getResources().getDimensionPixelSize(R.dimen.chart_title_0);
+	private int title_1 = App.getContext().getResources().getDimensionPixelSize(R.dimen.chart_title_1);
+	private int title_2 = App.getContext().getResources().getDimensionPixelSize(R.dimen.chart_title_2);
+	private int title_3 = App.getContext().getResources().getDimensionPixelSize(R.dimen.chart_title_3);
 	
-	private int titleTop = App.context.getResources().getDimensionPixelSize(R.dimen.chart_title_top);
+	private int titleTop = App.getContext().getResources().getDimensionPixelSize(R.dimen.chart_title_top);
 	
 	private ChartCaller caller;
 	
 	private int chart_type = 0;
 	
-	private static final int text_color = App.context.getResources().getColor(R.color.chart_text);
-	private static final int orange = App.context.getResources().getColor(R.color.lite_orange);
+	private static final int text_color = App.getContext().getResources().getColor(R.color.chart_text);
+	private static final int orange = App.getContext().getResources().getColor(R.color.lite_orange);
 	
 	public ChartTitleView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		text_paint_large.setColor(text_color);
-		int textSize = App.context.getResources().getDimensionPixelSize(R.dimen.normal_text_size);
+		int textSize = App.getContext().getResources().getDimensionPixelSize(R.dimen.normal_text_size);
 		text_paint_large.setTextSize(textSize);
 		text_paint_large.setTextAlign(Align.LEFT);
 		text_paint_large.setTypeface(Typefaces.getWordTypefaceBold());

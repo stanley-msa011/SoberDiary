@@ -6,11 +6,17 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 public class App extends Application {
-	public static Context context;
-	public static SharedPreferences sp;
+	private static Context context;
+	private static SharedPreferences sp;
     @Override public void onCreate() {
         super.onCreate();
         context = getApplicationContext();
         sp = PreferenceManager.getDefaultSharedPreferences(context);
     }
+	public static Context getContext() {
+		return context;
+	}
+	public static SharedPreferences getSp() {
+		return sp;
+	}
 }

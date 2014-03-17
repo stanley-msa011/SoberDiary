@@ -24,95 +24,91 @@ import android.widget.TextView;
 @SuppressLint("InlinedApi")
 public class QuoteMsgBox {
 
-	
 	private EnablePage enablePage;
 	private LayoutInflater inflater;
 	private FrameLayout boxLayout = null;
-	
+
 	private RelativeLayout mainLayout;
-	private TextView title,help,end,cancel;
+	private TextView title, help, end, cancel;
 	private Typeface wordTypefaceBold;
 	private int page;
 	private DatabaseControl db;
 	private String[] learningArray;
-	
-	public QuoteMsgBox(EnablePage enablePage,RelativeLayout mainLayout){
+
+	public QuoteMsgBox(EnablePage enablePage, RelativeLayout mainLayout) {
 		this.enablePage = enablePage;
-		this.inflater = (LayoutInflater) App.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		this.inflater = (LayoutInflater) App.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		this.mainLayout = mainLayout;
-		db=new DatabaseControl ();
-		learningArray = App.context.getResources().getStringArray(R.array.quote_learning);
+		db = new DatabaseControl();
+		learningArray = App.getContext().getResources().getStringArray(R.array.quote_learning);
 		setting();
 	}
-	
-	private void setting(){
-		
+
+	private void setting() {
+
 		wordTypefaceBold = Typefaces.getWordTypefaceBold();
-		
-		boxLayout = (FrameLayout) inflater.inflate(R.layout.quote_box_layout,null);
+
+		boxLayout = (FrameLayout) inflater.inflate(R.layout.dialog_storytelling_quote, null);
 		boxLayout.setVisibility(View.INVISIBLE);
-		
+
 		title = (TextView) boxLayout.findViewById(R.id.quote_title);
 		help = (TextView) boxLayout.findViewById(R.id.quote_text);
 		end = (TextView) boxLayout.findViewById(R.id.quote_enter);
 		cancel = (TextView) boxLayout.findViewById(R.id.quote_cancel);
-		
+
 		mainLayout.addView(boxLayout);
-		
+
 		RelativeLayout.LayoutParams boxParam = (RelativeLayout.LayoutParams) boxLayout.getLayoutParams();
 		boxParam.width = boxParam.height = LayoutParams.MATCH_PARENT;
-		
-		
+
 		help.setTypeface(wordTypefaceBold);
 		end.setTypeface(wordTypefaceBold);
 		title.setTypeface(wordTypefaceBold);
 		cancel.setTypeface(wordTypefaceBold);
-		
+
 		cancel.setOnClickListener(new CancelListener());
 		end.setOnClickListener(new EndListener());
 	}
-	
-	public void clear(){
-		if (boxLayout !=null)
+
+	public void clear() {
+		if (boxLayout != null)
 			mainLayout.removeView(boxLayout);
 	}
-	
-	
-	public void openBox(int page){
+
+	public void openBox(int page) {
 		enablePage.enablePage(false);
 		boxLayout.setVisibility(View.VISIBLE);
-		this.page =page;
+		this.page = page;
 		help.setText(learningArray[page]);
 		return;
-}
-	
-	private class CancelListener implements View.OnClickListener{
+	}
+
+	private class CancelListener implements View.OnClickListener {
 
 		@Override
 		public void onClick(View v) {
 			closeBox();
 			ClickLog.Log(ClickLogId.STORYTELLING_READ_CANCEL);
 		}
-		
+
 	}
-	
-	private class EndListener implements View.OnClickListener{
+
+	private class EndListener implements View.OnClickListener {
 
 		@Override
 		public void onClick(View v) {
 			closeBox();
 			ClickLog.Log(ClickLogId.STORYTELLING_READ_OK);
-			int addScore = db.insertStorytellingRead(
-					new StorytellingRead(System.currentTimeMillis(),false,page,0));
+			int addScore = db.insertStorytellingRead(new StorytellingRead(System.currentTimeMillis(), false, page, 0));
 			if (PreferenceControl.checkCouponChange())
 				PreferenceControl.setCouponChange(true);
 			CustomToast.generateToast(R.string.bonus, addScore);
 			DataUploader.upload();
 		}
-		
+
 	}
-	
-	public void closeBox(){
+
+	public void closeBox() {
 		enablePage.enablePage(true);
 		boxLayout.setVisibility(View.INVISIBLE);
 	}

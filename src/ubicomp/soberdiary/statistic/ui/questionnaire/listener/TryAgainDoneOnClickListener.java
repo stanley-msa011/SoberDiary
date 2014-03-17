@@ -20,7 +20,7 @@ public class TryAgainDoneOnClickListener extends QuestionnaireOnClickListener {
 		seq.add(8);
 		msgBox.closeBox(R.string.try_again_toast);
 		PreferenceControl.setUpdateDetection(true);
-		MainActivity.changeTab(0);
+		MainActivity.getMainActivity().changeTab(0);
 	}
 
 }

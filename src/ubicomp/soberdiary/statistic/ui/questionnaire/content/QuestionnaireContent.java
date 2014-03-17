@@ -35,7 +35,7 @@ abstract public class QuestionnaireContent {
 		this.contentSeq = msgBox.getQuestionSequence();
 		this.choiceDrawable = msgBox.getChoiceDrawable();
 		this.msgBox = msgBox;
-		this.context = App.context;
+		this.context = App.getContext();
 		if (inflater == null)
 			inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		wordTypefaceBold = msgBox.getTypeface();
@@ -57,7 +57,7 @@ abstract public class QuestionnaireContent {
 	}
 	
 	protected void setSelectItem(String str, View.OnClickListener listener){
-		RelativeLayout v =(RelativeLayout) inflater.inflate(R.layout.questionnaire_selection, null);
+		RelativeLayout v =(RelativeLayout) inflater.inflate(R.layout.dialog_statistic_item, null);
 		TextView text = (TextView) v.findViewById(R.id.questionnaire_text);
 		text.setText(str);
 		text.setTypeface(wordTypefaceBold);
@@ -71,7 +71,7 @@ abstract public class QuestionnaireContent {
 	}
 	
 	protected void setSelectItem(int str_id, View.OnClickListener listener){
-		RelativeLayout v =(RelativeLayout) inflater.inflate(R.layout.questionnaire_selection, null);
+		RelativeLayout v =(RelativeLayout) inflater.inflate(R.layout.dialog_statistic_item, null);
 		TextView text = (TextView) v.findViewById(R.id.questionnaire_text);
 		text.setText(str_id);
 		text.setTypeface(wordTypefaceBold);

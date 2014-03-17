@@ -22,7 +22,7 @@ public class DevelopNormalView extends StatisticPageView {
 	private boolean result;
 	
 	public DevelopNormalView() {
-		super(R.layout.statistic_developer_view_normal);
+		super(R.layout.statistic_developer_view_avm);
 		
 		brac = (TextView) view.findViewById(R.id.developer_brac_value);
 		voltage = (TextView) view.findViewById(R.id.developer_voltage_value);

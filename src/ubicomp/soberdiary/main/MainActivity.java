@@ -17,7 +17,6 @@ import ubicomp.soberdiary.system.config.Config;
 import ubicomp.soberdiary.system.config.PreferenceControl;
 import ubicomp.soberdiary.system.gcm.GCMNotificationGen;
 import ubicomp.soberdiary.system.gcm.GCMUtilities;
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Point;
@@ -30,7 +29,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -38,7 +36,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnTouchListener;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
@@ -49,12 +46,12 @@ import android.widget.TextView;
 
 public class MainActivity extends FragmentActivity {
 
-	public static MainActivity mainActivity = null;
-	
-	static private TabHost tabHost;
+	private static MainActivity mainActivity = null;
 
-	static private TabSpec[] tabs;
-	static private CustomTab[] customTabs;
+	private TabHost tabHost;
+
+	private TabSpec[] tabs;
+	private CustomTab[] customTabs;
 
 	private static final String[] tabName = { "Test", "Statistic", "Storytelling" };
 	private static final int[] iconId = { R.drawable.tab_test_selector, R.drawable.tab_statistic_selector,
@@ -62,142 +59,145 @@ public class MainActivity extends FragmentActivity {
 	private static final int[] iconOnId = { R.drawable.tab_test_selected, R.drawable.tab_statistic_selected,
 			R.drawable.tab_storytelling_selected };
 
-	static private Fragment[] fragments;
+	private Fragment[] fragments;
 	private android.support.v4.app.FragmentTransaction ft;
 	private android.support.v4.app.FragmentManager fm;
-	TabChangeListener tabChangeListener;
 
-	private LoadingPageHandler loadingPageHandler;
-
-	private Thread t;
+	private ImageView loading_page;
+	private LoadingPageTimer loadingPageTimer;
+	private Handler loadingHandler = new LoadingHandler();
 
 	private CustomMenu menu;
 
-	private static RelativeLayout count_down_layout;
-	private static TextView count_down_text;
+	private RelativeLayout count_down_layout;
+	private TextView count_down_text;
 
-	//private static final String TAG = "MAIN_ACTIVITY";
+	// private static final String TAG = "MAIN_ACTIVITY";
 
-	private static boolean canUpdate;
-	private static CountDownTimer updateTestTimer = null;
+	private boolean canUpdate;
+	private CountDownTimer updateTestTimer = null;
 
 	private static final long TEST_GAP_DURATION_LONG = Config.TEST_GAP_DURATION_LONG;
 	private static final long TEST_GAP_DURATION_SHORT = Config.TEST_GAP_DURATION_SHORT;
-	private static CountDownTimer sensorCountDownTimer = null;
-	private static boolean isRecovery = false;
+	private CountDownTimer sensorCountDownTimer = null;
+	private boolean isRecovery = false;
 
-	private static SoundPool soundpool;
-	private static int timer_sound_id;
+	private SoundPool soundpool;
+	private int timer_sound_id;
 
-	private static int notify_action = 0;
-	
+	private int notify_action = 0;
+
+	private boolean clickable = false;
+	private boolean doubleClickState = false;
+	private long latestClickTime = 0;
+
 	public static final int ACTION_RECORD = 1;
 	public static final int ACTION_QUESTIONNAIRE = 2;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+
 		mainActivity = this;
-		
 		setContentView(R.layout.activity_main);
-
-		if (PreferenceControl.checkFirstUID())
-			PreferenceControl.defaultSetting();
-
-		Typefaces.initAll();
-		CustomToast.settingSoundPool();
+		enableTabAndClick(false);
 
 		loading_page = (ImageView) findViewById(R.id.loading_page);
-
 		tabHost = (TabHost) findViewById(android.R.id.tabhost);
-		tabHost.setup();
-
-		if (tabs == null)
-			tabs = new TabSpec[3];
-		if (customTabs == null)
-			customTabs = new CustomTab[3];
-
-		for (int i = 0; i < 3; ++i) {
-			customTabs[i] = new CustomTab(iconId[i], iconOnId[i]);
-			tabs[i] = tabHost.newTabSpec(tabName[i]).setIndicator(customTabs[i].getTab());
-			tabs[i].setContent(new DummyTabFactory(this));
-			tabHost.addTab(tabs[i]);
-		}
-		fm = getSupportFragmentManager();
-		fragments = new Fragment[3];
-		tabHost.setOnTabChangedListener(new TabChangeListener());
-
-		setDefaultTab();
-
-		loadingPageHandler = new LoadingPageHandler();
-		t = new Thread(new TimerRunnable());
-		t.start();
-
-		DisplayMetrics dm = new DisplayMetrics();
-		getWindowManager().getDefaultDisplay().getMetrics(dm);
-		int screenWidth = dm.widthPixels;
-
-		TabWidget tabWidget = tabHost.getTabWidget();
-
-		int count = tabWidget.getChildCount();
-		for (int i = 0; i < count; ++i)
-			tabWidget.getChildTabViewAt(i).setMinimumWidth(screenWidth / count);
-
-		GCMUtilities.onCreate(getApplicationContext());
-
-		enableTabAndClick(false);
+		count_down_layout = (RelativeLayout) findViewById(R.id.main_count_down_layout);
+		count_down_text = (TextView) findViewById(R.id.main_count_down_text);
 
 		if (soundpool == null) {
 			soundpool = new SoundPool(1, AudioManager.STREAM_MUSIC, 1);
 			timer_sound_id = soundpool.load(getApplicationContext(), R.raw.end_count_down, 0);
 		}
 
-		count_down_layout = (RelativeLayout) findViewById(R.id.main_count_down_layout);
-		count_down_text = (TextView) findViewById(R.id.main_count_down_text);
-		count_down_text.setTypeface(Typefaces.getDigitTypefaceBold());
-		count_down_layout.setOnTouchListener(new OnTouchListener() {
+		loadingHandler.sendEmptyMessage(0);
 
-			private int width = 0, height = 0;
+		loadingPageTimer = new LoadingPageTimer();
+		loadingPageTimer.start();
 
-			public boolean onTouch(View v, MotionEvent event) {
-				RelativeLayout.LayoutParams param = (LayoutParams) v.getLayoutParams();
-				Point screen = ScreenSize.getScreenSize();
-				switch (event.getAction()) {
-				case MotionEvent.ACTION_DOWN:
-					width = width > 0 ? width : v.getWidth();
-					height = height > 0 ? height : v.getHeight();
-					param.width = width * 3 / 2;
-					param.height = height * 3 / 2;
-					count_down_text.setTextSize(21);
-					v.setBackgroundResource(R.drawable.count_down_circle_pressed);
-					v.setLayoutParams(param);
-					v.invalidate();
-					break;
+		GCMUtilities.onCreate(getApplicationContext());
 
-				case MotionEvent.ACTION_MOVE:
-					param.leftMargin = (int) event.getRawX() - width * 3 / 4;
-					param.topMargin = (int) event.getRawY() - height * 3 / 4;
-					param.leftMargin = Math.max(param.leftMargin, 0);
-					param.topMargin = Math.max(param.topMargin, 0);
-					param.leftMargin = Math.min(param.leftMargin, screen.x - width * 3 / 2);
-					param.topMargin = Math.min(param.topMargin, screen.y - height * 3 / 2);
-					v.setLayoutParams(param);
-					v.invalidate();
-					break;
+	}
 
-				case MotionEvent.ACTION_UP:
-					v.setBackgroundResource(R.drawable.count_down_circle);
-					param.width = width;
-					param.height = height;
-					v.setLayoutParams(param);
-					count_down_text.setTextSize(14);
-					v.invalidate();
-					break;
-				}
-				return true;
+	private class LoadingHandler extends Handler {
+		public void handleMessage(Message msg) {
+			if (PreferenceControl.checkFirstUID())
+				PreferenceControl.defaultSetting();
+			Typefaces.initAll();
+			CustomToast.settingSoundPool();
+
+			tabHost.setup();
+
+			if (tabs == null)
+				tabs = new TabSpec[3];
+			if (customTabs == null)
+				customTabs = new CustomTab[3];
+
+			for (int i = 0; i < 3; ++i) {
+				customTabs[i] = new CustomTab(iconId[i], iconOnId[i]);
+				tabs[i] = tabHost.newTabSpec(tabName[i]).setIndicator(customTabs[i].getTab());
+				tabs[i].setContent(new DummyTabFactory(mainActivity));
+				tabHost.addTab(tabs[i]);
 			}
-		});
+			fm = getSupportFragmentManager();
+			fragments = new Fragment[3];
+			tabHost.setOnTabChangedListener(new TabChangeListener());
+
+			setDefaultTab();
+
+			TabWidget tabWidget = tabHost.getTabWidget();
+
+			int count = tabWidget.getChildCount();
+			for (int i = 0; i < count; ++i)
+				tabWidget.getChildTabViewAt(i).setMinimumWidth(ScreenSize.getScreenSize().x / count);
+
+			count_down_text.setTypeface(Typefaces.getDigitTypefaceBold());
+			count_down_layout.setOnTouchListener(new CountDownCircleOnTouchListener());
+		}
+	}
+
+	private class CountDownCircleOnTouchListener implements View.OnTouchListener {
+		private int width = 0, height = 0;
+
+		public boolean onTouch(View v, MotionEvent event) {
+			RelativeLayout.LayoutParams param = (LayoutParams) v.getLayoutParams();
+			Point screen = ScreenSize.getScreenSize();
+			switch (event.getAction()) {
+			case MotionEvent.ACTION_DOWN:
+				width = width > 0 ? width : v.getWidth();
+				height = height > 0 ? height : v.getHeight();
+				param.width = width * 3 / 2;
+				param.height = height * 3 / 2;
+				count_down_text.setTextSize(21);
+				v.setBackgroundResource(R.drawable.count_down_circle_pressed);
+				v.setLayoutParams(param);
+				v.invalidate();
+				break;
+
+			case MotionEvent.ACTION_MOVE:
+				param.leftMargin = (int) event.getRawX() - width * 3 / 4;
+				param.topMargin = (int) event.getRawY() - height * 3 / 4;
+				param.leftMargin = Math.max(param.leftMargin, 0);
+				param.topMargin = Math.max(param.topMargin, 0);
+				param.leftMargin = Math.min(param.leftMargin, screen.x - width * 3 / 2);
+				param.topMargin = Math.min(param.topMargin, screen.y - height * 3 / 2);
+				v.setLayoutParams(param);
+				v.invalidate();
+				break;
+
+			case MotionEvent.ACTION_UP:
+				v.setBackgroundResource(R.drawable.count_down_circle_normal);
+				param.width = width;
+				param.height = height;
+				v.setLayoutParams(param);
+				count_down_text.setTextSize(14);
+				v.invalidate();
+				break;
+			}
+			return true;
+		}
 	}
 
 	@Override
@@ -221,7 +221,7 @@ public class MainActivity extends FragmentActivity {
 	@Override
 	protected void onDestroy() {
 		GCMUtilities.onDestroy(getApplicationContext());
-		GCMNotificationGen.gen(App.context);
+		GCMNotificationGen.gen(App.getContext());
 		super.onDestroy();
 	}
 
@@ -241,15 +241,15 @@ public class MainActivity extends FragmentActivity {
 		}
 	}
 
-	public static void changeTab(int pos) {
+	public void changeTab(int pos) {
 		TabWidget tabWidget = tabHost.getTabWidget();
 		int count = tabWidget.getChildCount();
 		if (pos >= 0 && pos < count) {
 			tabHost.setCurrentTab(pos);
 		}
 	}
-	
-	public static void changeTab(int pos, int action) {
+
+	public void changeTab(int pos, int action) {
 		TabWidget tabWidget = tabHost.getTabWidget();
 		int count = tabWidget.getChildCount();
 		if (pos >= 0 && pos < count) {
@@ -258,22 +258,24 @@ public class MainActivity extends FragmentActivity {
 		}
 	}
 
-	public void setCouponChange(boolean change){
+	public void setCouponChange(boolean change) {
 		customTabs[1].showHighlight(change);
 	}
-	
+
 	private void setDefaultTab() {
 		ft = fm.beginTransaction();
 		fragments[0] = new TestFragment();
 		fragments[1] = new StatisticFragment();
 		fragments[2] = new StorytellingFragment();
 
-		ft.add(android.R.id.tabcontent, fragments[0], tabName[0]);
+		for (int i = fragments.length - 1; i >= 0; --i)
+			ft.add(android.R.id.tabcontent, fragments[i], tabName[i]);
+		// ft.add(android.R.id.tabcontent, fragments[0], tabName[0]);
 		setTabState(tabName[0]);
-		
+
 		customTabs[1].showHighlight(PreferenceControl.getCouponChange());
 		customTabs[2].showHighlight(PreferenceControl.getPageChange());
-		
+
 		ft.commit();
 	}
 
@@ -290,7 +292,22 @@ public class MainActivity extends FragmentActivity {
 
 			if (lastTabId.equals(tabId))
 				return;
+			ft = fm.beginTransaction();
 
+			int lastTabPos = 0, tabPos=0;
+			for (int i = 0; i < fragments.length; ++i) {
+				if (lastTabId.equals(tabName[i]))
+					lastTabPos = i;
+				else if (tabId.equals(tabName[i]))
+					tabPos = i;
+			}
+			
+			if (Build.VERSION.SDK_INT >= 11)
+				if (lastTabPos < tabPos)
+					ft.setCustomAnimations(R.anim.animation_right_enter, R.anim.animation_left_exit);
+				else
+					ft.setCustomAnimations(R.anim.animation_left_enter, R.anim.animation_right_exit);
+			
 			LoadingDialogControl.show(MainActivity.this);
 
 			setTimers();
@@ -307,29 +324,30 @@ public class MainActivity extends FragmentActivity {
 				customTabs[1].showHighlight(PreferenceControl.getCouponChange());
 				customTabs[2].showHighlight(false);
 			}
-			ft = fm.beginTransaction();
+			
 
 			for (int i = 0; i < fragments.length; ++i) {
 				if (fragments[i] != null)
-					ft.remove(fragments[i]);
+					ft.detach(fragments[i]);
 			}
 			for (int i = 0; i < tabName.length; ++i) {
 				if (tabId.equals(tabName[i])) {
-					if (notify_action  == ACTION_RECORD){
+					if (notify_action == ACTION_RECORD) {
 						Bundle data = new Bundle();
 						data.putInt("action", notify_action);
 						fragments[i].setArguments(data);
 						notify_action = 0;
-					}else if(notify_action == ACTION_QUESTIONNAIRE){
+					} else if (notify_action == ACTION_QUESTIONNAIRE) {
 						Bundle data = new Bundle();
 						data.putInt("action", notify_action);
 						fragments[i].setArguments(data);
 						notify_action = 0;
 					}
-					ft.add(android.R.id.tabcontent, fragments[i], tabName[i]);
+					ft.attach(fragments[i]);
 					break;
 				}
 			}
+			
 			lastTabId = tabId;
 			setTabState(tabId);
 			ft.commit();
@@ -337,7 +355,7 @@ public class MainActivity extends FragmentActivity {
 
 	}
 
-	private static class DummyTabFactory implements TabHost.TabContentFactory {
+	private class DummyTabFactory implements TabHost.TabContentFactory {
 		private final Context context;
 
 		public DummyTabFactory(Context context) {
@@ -351,12 +369,12 @@ public class MainActivity extends FragmentActivity {
 		}
 	}
 
-	public static void enableTabAndClick(boolean enable) {
+	public void enableTabAndClick(boolean enable) {
 		enableTab(enable);
 		setClickable(enable);
 	}
 
-	private static void enableTab(boolean enable) {
+	private void enableTab(boolean enable) {
 		if (tabHost == null || tabHost.getTabWidget() == null)
 			return;
 
@@ -366,42 +384,13 @@ public class MainActivity extends FragmentActivity {
 		}
 	}
 
-	private static void setClickable(boolean enable) {
+	private void setClickable(boolean enable) {
 		clickable = enable;
 	}
 
-	public static boolean getClickable() {
+	public boolean getClickable() {
 		return clickable;
 	}
-
-	private ImageView loading_page;
-
-	private class TimerRunnable implements Runnable {
-		@Override
-		public void run() {
-			try {
-				Thread.sleep(3000);
-				loadingPageHandler.sendEmptyMessage(0);
-			} catch (InterruptedException e) {
-			}
-		}
-	}
-
-	@SuppressLint("HandlerLeak")
-	private class LoadingPageHandler extends Handler {
-		public void handleMessage(Message msg) {
-			if (msg.what == 0) {
-				loading_page.setVisibility(View.INVISIBLE);
-				enableTabAndClick(true);
-			} else
-				loading_page.setVisibility(View.VISIBLE);
-		}
-	}
-
-	private static boolean clickable = false;
-
-	private boolean doubleClickState = false;
-	private long latestClickTime = 0;
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
@@ -478,10 +467,9 @@ public class MainActivity extends FragmentActivity {
 	@Override
 	public boolean onKeyUp(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_MENU) {
-			if (Build.VERSION.SDK_INT <14){
+			if (Build.VERSION.SDK_INT < 14) {
 				return super.onKeyUp(keyCode, event);
-			}
-			else{
+			} else {
 				if (menu != null && menu.isShowing())
 					closeOptionsMenu();
 				else
@@ -502,7 +490,7 @@ public class MainActivity extends FragmentActivity {
 		return super.onKeyUp(keyCode, event);
 	}
 
-	private static void setSensorCountDownTimer() {
+	private void setSensorCountDownTimer() {
 		long lastTime = PreferenceControl.getLastTestTime();
 		long curTime = System.currentTimeMillis();
 		boolean debug = PreferenceControl.isDebugMode();
@@ -514,7 +502,7 @@ public class MainActivity extends FragmentActivity {
 			closeSensorCountDownTimer();
 			if (debug)
 				sensorCountDownTimer = new SensorCountDownTimer(0);
-			else{
+			else {
 				isRecovery = true;
 				sensorCountDownTimer = new SensorCountDownTimer(TEST_GAP_DURATION - time);
 			}
@@ -522,7 +510,7 @@ public class MainActivity extends FragmentActivity {
 		}
 	}
 
-	private static void closeSensorCountDownTimer() {
+	private void closeSensorCountDownTimer() {
 		if (sensorCountDownTimer != null) {
 			sensorCountDownTimer.cancel();
 			sensorCountDownTimer = null;
@@ -532,7 +520,24 @@ public class MainActivity extends FragmentActivity {
 		}
 	}
 
-	private static class SensorCountDownTimer extends CountDownTimer {
+	private class LoadingPageTimer extends CountDownTimer {
+
+		public LoadingPageTimer() {
+			super(3000, 3000);
+		}
+
+		@Override
+		public void onFinish() {
+			loading_page.setVisibility(View.INVISIBLE);
+			enableTabAndClick(true);
+		}
+
+		@Override
+		public void onTick(long millisUntilFinished) {
+		}
+	}
+
+	private class SensorCountDownTimer extends CountDownTimer {
 
 		public SensorCountDownTimer(long millisInFuture) {
 			super(millisInFuture, 100);
@@ -570,7 +575,7 @@ public class MainActivity extends FragmentActivity {
 		}
 	}
 
-	private static class UpdateTestTimer extends CountDownTimer {
+	private class UpdateTestTimer extends CountDownTimer {
 
 		private static final long FIVE_MINUTES = 5 * 60 * 1000;
 
@@ -598,14 +603,14 @@ public class MainActivity extends FragmentActivity {
 		}
 	}
 
-	private static void closeUpdateTestTimer() {
+	private void closeUpdateTestTimer() {
 		if (updateTestTimer != null) {
 			updateTestTimer.cancel();
 			updateTestTimer = null;
 		}
 	}
 
-	private static void setUpdateTestTimer() {
+	private void setUpdateTestTimer() {
 		canUpdate = false;
 		canUpdate = PreferenceControl.getUpdateDetection();
 		if (canUpdate) {
@@ -615,20 +620,24 @@ public class MainActivity extends FragmentActivity {
 		}
 	}
 
-	public static void setTimers() {
+	public void setTimers() {
 		closeTimers();
 		setSensorCountDownTimer();
 		setUpdateTestTimer();
 	}
 
-	public static void closeTimers() {
+	public void closeTimers() {
 		count_down_layout.setVisibility(View.GONE);
 		closeUpdateTestTimer();
 		closeSensorCountDownTimer();
 	}
 
-	public static boolean canUpdate() {
+	public boolean canUpdate() {
 		return canUpdate;
+	}
+
+	public static MainActivity getMainActivity() {
+		return mainActivity;
 	}
 
 }

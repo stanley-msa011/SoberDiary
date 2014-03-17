@@ -211,7 +211,7 @@ public class SettingActivity extends Activity {
 		mainLayout.addView(socialGroupView);
 		socialGroupView.setVisibility(View.GONE);
 
-		String[] strs = App.context.getResources().getStringArray(R.array.setting_time_gap);
+		String[] strs = App.getContext().getResources().getStringArray(R.array.setting_time_gap);
 		notificationGroup = new SingleRadioGroup(activity,strs,PreferenceControl.getNotificationTimeIdx(),ClickLogId.SETTING_SELECT+OTHERS);
 		notificationGroupView = notificationGroup.getView();
 		notificationGroupView.setVisibility(View.GONE);
@@ -268,7 +268,7 @@ public class SettingActivity extends Activity {
 
 	private RelativeLayout createListView(int titleStr, OnClickListener listener) {
 
-		RelativeLayout layout = (RelativeLayout) inflater.inflate(R.layout.question_list_item, null);
+		RelativeLayout layout = (RelativeLayout) inflater.inflate(R.layout.bar_list_item, null);
 		TextView text = (TextView) layout.findViewById(R.id.question_description);
 		text.setTypeface(wordTypefaceBold);
 		text.setText(titleStr);
@@ -278,7 +278,7 @@ public class SettingActivity extends Activity {
 
 	private RelativeLayout createEditRecreationView(String defaultText, int id) {
 
-		RelativeLayout layout = (RelativeLayout) inflater.inflate(R.layout.question_edit_recreation_item, null);
+		RelativeLayout layout = (RelativeLayout) inflater.inflate(R.layout.bar_edit_recreation_item, null);
 
 		TextView text = (TextView) layout.findViewById(R.id.question_text);
 		text.setTypeface(wordTypeface);
@@ -304,11 +304,11 @@ public class SettingActivity extends Activity {
 		private TextView button;
 		private int id;
 
-		private String ok = App.context.getString(R.string.ok);
-		private String edit = App.context.getString(R.string.edit);
+		private String ok = App.getContext().getString(R.string.ok);
+		private String edit = App.getContext().getString(R.string.edit);
 
-		private int ok_color = App.context.getResources().getColor(R.color.lite_orange);
-		private int edit_color = App.context.getResources().getColor(R.color.text_gray);
+		private int ok_color = App.getContext().getResources().getColor(R.color.lite_orange);
+		private int edit_color = App.getContext().getResources().getColor(R.color.text_gray);
 
 		public RecreationOnClickListener(TextView text, EditText editText, TextView button, int id) {
 			this.text = text;
@@ -342,7 +342,7 @@ public class SettingActivity extends Activity {
 
 	private RelativeLayout createEditPhoneView(String defaultName, String defaultPhone, int id) {
 
-		RelativeLayout layout = (RelativeLayout) inflater.inflate(R.layout.question_edit_contact_item, null);
+		RelativeLayout layout = (RelativeLayout) inflater.inflate(R.layout.bar_edit_contact_item, null);
 
 		TextView nt = (TextView) layout.findViewById(R.id.question_name_text);
 		nt.setTypeface(wordTypeface);
@@ -373,11 +373,11 @@ public class SettingActivity extends Activity {
 		private TextView button;
 		private int id;
 
-		private String ok = App.context.getString(R.string.ok);
-		private String edit = App.context.getString(R.string.edit);
+		private String ok = App.getContext().getString(R.string.ok);
+		private String edit = App.getContext().getString(R.string.edit);
 
-		private int ok_color = App.context.getResources().getColor(R.color.lite_orange);
-		private int edit_color = App.context.getResources().getColor(R.color.text_gray);
+		private int ok_color = App.getContext().getResources().getColor(R.color.lite_orange);
+		private int edit_color = App.getContext().getResources().getColor(R.color.text_gray);
 
 		public PhoneOnClickListener(TextView nt, TextView pt, EditText name, EditText phone, TextView button, int id) {
 			this.nt = nt;
@@ -419,7 +419,7 @@ public class SettingActivity extends Activity {
 	}
 
 	private View createCheckBoxView(int str_id, OnCheckedChangeListener listener, boolean defaultCheck) {
-		LinearLayout layout = (LinearLayout) inflater.inflate(R.layout.question_checkbox_item, null);
+		LinearLayout layout = (LinearLayout) inflater.inflate(R.layout.bar_checkbox_item, null);
 
 		TextView text = (TextView) layout.findViewById(R.id.question_description);
 		text.setText(str_id);

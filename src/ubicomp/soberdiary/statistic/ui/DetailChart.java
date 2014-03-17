@@ -29,15 +29,15 @@ public class DetailChart {
 	private ImageView[] bar_ends = new ImageView[3];
 	private ImageView[] bar_progress = new ImageView[3];
 	
-	private String[] detectionComment = App.context.getResources().getStringArray(R.array.radar_0);
-	private String[] adviceQuestionComment = App.context.getResources().getStringArray(R.array.radar_1_0);
-	private String[] adviceEmotionDIYComment = App.context.getResources().getStringArray(R.array.radar_1_1);
-	private String[] manageVoiceComment = App.context.getResources().getStringArray(R.array.radar_2_0);
-	private String[] manageEmotionComment = App.context.getResources().getStringArray(R.array.radar_2_1);
-	private String[] manageAdditionalComment = App.context.getResources().getStringArray(R.array.radar_2_2);
-	private String[] storyReadComment = App.context.getResources().getStringArray(R.array.radar_3_0);
-	private String[] storyTestComment = App.context.getResources().getStringArray(R.array.radar_3_1);
-	private String[] storyFbComment = App.context.getResources().getStringArray(R.array.radar_3_2);
+	private String[] detectionComment = App.getContext().getResources().getStringArray(R.array.radar_0);
+	private String[] adviceQuestionComment = App.getContext().getResources().getStringArray(R.array.radar_1_0);
+	private String[] adviceEmotionDIYComment = App.getContext().getResources().getStringArray(R.array.radar_1_1);
+	private String[] manageVoiceComment = App.getContext().getResources().getStringArray(R.array.radar_2_0);
+	private String[] manageEmotionComment = App.getContext().getResources().getStringArray(R.array.radar_2_1);
+	private String[] manageAdditionalComment = App.getContext().getResources().getStringArray(R.array.radar_2_2);
+	private String[] storyReadComment = App.getContext().getResources().getStringArray(R.array.radar_3_0);
+	private String[] storyTestComment = App.getContext().getResources().getStringArray(R.array.radar_3_1);
+	private String[] storyFbComment = App.getContext().getResources().getStringArray(R.array.radar_3_2);
 	
 	public static final int TYPE_DETECTION = 0;
 	public static final int TYPE_ADVICE = 1;
@@ -51,7 +51,7 @@ public class DetailChart {
 	
 	public DetailChart(Context context){
 		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		layout = (FrameLayout) inflater.inflate(R.layout.detail_chart, null);
+		layout = (FrameLayout) inflater.inflate(R.layout.dialog_detail_rank, null);
 		
 		Typeface wordTypeface = Typefaces.getWordTypeface();
 		Typeface wordTypefaceBold = Typefaces.getWordTypefaceBold();
@@ -128,8 +128,8 @@ public class DetailChart {
 			case TYPE_DETECTION:
 				title.setText(R.string.radar_label0_full);
 				
-				len = Math.min(rank.test * total_len/600,total_len);
-				idx = Math.min(rank.test*3/600,detectionComment.length-1);
+				len = Math.min(rank.getTest() * total_len/600,total_len);
+				idx = Math.min(rank.getTest()*3/600,detectionComment.length-1);
 				params[0].width = len;
 				subtitles[0].setText(R.string.radar_label0_0);
 				items[0].updateViewLayout(bar_progress[0], params[0]);
@@ -143,15 +143,15 @@ public class DetailChart {
 			case TYPE_ADVICE:
 				title.setText(R.string.radar_label1_full);
 				
-				len = Math.min(rank.advice_questionnaire*total_len/300, total_len);
-				idx = Math.min(rank.advice_questionnaire*3/300, adviceQuestionComment.length-1);
+				len = Math.min(rank.getAdviceQuestionnaire()*total_len/300, total_len);
+				idx = Math.min(rank.getAdviceQuestionnaire()*3/300, adviceQuestionComment.length-1);
 				params[0].width = len;
 				subtitles[0].setText(R.string.radar_label1_0);
 				items[0].updateViewLayout(bar_progress[0], params[0]);
 				comments[0].setText(adviceQuestionComment[idx]);
 				
-				len = Math.min(rank.advice_emotion_diy*total_len/300, total_len);
-				idx = Math.min(rank.advice_emotion_diy*3/300, adviceEmotionDIYComment.length-1);
+				len = Math.min(rank.getAdviceEmotionDiy()*total_len/300, total_len);
+				idx = Math.min(rank.getAdviceEmotionDiy()*3/300, adviceEmotionDIYComment.length-1);
 				params[1].width = len;
 				subtitles[1].setText(R.string.radar_label1_1);
 				items[1].updateViewLayout(bar_progress[1], params[1]);
@@ -164,22 +164,22 @@ public class DetailChart {
 			case TYPE_MANAGE:
 				title.setText(R.string.radar_label2_full);
 				
-				len = Math.min(rank.manage_voice*total_len/300, total_len);
-				idx = Math.min(rank.manage_voice*3/300, manageVoiceComment.length-1);
+				len = Math.min(rank.getManageVoice()*total_len/300, total_len);
+				idx = Math.min(rank.getManageVoice()*3/300, manageVoiceComment.length-1);
 				params[0].width = len;
 				subtitles[0].setText(R.string.radar_label2_0);
 				items[0].updateViewLayout(bar_progress[0], params[0]);
 				comments[0].setText(manageVoiceComment[idx]);
 				
-				len = Math.min(rank.manage_emotion*total_len/300, total_len);
-				idx = Math.min(rank.manage_emotion*3/300, manageEmotionComment.length-1);
+				len = Math.min(rank.getManageEmotion()*total_len/300, total_len);
+				idx = Math.min(rank.getManageEmotion()*3/300, manageEmotionComment.length-1);
 				params[1].width = len;
 				subtitles[1].setText(R.string.radar_label2_1);
 				items[1].updateViewLayout(bar_progress[1], params[1]);
 				comments[1].setText(manageEmotionComment[idx]);
 				
-				len = Math.min(rank.manage_additional*total_len/100, total_len);
-				idx = Math.min(rank.manage_emotion*2/100, manageAdditionalComment.length-1);
+				len = Math.min(rank.getManageAdditional()*total_len/100, total_len);
+				idx = Math.min(rank.getManageEmotion()*2/100, manageAdditionalComment.length-1);
 				params[2].width = len;
 				subtitles[2].setText(R.string.radar_label2_2);
 				items[2].updateViewLayout(bar_progress[2], params[2]);
@@ -193,22 +193,22 @@ public class DetailChart {
 			case TYPE_STORY:
 				title.setText(R.string.radar_label3_full);
 				
-				len = Math.min(rank.story_read*total_len/300, total_len);
-				idx = Math.min(rank.story_read*3/300, storyReadComment.length-1);
+				len = Math.min(rank.getStoryRead()*total_len/300, total_len);
+				idx = Math.min(rank.getStoryRead()*3/300, storyReadComment.length-1);
 				params[0].width = len;
 				subtitles[0].setText(R.string.radar_label3_0);
 				items[0].updateViewLayout(bar_progress[0], params[0]);
 				comments[0].setText(storyReadComment[idx]);
 				
-				len = Math.min(rank.story_test*total_len/300, total_len);
-				idx = Math.min(rank.story_test*3/300, storyTestComment.length-1);
+				len = Math.min(rank.getStoryTest()*total_len/300, total_len);
+				idx = Math.min(rank.getStoryTest()*3/300, storyTestComment.length-1);
 				params[1].width = len;
 				subtitles[1].setText(R.string.radar_label3_1);
 				items[1].updateViewLayout(bar_progress[1], params[1]);
 				comments[1].setText(storyTestComment[idx]);
 				
-				len = Math.min(rank.story_fb*total_len/100*7, total_len);
-				idx = Math.min(rank.story_fb*2/100*7, storyFbComment.length-1);
+				len = Math.min(rank.getStoryFb()*total_len/100*7, total_len);
+				idx = Math.min(rank.getStoryFb()*2/100*7, storyFbComment.length-1);
 				params[2].width = len;
 				subtitles[2].setText(R.string.radar_label3_2);
 				items[2].updateViewLayout(bar_progress[2], params[2]);

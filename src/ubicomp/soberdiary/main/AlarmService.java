@@ -61,7 +61,7 @@ public class AlarmService extends Service {
 		
 			notificationBuilder.setContentTitle(title);
 			notificationBuilder.setContentText(msgText);
-			notificationBuilder.setSmallIcon(R.drawable.icon);
+			notificationBuilder.setSmallIcon(R.drawable.app_icon);
 			notificationBuilder.setContentIntent(pIntent);
 
 			if (Build.VERSION.SDK_INT <16)

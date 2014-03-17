@@ -39,15 +39,14 @@ public class EmotionManageActivity extends Activity {
 	private String reason;
 	private EditText r_texts;
 
-	private static final int[] EMOTION_DRAWABLE_ID = { R.drawable.emotion_type_0,
-			R.drawable.emotion_type_1, R.drawable.emotion_type_2, R.drawable.emotion_type_3,
-			R.drawable.emotion_type_4, R.drawable.emotion_type_5, R.drawable.emotion_type_6,
-			R.drawable.emotion_type_7, R.drawable.emotion_type_8, R.drawable.emotion_type_9, };
+	private static final int[] EMOTION_DRAWABLE_ID = { R.drawable.emotion_type_0, R.drawable.emotion_type_1,
+			R.drawable.emotion_type_2, R.drawable.emotion_type_3, R.drawable.emotion_type_4, R.drawable.emotion_type_5,
+			R.drawable.emotion_type_6, R.drawable.emotion_type_7, R.drawable.emotion_type_8, R.drawable.emotion_type_9, };
 
 	private static String[] emotion_texts;
 
-	private static final int[] RELATED_DRAWABLE_ID = { R.drawable.reason_type_0,
-			R.drawable.reason_type_1, R.drawable.reason_type_2, R.drawable.reason_type_3 };
+	private static final int[] RELATED_DRAWABLE_ID = { R.drawable.reason_type_0, R.drawable.reason_type_1,
+			R.drawable.reason_type_2, R.drawable.reason_type_3 };
 
 	private static String[] related_texts;
 
@@ -61,7 +60,9 @@ public class EmotionManageActivity extends Activity {
 	private TimeValue curTV;
 
 	private static final int MIN_BARS = ScreenSize.getMinBars();
-	
+
+	private boolean isShow = false;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -86,8 +87,8 @@ public class EmotionManageActivity extends Activity {
 
 		mainLayout.removeAllViews();
 
-		upDrawable = getResources().getDrawable(R.drawable.list_hide);
-		downDrawable = getResources().getDrawable(R.drawable.list_show);
+		upDrawable = getResources().getDrawable(R.drawable.icon_list_hide);
+		downDrawable = getResources().getDrawable(R.drawable.icon_list_show);
 
 		View title = BarGen.createTitleView(getString(R.string.emotion_manage_title0) + curTV.toSimpleDateString()
 				+ getString(R.string.emotion_manage_title1));
@@ -137,7 +138,7 @@ public class EmotionManageActivity extends Activity {
 			mainLayout.addView(vv);
 		}
 		int from = mainLayout.getChildCount();
-		for (int i=from;i<MIN_BARS;++i){
+		for (int i = from; i < MIN_BARS; ++i) {
 			View v = BarGen.createBlankView();
 			mainLayout.addView(v);
 		}
@@ -165,11 +166,11 @@ public class EmotionManageActivity extends Activity {
 		View ev = BarGen.createTextView(R.string.emotion_manage_help4);
 		mainLayout.addView(ev);
 
-		View vv = BarGen.createIconView(R.string.ok, R.drawable.ok, new EditedOnClickListener());
+		View vv = BarGen.createIconView(R.string.ok, R.drawable.icon_ok, new EditedOnClickListener());
 		mainLayout.addView(vv);
-		
+
 		int from = mainLayout.getChildCount();
-		for (int i=from;i<MIN_BARS;++i){
+		for (int i = from; i < MIN_BARS; ++i) {
 			View v = BarGen.createBlankView();
 			mainLayout.addView(v);
 		}
@@ -186,11 +187,11 @@ public class EmotionManageActivity extends Activity {
 		View tv = BarGen.createTextView(R.string.emotion_end_message);
 		titleLayout.addView(tv);
 
-		View vv = BarGen.createIconView(R.string.done, R.drawable.ok, new EndOnClickListener());
+		View vv = BarGen.createIconView(R.string.done, R.drawable.icon_ok, new EndOnClickListener());
 		mainLayout.addView(vv);
 
 		int from = mainLayout.getChildCount();
-		for (int i=from;i<MIN_BARS-1;++i){
+		for (int i = from; i < MIN_BARS - 1; ++i) {
 			View v = BarGen.createBlankView();
 			mainLayout.addView(v);
 		}
@@ -198,7 +199,7 @@ public class EmotionManageActivity extends Activity {
 
 	private View createEditView(int type) {
 
-		RelativeLayout layout = (RelativeLayout) inflater.inflate(R.layout.question_edit_item, null);
+		RelativeLayout layout = (RelativeLayout) inflater.inflate(R.layout.bar_edit_item, null);
 
 		EditText edit = (EditText) layout.findViewById(R.id.question_edit);
 		edit.setTypeface(wordTypefaceBold);
@@ -231,12 +232,12 @@ public class EmotionManageActivity extends Activity {
 				updown.setImageDrawable(downDrawable);
 			}
 			int from = mainLayout.getChildCount();
-			for (int i=from;i<MIN_BARS;++i){
+			for (int i = from; i < MIN_BARS; ++i) {
 				View vb = BarGen.createBlankView();
 				mainLayout.addView(vb);
 			}
-			for (int i=MIN_BARS+1;i<from;++i)
-				mainLayout.removeViewAt(MIN_BARS+1);
+			for (int i = MIN_BARS + 1; i < from; ++i)
+				mainLayout.removeViewAt(MIN_BARS + 1);
 		}
 
 	}
@@ -245,14 +246,13 @@ public class EmotionManageActivity extends Activity {
 		@Override
 		public void onClick(View v) {
 			ClickLog.Log(ClickLogId.EMOTION_MANAGE_SELECTION);
-			
-			
-			int addScore = db.insertEmotionManagement(new EmotionManagement(System.currentTimeMillis(), curTV.year,
-					curTV.month, curTV.day, emotion, r_type, reason, 0));
-			
+
+			int addScore = db.insertEmotionManagement(new EmotionManagement(System.currentTimeMillis(), curTV.getYear(),
+					curTV.getMonth(), curTV.getDay(), emotion, r_type, reason, 0));
+
 			if (PreferenceControl.checkCouponChange())
 				PreferenceControl.setCouponChange(true);
-			
+
 			CustomToast.generateToast(R.string.emotion_manage_end_toast, addScore);
 			activity.finish();
 		}
@@ -330,8 +330,6 @@ public class EmotionManageActivity extends Activity {
 		return false;
 	}
 
-	private boolean isShow = false;
-
 	private class SelectionOnClickListener implements View.OnClickListener {
 
 		@Override
@@ -350,13 +348,13 @@ public class EmotionManageActivity extends Activity {
 				updown.setImageDrawable(upDrawable);
 			}
 			int from = mainLayout.getChildCount();
-			for (int i=from;i<MIN_BARS;++i){
+			for (int i = from; i < MIN_BARS; ++i) {
 				View vb = BarGen.createBlankView();
 				mainLayout.addView(vb);
 			}
-			for (int i=MIN_BARS+1;i<from;++i)
-				mainLayout.removeViewAt(MIN_BARS+1);
-			
+			for (int i = MIN_BARS + 1; i < from; ++i)
+				mainLayout.removeViewAt(MIN_BARS + 1);
+
 			isShow = !isShow;
 
 		}

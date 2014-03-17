@@ -66,15 +66,15 @@ public class ChartView extends View {
 	private int chartType = 0;
 	private int pageWeek = 0;
 
-	private int pageHeight = App.context.getResources().getDimensionPixelSize(R.dimen.chart_height);
-	private int smallTextSize = App.context.getResources().getDimensionPixelSize(R.dimen.small_text_size);
-	private int line_size = App.context.getResources().getDimensionPixelSize(R.dimen.chart_line_paint);
-	private int bar_size = App.context.getResources().getDimensionPixelSize(R.dimen.chart_bar_size);
-	private int bar_margin = App.context.getResources().getDimensionPixelSize(R.dimen.chart_bar_margin);
-	private float top_margin = App.context.getResources().getDimensionPixelSize(R.dimen.chart_top_panel_height);
-	private int button_left = App.context.getResources().getDimensionPixelSize(R.dimen.chart_button_start_left);
-	private int button_top = App.context.getResources().getDimensionPixelSize(R.dimen.chart_button_start_top);
-	private int bar_scroll_size = App.context.getResources().getDimensionPixelSize(R.dimen.chart_bar_scroll_size);
+	private int pageHeight = App.getContext().getResources().getDimensionPixelSize(R.dimen.chart_height);
+	private int smallTextSize = App.getContext().getResources().getDimensionPixelSize(R.dimen.small_text_size);
+	private int line_size = App.getContext().getResources().getDimensionPixelSize(R.dimen.chart_line_paint);
+	private int bar_size = App.getContext().getResources().getDimensionPixelSize(R.dimen.chart_bar_size);
+	private int bar_margin = App.getContext().getResources().getDimensionPixelSize(R.dimen.chart_bar_margin);
+	private float top_margin = App.getContext().getResources().getDimensionPixelSize(R.dimen.chart_top_panel_height);
+	private int button_left = App.getContext().getResources().getDimensionPixelSize(R.dimen.chart_button_start_left);
+	private int button_top = App.getContext().getResources().getDimensionPixelSize(R.dimen.chart_button_start_top);
+	private int bar_scroll_size = App.getContext().getResources().getDimensionPixelSize(R.dimen.chart_bar_scroll_size);
 	
 	private boolean onButton = false;
 	private int buttonNum = -1;
@@ -84,11 +84,11 @@ public class ChartView extends View {
 	private int dataLabelX, dataLabelY;
 	private int addLabelX, addLabelY;
 	
-	private static final int axis_color = App.context.getResources().getColor(R.color.chart_axis);
-	private static final int green = App.context.getResources().getColor(R.color.green);
-	private static final int orange = App.context.getResources().getColor(R.color.lite_orange);
-	private static final int white = App.context.getResources().getColor(R.color.white);
-	private static final int xaxis_color = App.context.getResources().getColor(R.color.chart_x_axis);
+	private static final int axis_color = App.getContext().getResources().getColor(R.color.chart_axis);
+	private static final int green = App.getContext().getResources().getColor(R.color.green);
+	private static final int orange = App.getContext().getResources().getColor(R.color.lite_orange);
+	private static final int white = App.getContext().getResources().getColor(R.color.white);
+	private static final int xaxis_color = App.getContext().getResources().getColor(R.color.chart_x_axis);
 	
 	public ChartView(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -231,7 +231,7 @@ public class ChartView extends View {
 	public void showToday(){
 		int size = bars.size();
 		if (size > 0){
-			TimeValue tv = bars.get(size-1).tv;
+			TimeValue tv = bars.get(size-1).getTv();
 			caller.openRecordBox(tv, size-1);
 		}
 	}
@@ -272,21 +272,21 @@ public class ChartView extends View {
 			BarInfo bar = bars.get(i);
 
 			float e_height, d_height, b_height;
-			e_height = bar.emotion / 5 * max_height;
-			d_height = bar.craving / 10 * max_height;
-			b_height = bar.brac / 0.5F * max_height;
+			e_height = bar.getEmotion() / 5 * max_height;
+			d_height = bar.getCraving() / 10 * max_height;
+			b_height = bar.getBrac() / 0.5F * max_height;
 			if (b_height > max_height)
 				b_height = max_height;
 
 			int e_top = _bottom - (int) e_height;
 			int d_top = _bottom - (int) d_height;
 			int b_top = _bottom - (int) b_height;
-			if (!bar.hasData)
+			if (!bar.isHasData())
 				e_top = d_top = b_top = _bottom;
 
 			// Draw X axis Label
 			if (i % 7 == 0) {
-				String str = bar.tv.toSimpleDateString();
+				String str = bar.getTv().toSimpleDateString();
 				canvas.drawLine(left, _bottom, left, _bottom - max_height, axis_paint);
 				canvas.drawText(str, left + small_radius, _bottom + bar_width + small_radius, text_paint_small);
 			}
@@ -335,7 +335,7 @@ public class ChartView extends View {
 			prev_b_center = b_center;
 
 			// draw highlights
-			if (bar.week == pageWeek)
+			if (bar.getWeek() == pageWeek)
 				canvas.drawRect(left, _bottom - max_height - bar_width - circle_radius, left + bar_width + bar_gap,
 						_bottom, paint_highlight);
 
@@ -365,11 +365,11 @@ public class ChartView extends View {
 			BarInfo bar = bars.get(i);
 
 			if (chartType == 0)
-				height = bar.emotion / 5 * max_height;
+				height = bar.getEmotion() / 5 * max_height;
 			else if (chartType == 1)
-				height = bar.craving / 10 * max_height;
+				height = bar.getCraving() / 10 * max_height;
 			else if (chartType == 2) {
-				height = bar.brac / 0.5F * max_height;
+				height = bar.getBrac() / 0.5F * max_height;
 				if (height > max_height)
 					height = max_height;
 			}
@@ -389,9 +389,9 @@ public class ChartView extends View {
 			else
 				canvas.drawBitmap(chartDataBmp, center.x - dataLabelX, center.y - dataLabelY, null);
 
-			if (!bar.hasData)
+			if (!bar.isHasData())
 				;
-			else if (bar.drink)
+			else if (bar.isDrink())
 				canvas.drawRect(left, _top, right, _bottom, paint_fail);
 			else
 				canvas.drawRect(left, _top, right, _bottom, paint_pass);
@@ -399,13 +399,13 @@ public class ChartView extends View {
 			circle_centers.add(center);
 
 			// draw highlights
-			if (bar.week == pageWeek)
+			if (bar.getWeek() == pageWeek)
 				canvas.drawRect(left, _bottom - max_height - bar_width - circle_radius, right + bar_gap, _bottom,
 						paint_highlight);
 
 			// Draw X axis Label
 			if (i % 7 == 0) {
-				String str = bar.tv.toSimpleDateString();
+				String str = bar.getTv().toSimpleDateString();
 				canvas.drawText(str, left + circle_radius/2, _bottom + bar_width + circle_radius/2, text_paint_small);
 			}
 			left += (bar_width + bar_gap);
@@ -423,7 +423,7 @@ public class ChartView extends View {
 				Point c = circle_centers.get(i);
 				int distance_square = (curX - c.x) * (curX - c.x) + (curY - c.y) * (curY - c.y);
 				if (distance_square < RADIUS_SQUARE) {
-					TimeValue tv = bars.get(i).tv;
+					TimeValue tv = bars.get(i).getTv();
 					selected_centers.add(c);
 					selected_dates.add(tv);
 					selected_idx.add(i);

@@ -21,7 +21,7 @@ public class DevelopView extends StatisticPageView {
 	private double brac_val;
 	
 	public DevelopView() {
-		super(R.layout.statistic_developer_view);
+		super(R.layout.statistic_developer_view_acvm);
 		brac = (TextView) view.findViewById(R.id.developer_brac_value);
 		ts = (TextView) view.findViewById(R.id.developer_ts_value);
 	}

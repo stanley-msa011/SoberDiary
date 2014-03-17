@@ -17,7 +17,7 @@ public class HttpSecureClientGenerator {
 	public static DefaultHttpClient getSecureHttpClient() {
 		DefaultHttpClient httpClient = new DefaultHttpClient();
 		KeyStore trustStore;
-		InputStream instream = App.context.getResources().openRawResource(R.raw.alcohol_certificate);
+		InputStream instream = App.getContext().getResources().openRawResource(R.raw.alcohol_certificate);
 		try {
 			trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
 			trustStore.load(instream, null);

@@ -17,7 +17,7 @@ public class CustomToastSmall {
 	private static TextView toastText;
 
 	public static void generateToast(int str_id){
-		Context context = App.context;
+		Context context = App.getContext();
 		if (toast!=null){
 			toast.cancel();
 			toast = null;
@@ -26,7 +26,7 @@ public class CustomToastSmall {
 		
 		if (layout==null){
 			LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			layout = inflater.inflate(R.layout.custom_toast_small,null);
+			layout = inflater.inflate(R.layout.toast_normal,null);
 			toastText = (TextView) layout.findViewById(R.id.custom_toast_text);
 			toastText.setTypeface(Typefaces.getWordTypefaceBold());
 		} 

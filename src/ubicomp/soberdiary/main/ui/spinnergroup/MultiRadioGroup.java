@@ -31,7 +31,7 @@ public class MultiRadioGroup {
 		inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		this.choices = choices;
 		this.isSelect = isSelect;
-		layout = (LinearLayout) inflater.inflate(R.layout.question_multi_radio_group, null);
+		layout = (LinearLayout) inflater.inflate(R.layout.bar_radio_group, null);
 		for (int i=0;i<isSelect.length;++i)
 			if(isSelect[i])
 				++numSelect;
@@ -56,7 +56,7 @@ public class MultiRadioGroup {
 	
 	public View createItem(int id) {
 
-		LinearLayout layout = (LinearLayout) inflater.inflate(R.layout.question_multi_radio_item, null);
+		LinearLayout layout = (LinearLayout) inflater.inflate(R.layout.bar_radio_item, null);
 		TextView text = (TextView) layout.findViewById(R.id.question_description);
 		text.setTypeface(wordTypeface);
 		text.setText(choices[id]);

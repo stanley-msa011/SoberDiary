@@ -21,7 +21,7 @@ public class CustomTab {
 	private Drawable iconDrawable, iconOnDrawable;
 	
 	public CustomTab(int id, int onId){
-		this.context = App.context;
+		this.context = App.getContext();
 		this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		this.iconId = id;
 		this.iconOnId = onId;
@@ -30,7 +30,7 @@ public class CustomTab {
 	
 	
 	private void setting(){
-		view = inflater.inflate(R.layout.tab_icon_layout, null);
+		view = inflater.inflate(R.layout.tab_item, null);
 		bg = (ImageView) view.findViewById(R.id.tab_icon_bg);
 		icon = (ImageView) view.findViewById(R.id.tab_icon_icon);
 		iconDrawable = context.getResources().getDrawable(iconId);

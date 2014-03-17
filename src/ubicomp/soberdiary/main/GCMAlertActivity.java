@@ -32,7 +32,7 @@ public class GCMAlertActivity extends Activity {
 			finish();
 			return;
 		}
-		String message = data.message;
+		String message = data.getMessage();
 		
 		wordTypefaceBold = Typefaces.getWordTypefaceBold();
 		wordTypeface = Typefaces.getWordTypeface();
@@ -47,7 +47,7 @@ public class GCMAlertActivity extends Activity {
 	        	finish();	
 			}
 	    });
-	    dialog.getWindow().setContentView(R.layout.gcm_alert_dialog);
+	    dialog.getWindow().setContentView(R.layout.dialog_gcm);
 	    
 	    TextView msg_title = (TextView) dialog.findViewById(R.id.gcm_alert_title);
 	    msg_title.setTypeface(wordTypefaceBold);
@@ -70,9 +70,10 @@ public class GCMAlertActivity extends Activity {
 	@Override
 	protected void onPause(){
 		super.onPause();
-		DatabaseControl db = new DatabaseControl();
-		if (data!=null)
-			db.readGCMRead(new GCMRead(data.tv.timestamp,System.currentTimeMillis(),data.message,true));
+		if (data!=null){
+			DatabaseControl db = new DatabaseControl();
+			db.readGCMRead(new GCMRead(data.getTv().getTimestamp(),System.currentTimeMillis(),data.getMessage(),true));
+		}
 		finish();
 	}
 }

@@ -26,7 +26,7 @@ public class MusicContent extends QuestionnaireContent {
 		msgBox.setNextButton(TEXT[aid-AID_START_IDX],new MusicEndOnClickListener(msgBox));
 		msgBox.showQuestionnaireLayout(false);
 		Log.d("CONTENT","MEDIAPLAYER_CONTENT");
-		MediaPlayer mediaPlayer = msgBox.setMediaPlayer(R.raw.music);
+		MediaPlayer mediaPlayer = msgBox.setMediaPlayer(R.raw.emotion_0);
 		mediaPlayer.start();
 	}
 	

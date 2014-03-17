@@ -26,8 +26,8 @@ import ubicomp.soberdiary.test.bluetooth.BTInitHandler;
 import ubicomp.soberdiary.test.bluetooth.BTRunTask;
 import ubicomp.soberdiary.test.bluetooth.Bluetooth;
 import ubicomp.soberdiary.test.bluetooth.BluetoothCaller;
-import ubicomp.soberdiary.test.bluetooth.BluetoothDebugMode;
-import ubicomp.soberdiary.test.bluetooth.BluetoothDebugModeNormal;
+import ubicomp.soberdiary.test.bluetooth.BluetoothDebugModeACVM;
+import ubicomp.soberdiary.test.bluetooth.BluetoothDebugModeAVM;
 import ubicomp.soberdiary.test.bluetooth.BluetoothDebugger;
 import ubicomp.soberdiary.test.bluetooth.BluetoothMessageUpdater;
 import ubicomp.soberdiary.test.bluetooth.SimpleBluetooth;
@@ -82,7 +82,8 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-public class TestFragment extends Fragment implements GPSInterface,TestQuestionCaller, BluetoothDebugger, BluetoothMessageUpdater,BluetoothCaller, CameraCaller, EnablePage, NotificationInterface {
+public class TestFragment extends Fragment implements GPSInterface, TestQuestionCaller, BluetoothDebugger,
+		BluetoothMessageUpdater, BluetoothCaller, CameraCaller, EnablePage, NotificationInterface {
 
 	private static final String TAG = "TEST_PAGE";
 
@@ -145,9 +146,10 @@ public class TestFragment extends Fragment implements GPSInterface,TestQuestionC
 	private EditText debugMsg;
 	private ChangeMsgHandler msgHandler;
 	private TextView debugBracValueView;
-	
+
 	private static final int[] BLOW_RESOURCE = { 0, R.drawable.test_progress_1, R.drawable.test_progress_2,
-			R.drawable.test_progress_3, R.drawable.test_progress_4, R.drawable.test_progress_5, R.drawable.test_progress_5 };
+			R.drawable.test_progress_3, R.drawable.test_progress_4, R.drawable.test_progress_5,
+			R.drawable.test_progress_5 };
 	private ImageView face;
 
 	private QuestionFile questionFile;
@@ -158,20 +160,21 @@ public class TestFragment extends Fragment implements GPSInterface,TestQuestionC
 
 	private static SoundPool soundpool;
 	private static int soundId;
-	
+
 	private AdditionalQuestionMsgBox addBox;
-	
+
 	private NotificationDialog notificationDialog;
-	
-	private CountDownTimer testCountDownTimer = null; 
+
+	private CountDownTimer testCountDownTimer = null;
 	private CountDownTimer openSensorMsgTimer = null;
-	
+
 	private LinearLayout middleLayout;
-	
-	private TextView guideTop,guideBottom;
-	
-	private Animation startButtonAnimation = AnimationUtils.loadAnimation(App.context, R.anim.start_button_animation);
-	
+
+	private TextView guideTop, guideBottom;
+
+	private Animation startButtonAnimation = AnimationUtils.loadAnimation(App.getContext(),
+			R.anim.animation_start_button);
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -194,15 +197,15 @@ public class TestFragment extends Fragment implements GPSInterface,TestQuestionC
 		changeTabsHandler = new ChangeTabsHandler();
 		test_guide_msg = getResources().getStringArray(R.array.test_guide_msg);
 	}
-	
+
 	public static final int STATE_INIT = 0;
-	
-	public void setState(int state){
-		switch(state){
+
+	public void setState(int state) {
+		switch (state) {
 		case STATE_INIT:
-			MainActivity.enableTabAndClick(true);
+			MainActivity.getMainActivity().enableTabAndClick(true);
 			testCircle.setImageDrawable(null);
-			setGuideMessage(R.string.test_guide_start_top,R.string.test_guide_start_bottom);
+			setGuideMessage(R.string.test_guide_start_top, R.string.test_guide_start_bottom);
 			messageView.setText("");
 			startButton.setOnClickListener(new StartOnClickListener());
 			startButton.setEnabled(true);
@@ -211,35 +214,34 @@ public class TestFragment extends Fragment implements GPSInterface,TestQuestionC
 			startText.setText(R.string.start);
 			helpButton.setOnClickListener(new TutorialOnClickListener());
 			face.setVisibility(View.INVISIBLE);
-			
+
 			break;
 		}
 	}
-	
-	
-	public void onDestory(){
-		if (msgBox!=null){
+
+	public void onDestory() {
+		if (msgBox != null) {
 			msgBox.clear();
 			msgBox = null;
 		}
-		if (feedbackBox != null){
+		if (feedbackBox != null) {
 			feedbackBox.clear();
 			feedbackBox = null;
 		}
 		super.onDestroy();
 	}
-	
+
 	public void onPause() {
 		ClickLog.Log(ClickLogId.TEST_LEAVE);
 		SimpleBluetooth.closeConnection();
 		stop();
-		if(addBox !=null){
+		if (addBox != null) {
 			addBox.clear();
 			addBox = null;
 		}
-		if (notificationDialog!=null)
+		if (notificationDialog != null)
 			notificationDialog.removeView();
-		if (startText != null){
+		if (startText != null) {
 			startText.setAnimation(null);
 			startButtonAnimation.cancel();
 		}
@@ -252,24 +254,24 @@ public class TestFragment extends Fragment implements GPSInterface,TestQuestionC
 		checkDebug(PreferenceControl.isDebugMode(), PreferenceControl.debugType());
 		setState(STATE_INIT);
 		LoadingDialogControl.dismiss();
-		if (PreferenceControl.showAdditionalQuestionnaire()){
+		if (PreferenceControl.showAdditionalQuestionnaire()) {
 			PreferenceControl.setShowAdditonalQuestionnaire();
-			addBox = new AdditionalQuestionMsgBox(main_layout,testFragment);
+			addBox = new AdditionalQuestionMsgBox(main_layout, testFragment);
 			addBox.generateAdditionalBox();
-		}else
+		} else
 			notificationDialog.setting();
 	}
 
 	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data){
-		if (requestCode == 0x10){
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == 0x10) {
 			runGPS();
 		}
 	}
-	
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		view = inflater.inflate(R.layout.test_fragment, container, false);
+		view = inflater.inflate(R.layout.fragment_test, container, false);
 		main_layout = (RelativeLayout) view.findViewById(R.id.test_fragment_main_layout);
 		startButton = (ImageView) view.findViewById(R.id.test_start_button);
 		guideTop = (TextView) view.findViewById(R.id.test_guide_top);
@@ -281,7 +283,7 @@ public class TestFragment extends Fragment implements GPSInterface,TestQuestionC
 		countDownText = (TextView) view.findViewById(R.id.test_start_count_down_text);
 		messageView = (TextView) view.findViewById(R.id.test_message);
 		debugBracValueView = (TextView) view.findViewById(R.id.debug_brac_value);
-		
+
 		guideTop.setTypeface(wordTypefaceBold);
 		guideBottom.setTypeface(wordTypefaceBold);
 		startText.setTypeface(wordTypefaceBold);
@@ -293,18 +295,18 @@ public class TestFragment extends Fragment implements GPSInterface,TestQuestionC
 
 		middleLayout = (LinearLayout) view.findViewById(R.id.test_bg_middle);
 		Point screen = ScreenSize.getScreenSize();
-		RelativeLayout.LayoutParams param = (RelativeLayout.LayoutParams)middleLayout.getLayoutParams();
+		RelativeLayout.LayoutParams param = (RelativeLayout.LayoutParams) middleLayout.getLayoutParams();
 		param.width = screen.x;
-		param.height = screen.x * 262/480;
+		param.height = screen.x * 262 / 480;
 		middleLayout.invalidate();
-		
+
 		helpButton.setOnTouchListener(new ScaleOnTouchListener());
 
-		msgBox = new TestQuestionMsgBox(testFragment,testFragment, main_layout);
-		feedbackBox = new FeedbackMsgBox(testFragment,main_layout);
-		
-		notificationDialog = new NotificationDialog(testFragment.getActivity(),main_layout, testFragment, testFragment);
-		
+		msgBox = new TestQuestionMsgBox(testFragment, testFragment, main_layout);
+		feedbackBox = new FeedbackMsgBox(testFragment, main_layout);
+
+		notificationDialog = new NotificationDialog(testFragment.getActivity(), main_layout, testFragment, testFragment);
+
 		return view;
 	}
 
@@ -312,14 +314,14 @@ public class TestFragment extends Fragment implements GPSInterface,TestQuestionC
 		SimpleBluetooth.closeConnection();
 
 		timestamp = System.currentTimeMillis();
-		MainActivity.closeTimers();
+		MainActivity.getMainActivity().closeTimers();
 		setGuideMessage(R.string.test_guide_reset_top, R.string.test_guide_reset_bottom);
-		
-		if (MainActivity.canUpdate())
+
+		if (MainActivity.getMainActivity().canUpdate())
 			PreferenceControl.setUpdateDetectionTimestamp(timestamp);
 		else
 			PreferenceControl.setUpdateDetectionTimestamp(0);
-		
+
 		setStorage();
 		locationManager = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
 		cameraRecorder = new CameraRecorder(testFragment, imgFileHandler);
@@ -330,16 +332,18 @@ public class TestFragment extends Fragment implements GPSInterface,TestQuestionC
 
 		if (debug) {
 			if (debug_type)
-				bt = new BluetoothDebugModeNormal(testFragment,testFragment, cameraRunHandler, bracFileHandler, bracDebugHandler);
+				bt = new BluetoothDebugModeAVM(testFragment, testFragment, cameraRunHandler, bracFileHandler,
+						bracDebugHandler);
 			else
-				bt = new BluetoothDebugMode(testFragment,testFragment, cameraRunHandler, bracFileHandler, bracDebugHandler);
+				bt = new BluetoothDebugModeACVM(testFragment, testFragment, cameraRunHandler, bracFileHandler,
+						bracDebugHandler);
 		} else
-				bt = new Bluetooth(testFragment,testFragment,  cameraRunHandler, bracFileHandler, true);
+			bt = new Bluetooth(testFragment, testFragment, cameraRunHandler, bracFileHandler, true);
 		for (int i = 0; i < 3; ++i)
 			INIT_PROGRESS[i] = DONE_PROGRESS[i] = false;
 	}
-	
-	//GPSInterface
+
+	// GPSInterface
 	@Override
 	public void runGPS() {
 		if (gps_state) {
@@ -363,7 +367,7 @@ public class TestFragment extends Fragment implements GPSInterface,TestQuestionC
 		Intent gpsIntent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
 		startActivityForResult(gpsIntent, 0x10);
 	}
-	
+
 	@Override
 	public void startGPS(boolean enable) {
 		msgBox.generateWaitingBox();
@@ -377,15 +381,13 @@ public class TestFragment extends Fragment implements GPSInterface,TestQuestionC
 			runGPS();
 		}
 	}
-	
 
-	//TestQuestionBox
+	// TestQuestionBox
 	public void writeQuestionFile(int emotion, int craving) {
 		questionFile.write(emotion, craving);
 	}
-	
-	
-	//BluetoothInterface
+
+	// BluetoothInterface
 	public void startBT() {
 		// initialize bt task
 		btInitHandler = new BTInitHandler(testFragment, bt);
@@ -413,32 +415,32 @@ public class TestFragment extends Fragment implements GPSInterface,TestQuestionC
 			failBgHandler.sendMessage(msg);
 	}
 
-	//Camera
+	// Camera
 	@Override
 	public FrameLayout getPreviewFrameLayout() {
 		return (FrameLayout) this.getView().findViewById(R.id.test_camera_preview_layout);
 	}
-	
+
 	@Override
 	public Point getPreviewSize() {
 		int left = startButton.getLeft();
 		int right = startButton.getRight();
 		int top = startButton.getTop();
 		int bottom = startButton.getBottom();
-		return new Point(right-left,bottom-top);
+		return new Point(right - left, bottom - top);
 	}
-	
+
 	private class StartOnClickListener implements View.OnClickListener {
 
 		@Override
 		public void onClick(View v) {
 
 			Point p = getPreviewSize();
-			Log.d(TAG,"IMAGE_SIZE="+p.toString());
-			
+			Log.d(TAG, "IMAGE_SIZE=" + p.toString());
+
 			ClickLog.Log(ClickLogId.TEST_START_BUTTON);
-			
-			if (!MainActivity.getClickable())
+
+			if (!MainActivity.getMainActivity().getClickable())
 				return;
 
 			if (DefaultCheck.check()) {
@@ -451,10 +453,10 @@ public class TestFragment extends Fragment implements GPSInterface,TestQuestionC
 				PreferenceControl.setAfterFirstTime();
 				showTutorial();
 			} else {
-				
+
 				startText.setAnimation(null);
 				startButtonAnimation.cancel();
-				
+
 				long lastTime = PreferenceControl.getLastTestTime();
 				long curTime = System.currentTimeMillis();
 				Boolean debug = PreferenceControl.isDebugMode();
@@ -462,7 +464,7 @@ public class TestFragment extends Fragment implements GPSInterface,TestQuestionC
 				long TEST_GAP_DURATION = testFail ? TEST_GAP_DURATION_SHORT : TEST_GAP_DURATION_LONG;
 				long time = curTime - lastTime;
 				if (time > TEST_GAP_DURATION || debug) {
-					MainActivity.closeTimers();
+					MainActivity.getMainActivity().closeTimers();
 					startButton.setOnClickListener(null);
 					startButton.setEnabled(false);
 					startText.setVisibility(View.INVISIBLE);
@@ -470,7 +472,7 @@ public class TestFragment extends Fragment implements GPSInterface,TestQuestionC
 					reset();
 					openSensorMsgTimer = new OpenSensorMsgTimer();
 					openSensorMsgTimer.start();
-				} else 
+				} else
 					CustomToastSmall.generateToast(R.string.testTimeCheckToast);
 			}
 		}
@@ -479,7 +481,7 @@ public class TestFragment extends Fragment implements GPSInterface,TestQuestionC
 	private class EndTestOnClickListener implements View.OnClickListener {
 		@Override
 		public void onClick(View v) {
-			
+
 			ClickLog.Log(ClickLogId.TEST_END_BUTTON);
 			stopDueToInit();
 			setState(STATE_INIT);
@@ -496,8 +498,8 @@ public class TestFragment extends Fragment implements GPSInterface,TestQuestionC
 			}
 
 		bracFileHandler = new BracValueFileHandler(mainDirectory, String.valueOf(timestamp));
-		bracDebugHandler = new BracValueDebugHandler(mainDirectory,String.valueOf(timestamp));
-		imgFileHandler = new ImageFileHandler(mainDirectory,String.valueOf(timestamp));
+		bracDebugHandler = new BracValueDebugHandler(mainDirectory, String.valueOf(timestamp));
+		imgFileHandler = new ImageFileHandler(mainDirectory, String.valueOf(timestamp));
 		questionFile = new QuestionFile(mainDirectory);
 	}
 
@@ -511,7 +513,7 @@ public class TestFragment extends Fragment implements GPSInterface,TestQuestionC
 				cameraInitHandler.removeMessages(0);
 				btRunTask = new BTRunTask(this, bt);
 				btRunTask.execute();
-				setGuideMessage(R.string.test_guide_init_top,R.string.test_guide_init_bottom);
+				setGuideMessage(R.string.test_guide_init_top, R.string.test_guide_init_bottom);
 				showDebug("Device launched");
 
 				if (PreferenceControl.isDebugMode())
@@ -533,16 +535,16 @@ public class TestFragment extends Fragment implements GPSInterface,TestQuestionC
 				stop();
 				if (msgLoadingHandler == null)
 					msgLoadingHandler = new MsgLoadingHandler();
-				Log.d(TAG,"DONE_ALL_PROGRESS");
+				Log.d(TAG, "DONE_ALL_PROGRESS");
 				msgLoadingHandler.sendEmptyMessage(0);
 			}
 		}
 		if (DONE_PROGRESS[_GPS] && DONE_PROGRESS[_BT] && DONE_PROGRESS[_CAMERA]) {
 			if (PreferenceControl.isDebugMode()) {
 				if (PreferenceControl.debugType())
-					BDH = new BracDataHandlerDebugModeNormal(activity,timestamp);
+					BDH = new BracDataHandlerDebugModeNormal(activity, timestamp);
 				else
-					BDH = new BracDataHandlerDebugMode(activity,timestamp);
+					BDH = new BracDataHandlerDebugMode(activity, timestamp);
 			} else
 				BDH = new BracDataHandler(timestamp);
 			BDH.start();
@@ -571,10 +573,10 @@ public class TestFragment extends Fragment implements GPSInterface,TestQuestionC
 
 		if (testHandler != null)
 			testHandler.removeMessages(0);
-		
-		if (testCountDownTimer!=null)
+
+		if (testCountDownTimer != null)
 			testCountDownTimer.cancel();
-		if (openSensorMsgTimer!=null)
+		if (openSensorMsgTimer != null)
 			openSensorMsgTimer.cancel();
 	}
 
@@ -607,46 +609,45 @@ public class TestFragment extends Fragment implements GPSInterface,TestQuestionC
 		if (changeTabsHandler != null) {
 			changeTabsHandler.removeMessages(0);
 		}
-		
-		if (testCountDownTimer!=null){
+
+		if (testCountDownTimer != null) {
 			testCountDownTimer.cancel();
 			testCountDownTimer = null;
 		}
-		if (openSensorMsgTimer!=null){
+		if (openSensorMsgTimer != null) {
 			openSensorMsgTimer.cancel();
 			openSensorMsgTimer = null;
 		}
 	}
-
 
 	@SuppressLint("HandlerLeak")
 	private class MsgLoadingHandler extends Handler {
 		public void handleMessage(Message msg) {
 			startButton.setOnClickListener(null);
 			startButton.setEnabled(false);
-			Log.d(TAG,"MsgLoadingHandler");
-			if (PreferenceControl.getUpdateDetectionTimestamp()>0){
+			Log.d(TAG, "MsgLoadingHandler");
+			if (PreferenceControl.getUpdateDetectionTimestamp() > 0) {
 				feedbackBox.gen();
 				feedbackBox.generateMsgBox(true);
-			}else{
+			} else {
 				msgBox.gen();
 				msgBox.generateMsgBox();
 			}
 			messageView.setText(R.string.test_guide_msg_box);
 		}
 	}
-	
-	public void feedbackToMsgBox(){
+
+	public void feedbackToMsgBox() {
 		feedbackBox.closeBox();
 		msgBox.gen();
 		msgBox.generateMsgBox();
 	}
-	
-	public void feedbackToFail(){
+
+	public void feedbackToFail() {
 		feedbackBox.closeBox();
 		startButton.setOnClickListener(new EndTestOnClickListener());
 	}
-	
+
 	@SuppressLint("HandlerLeak")
 	private class FailMessageHandler extends Handler {
 
@@ -662,30 +663,30 @@ public class TestFragment extends Fragment implements GPSInterface,TestQuestionC
 
 			messageView.setText("");
 			countDownText.setText("");
-			testCircle.setBackgroundResource(BLOW_RESOURCE [0]);
-			
+			testCircle.setBackgroundResource(BLOW_RESOURCE[0]);
+
 			int msg_str_id = msg.getData().getInt("msg");
-			
+
 			startButton.setOnClickListener(new EndTestOnClickListener());
 			startButton.setEnabled(true);
 			startButton.setVisibility(View.VISIBLE);
 			startText.setVisibility(View.VISIBLE);
 			startText.setText(R.string.ok);
 			face.setVisibility(View.INVISIBLE);
-			
-			if (testCountDownTimer!=null)
+
+			if (testCountDownTimer != null)
 				testCountDownTimer.cancel();
 
-			setGuideMessage(R.string.test_guide_end,msg_str_id);
-			
-			if (PreferenceControl.getUpdateDetectionTimestamp()>0 && ! PreferenceControl.getUpdateDetection()){
+			setGuideMessage(R.string.test_guide_end, msg_str_id);
+
+			if (PreferenceControl.getUpdateDetectionTimestamp() > 0 && !PreferenceControl.getUpdateDetection()) {
 				feedbackBox.gen();
 				feedbackBox.generateMsgBox(false);
 				startButton.setOnClickListener(null);
-			}else
-				MainActivity.setTimers();
-			
-			MainActivity.enableTabAndClick(true);
+			} else
+				MainActivity.getMainActivity().setTimers();
+
+			MainActivity.getMainActivity().enableTabAndClick(true);
 		}
 	}
 
@@ -697,7 +698,7 @@ public class TestFragment extends Fragment implements GPSInterface,TestQuestionC
 
 			face.setVisibility(View.VISIBLE);
 
-			setGuideMessage(R.string.test_guide_testing_top,R.string.test_guide_testing_bottom);
+			setGuideMessage(R.string.test_guide_testing_top, R.string.test_guide_testing_bottom);
 
 			if (bt != null && cameraRecorder != null) {
 				bt.start();
@@ -714,7 +715,7 @@ public class TestFragment extends Fragment implements GPSInterface,TestQuestionC
 		if (prev_drawable_time == time)
 			return;
 		prev_drawable_time = time;
-		testCircle.setBackgroundResource(BLOW_RESOURCE [time]);
+		testCircle.setBackgroundResource(BLOW_RESOURCE[time]);
 
 		if (time == 1) {
 			Random rand = new Random();
@@ -753,20 +754,19 @@ public class TestFragment extends Fragment implements GPSInterface,TestQuestionC
 			failBgHandler.sendMessage(msg);
 	}
 
-
 	@SuppressLint("HandlerLeak")
 	private class ChangeTabsHandler extends Handler {
 		public void handleMessage(Message msg) {
 			if (msgBox != null)
 				msgBox.closeBox();
-			MainActivity.enableTabAndClick(true);
-			MainActivity.changeTab(1);
+			MainActivity.getMainActivity().enableTabAndClick(true);
+			MainActivity.getMainActivity().changeTab(1);
 		}
 	}
 
 	private class TutorialOnClickListener implements View.OnClickListener {
 		public void onClick(View v) {
-			if (!MainActivity.getClickable())
+			if (!MainActivity.getMainActivity().getClickable())
 				return;
 			ClickLog.Log(ClickLogId.TEST_TUTORIAL_BUTTON);
 			showTutorial();
@@ -780,7 +780,7 @@ public class TestFragment extends Fragment implements GPSInterface,TestQuestionC
 	}
 
 	public void setPairMessage() {
-		setGuideMessage(R.string.test_guide_pair_top,R.string.test_guide_pair_bottom);
+		setGuideMessage(R.string.test_guide_pair_top, R.string.test_guide_pair_bottom);
 	}
 
 	@Override
@@ -789,14 +789,15 @@ public class TestFragment extends Fragment implements GPSInterface,TestQuestionC
 		helpButton.setEnabled(enable);
 	}
 
-	private class TestCountDownTimer extends CountDownTimer{
-	
+	private class TestCountDownTimer extends CountDownTimer {
+
 		private static final int SECOND_FIX = 1300;
-		private long prevSecond =99;
-		
+		private long prevSecond = 99;
+
 		public TestCountDownTimer(long second) {
-			super(second*SECOND_FIX, 100);
+			super(second * SECOND_FIX, 100);
 		}
+
 		@Override
 		public void onFinish() {
 			startButton.setVisibility(View.INVISIBLE);
@@ -804,10 +805,11 @@ public class TestFragment extends Fragment implements GPSInterface,TestQuestionC
 			showDebug(">Start to run the  device");
 			runBT();
 		}
+
 		@Override
 		public void onTick(long millisUntilFinished) {
-			long displaySecond = millisUntilFinished/SECOND_FIX ;
-			if (displaySecond < prevSecond){
+			long displaySecond = millisUntilFinished / SECOND_FIX;
+			if (displaySecond < prevSecond) {
 				soundpool.play(soundId, 0.6f, 0.6f, 0, 0, 1.f);
 				prevSecond = displaySecond;
 				countDownText.setText(String.valueOf(displaySecond));
@@ -815,35 +817,36 @@ public class TestFragment extends Fragment implements GPSInterface,TestQuestionC
 		}
 	}
 
-	private class OpenSensorMsgTimer extends CountDownTimer{
-		
+	private class OpenSensorMsgTimer extends CountDownTimer {
+
 		public OpenSensorMsgTimer() {
 			super(100, 50);
 		}
+
 		@Override
 		public void onFinish() {
 			showDebug(">Try to start the device");
 			startBT();
 		}
+
 		@Override
 		public void onTick(long millisUntilFinished) {
 		}
 	}
-	
-	
-	public void setGuideMessage(int str_id_top,int str_id_bottom){
+
+	public void setGuideMessage(int str_id_top, int str_id_bottom) {
 		guideTop.setText(str_id_top);
 		guideBottom.setText(str_id_bottom);
 	}
-	
-	public void setStartButtonText(int str_id){
+
+	public void setStartButtonText(int str_id) {
 		startText.setText(str_id);
 	}
-	
-	public void enableStartButton(boolean enable){
+
+	public void enableStartButton(boolean enable) {
 		startButton.setEnabled(enable);
 	}
-	
+
 	@Override
 	public void notifyStartButton() {
 		startText.startAnimation(startButtonAnimation);
@@ -852,11 +855,10 @@ public class TestFragment extends Fragment implements GPSInterface,TestQuestionC
 	@Override
 	public void notifyAdditionalQuestionnaire() {
 		PreferenceControl.setShowAdditonalQuestionnaire();
-		addBox = new AdditionalQuestionMsgBox(main_layout,testFragment);
-		addBox.generateAdditionalBox();		
+		addBox = new AdditionalQuestionMsgBox(main_layout, testFragment);
+		addBox.generateAdditionalBox();
 	}
-	
-	
+
 	// Debug
 	// --------------------------------------------------------------------------------------------------------
 
@@ -875,7 +877,7 @@ public class TestFragment extends Fragment implements GPSInterface,TestQuestionC
 			modeButton.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					PreferenceControl.setDebugType( ! PreferenceControl.debugType());
+					PreferenceControl.setDebugType(!PreferenceControl.debugType());
 					checkDebug(PreferenceControl.isDebugMode(), PreferenceControl.debugType());
 				}
 			});
@@ -923,7 +925,7 @@ public class TestFragment extends Fragment implements GPSInterface,TestQuestionC
 		public void onClick(View v) {
 			PreferenceControl.setTestResult(cond);
 			PreferenceControl.setLatestTestCompleteTime(System.currentTimeMillis());
-			MainActivity.changeTab(1);
+			MainActivity.getMainActivity().changeTab(1);
 		}
 	}
 

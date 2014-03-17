@@ -29,17 +29,17 @@ public class SimpleBluetooth {
 
 	public static void closeConnection() {
 		if (sb != null)
-			Log.d(TAG,"close by other classes");
-			try{
-				sb.close();
-			}catch(Exception e){}
+			Log.d(TAG, "close by other classes");
+		try {
+			sb.close();
+		} catch (Exception e) {
+		}
 		if (volThread != null && volThread.isAlive()) {
 			volThread.interrupt();
 		}
 		volThread = null;
 	}
 
-	
 	private static final String TAG = "simpleBluetooth";
 	private static SimpleBluetooth sb;
 	private static Thread volThread = null;
@@ -117,7 +117,7 @@ public class SimpleBluetooth {
 						btAdapter.cancelDiscovery();
 					sensor = device;
 					connect();
-					Log.d(TAG,"close by receiver");
+					Log.d(TAG, "close by receiver");
 					close();
 				}
 			}
@@ -129,7 +129,7 @@ public class SimpleBluetooth {
 			btAdapter.cancelDiscovery();
 
 		if (sensor == null) {
-			Log.d(TAG,"close by connection");
+			Log.d(TAG, "close by connection");
 			close();
 			return false;
 		}
@@ -201,10 +201,10 @@ public class SimpleBluetooth {
 				}
 
 			}
-			Log.d(TAG,"close by read normal end");
+			Log.d(TAG, "close by read normal end");
 			close();
 		} catch (Exception e) {
-			Log.d(TAG,"close by read exception");
+			Log.d(TAG, "close by read exception");
 			close();
 		}
 	}
@@ -239,7 +239,7 @@ public class SimpleBluetooth {
 
 	private void parseMsg(String msg) {
 		msg = msg.substring(1);
-		//Log.d(TAG,"read vol "+msg);
+		// Log.d(TAG,"read vol "+msg);
 		debugger.showDebug(msg, 1);
 	}
 
@@ -322,7 +322,6 @@ public class SimpleBluetooth {
 		}
 	}
 
-	
 	public static class InitRunnable implements Runnable {
 
 		public InitRunnable(BluetoothDebugger debugger) {
@@ -351,4 +350,3 @@ public class SimpleBluetooth {
 		}
 	}
 }
-

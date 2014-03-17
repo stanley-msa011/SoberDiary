@@ -84,7 +84,7 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginLeft="26.7dp"
-            android:src="@drawable/analysis_money_bar_background" />
+            android:src="@drawable/analysis_money_bar_bg" />
 
         <ImageView
             android:id="@+id/analysis_saving_cur_bar_start"

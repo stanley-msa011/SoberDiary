@@ -14,16 +14,16 @@ public class ChartYAxisView extends View {
 
 	private Paint text_paint_small = new Paint();
 	private String high;
-	
-	private int bar_width = App.context.getResources().getDimensionPixelSize(R.dimen.chart_bar_size);
-	private int bar_bottom = App.context.getResources().getDimensionPixelSize(R.dimen.chart_bar_margin);
-	private int chartHeight = App.context.getResources().getDimensionPixelSize(R.dimen.chart_height);
-	private int textSize = App.context.getResources().getDimensionPixelSize(R.dimen.sn_text_size);
-	
+
+	private int bar_width = App.getContext().getResources().getDimensionPixelSize(R.dimen.chart_bar_size);
+	private int bar_bottom = App.getContext().getResources().getDimensionPixelSize(R.dimen.chart_bar_margin);
+	private int chartHeight = App.getContext().getResources().getDimensionPixelSize(R.dimen.chart_height);
+	private int textSize = App.getContext().getResources().getDimensionPixelSize(R.dimen.sn_text_size);
+
 	private int chart_type = 0;
-	
-	private int yaxis_color = App.context.getResources().getColor(R.color.chart_y_axis);
-	
+
+	private int yaxis_color = App.getContext().getResources().getColor(R.color.chart_y_axis);
+
 	public ChartYAxisView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		text_paint_small.setColor(yaxis_color);
@@ -31,13 +31,13 @@ public class ChartYAxisView extends View {
 		text_paint_small.setTextSize(textSize);
 		text_paint_small.setTypeface(Typefaces.getDigitTypefaceBold());
 		high = getResources().getString(R.string.high);
-		bar_width = App.context.getResources().getDimensionPixelSize(R.dimen.chart_bar_size);
+		bar_width = App.getContext().getResources().getDimensionPixelSize(R.dimen.chart_bar_size);
 	}
-	
-	public void setChartType(int type){
+
+	public void setChartType(int type) {
 		chart_type = type;
 	}
-	
+
 	@Override
 	protected void onDraw(Canvas canvas) {
 		super.onDraw(canvas);

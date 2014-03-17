@@ -71,7 +71,7 @@ public class QuestionnaireBox {
 		
 		wordTypefaceBold = Typefaces.getWordTypefaceBold();
 		
-		boxLayout = (RelativeLayout) inflater.inflate(R.layout.questionnaire_box_layout,null);
+		boxLayout = (RelativeLayout) inflater.inflate(R.layout.dialog_statistic_questionnaire,null);
 		boxLayout.setVisibility(View.INVISIBLE);
 		
 		questionLayout = (LinearLayout) boxLayout.findViewById(R.id.question_layout);
@@ -91,8 +91,8 @@ public class QuestionnaireBox {
 		mainParam.width = mainParam.height = LayoutParams.MATCH_PARENT;
 		help.setTypeface(wordTypefaceBold);
 		next.setTypeface(wordTypefaceBold);
-		choiceDrawable = r.getDrawable(R.drawable.bar_radio_button);
-		choiceSelectedDrawable = r.getDrawable(R.drawable.bar_radio_button_checked);
+		choiceDrawable = r.getDrawable(R.drawable.radio_button_normal);
+		choiceSelectedDrawable = r.getDrawable(R.drawable.radio_button_checked);
 		closeButton.setOnClickListener(new ExitListener());
 	}
 	

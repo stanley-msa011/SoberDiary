@@ -51,9 +51,9 @@ public class VoiceRecordBlock implements RecorderCallee {
 
 	private Drawable playDrawable, playOffDrawable, recDrawable, stopDrawable;
 
-	private RelativeLayout contentLayout,barLayout;
+	private RelativeLayout contentLayout, barLayout;
 
-	private TextView help,countDownText;
+	private TextView help, countDownText;
 	private ImageView bar_bg, barStart, barEnd, bar;
 
 	private int chartItemIdx;
@@ -67,20 +67,20 @@ public class VoiceRecordBlock implements RecorderCallee {
 	private final PlayListener playListener = new PlayListener();
 	private final EndPlayListener endPlayListener = new EndPlayListener();
 
-	RelativeLayout.LayoutParams barParam;
-	
+	private RelativeLayout.LayoutParams barParam;
+
 	private int MAX_BAR_LENGTH;
-	
+
 	private RecordCountDownTimer countDownTimer;
-	
+
 	private DecimalFormat format;
-	
+
 	public VoiceRecordBlock(RecordBlockCaller recordCaller) {
 		this.recordCaller = recordCaller;
-		context = App.context;
+		context = App.getContext();
 		db = new DatabaseControl();
 		inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		contentLayout = (RelativeLayout) inflater.inflate(R.layout.voice_record_block, null);
+		contentLayout = (RelativeLayout) inflater.inflate(R.layout.storytelling_voice_record_block, null);
 		barLayout = (RelativeLayout) contentLayout.findViewById(R.id.voice_record_bar_layout);
 		help = (TextView) contentLayout.findViewById(R.id.voice_record_help);
 		help.setTypeface(Typefaces.getWordTypefaceBold());
@@ -94,10 +94,10 @@ public class VoiceRecordBlock implements RecorderCallee {
 
 		barParam = (LayoutParams) bar.getLayoutParams();
 		barParam.width = 0;
-		
-		recDrawable = context.getResources().getDrawable(R.drawable.rec);
-		playDrawable = context.getResources().getDrawable(R.drawable.play);
-		stopDrawable = context.getResources().getDrawable(R.drawable.stop);
+
+		recDrawable = context.getResources().getDrawable(R.drawable.icon_rec);
+		playDrawable = context.getResources().getDrawable(R.drawable.icon_play);
+		stopDrawable = context.getResources().getDrawable(R.drawable.icon_stop);
 		playOffDrawable = null;
 
 		topIcon = (ImageView) contentLayout.findViewById(R.id.voice_record_top_icon);
@@ -109,7 +109,7 @@ public class VoiceRecordBlock implements RecorderCallee {
 		format = new DecimalFormat();
 		format.setMaximumFractionDigits(2);
 		format.setMinimumIntegerDigits(2);
-		
+
 		setStorage();
 	}
 
@@ -132,11 +132,11 @@ public class VoiceRecordBlock implements RecorderCallee {
 	}
 
 	private void setButtonState(int state) {
-		if (countDownTimer !=null){
+		if (countDownTimer != null) {
 			countDownTimer.cancel();
 			countDownTimer = null;
 		}
-		
+
 		barParam.width = 0;
 		bar.invalidate();
 		barLayout.updateViewLayout(bar, barParam);
@@ -207,7 +207,7 @@ public class VoiceRecordBlock implements RecorderCallee {
 	private class RecListener implements View.OnClickListener {
 		@Override
 		public void onClick(View v) {
-			if (curTV == null){
+			if (curTV == null) {
 				help.setText("null");
 				return;
 			}
@@ -244,11 +244,11 @@ public class VoiceRecordBlock implements RecorderCallee {
 					mediaRecorder.stop();
 					mediaRecorder.release();
 					mediaRecorder = null;
-					int addScore = db.insertUserVoiceRecord(new UserVoiceRecord(System.currentTimeMillis(), curTV.year,
-							curTV.month, curTV.day, 0));
+					int addScore = db.insertUserVoiceRecord(new UserVoiceRecord(System.currentTimeMillis(), curTV.getYear(),
+							curTV.getMonth(), curTV.getDay(), 0));
 					if (PreferenceControl.checkCouponChange())
 						PreferenceControl.setCouponChange(true);
-					
+
 					CustomToast.generateToast(R.string.audio_box_toast_record_end, addScore);
 				} catch (IllegalStateException e) {
 				}
@@ -268,10 +268,10 @@ public class VoiceRecordBlock implements RecorderCallee {
 						mediaRecorder.release();
 						mediaRecorder = null;
 						int addScore = db.insertUserVoiceRecord(new UserVoiceRecord(System.currentTimeMillis(),
-								curTV.year, curTV.month, curTV.day, 0));
+								curTV.getYear(), curTV.getMonth(), curTV.getDay(), 0));
 						if (PreferenceControl.checkCouponChange())
 							PreferenceControl.setCouponChange(true);
-						
+
 						CustomToast.generateToast(R.string.audio_box_toast_timeup, addScore);
 						recordCaller.updateHasRecorder(chartItemIdx);
 					} catch (IllegalStateException e) {
@@ -384,28 +384,30 @@ public class VoiceRecordBlock implements RecorderCallee {
 				mediaRecorder.stop();
 				mediaRecorder.release();
 				mediaRecorder = null;
-			} catch (IllegalStateException e) {}
+			} catch (IllegalStateException e) {
+			}
 		}
 		if (mediaPlayer != null) {
 			try {
 				mediaPlayer.stop();
 				mediaPlayer.release();
 				mediaPlayer = null;
-			} catch (IllegalStateException e) {}
+			} catch (IllegalStateException e) {
+			}
 		}
 		topButton.setEnabled(enable);
 		bottomButton.setEnabled(enable);
 	}
-	
-	private class RecordCountDownTimer extends CountDownTimer{
-		
+
+	private class RecordCountDownTimer extends CountDownTimer {
+
 		private long TOTAL_MILLIS;
 		private String TOTAL_MILLIS_STR;
-		
+
 		public RecordCountDownTimer(long millisInFuture) {
 			super(millisInFuture, 10);
 			this.TOTAL_MILLIS = millisInFuture;
-			this.TOTAL_MILLIS_STR = "00:"+format.format(TOTAL_MILLIS/1000L);
+			this.TOTAL_MILLIS_STR = "00:" + format.format(TOTAL_MILLIS / 1000L);
 			int bar_bg_width = bar_bg.getRight() - bar_bg.getLeft();
 			int bar_start_width = barStart.getRight() - barStart.getLeft();
 			int bar_end_width = barEnd.getRight() - barEnd.getLeft();
@@ -419,10 +421,10 @@ public class VoiceRecordBlock implements RecorderCallee {
 
 		@Override
 		public void onTick(long millisUntilFinished) {
-			double length = ((double)(TOTAL_MILLIS-millisUntilFinished))/(double)TOTAL_MILLIS;
-			barParam.width = (int)(length*MAX_BAR_LENGTH);
+			double length = ((double) (TOTAL_MILLIS - millisUntilFinished)) / (double) TOTAL_MILLIS;
+			barParam.width = (int) (length * MAX_BAR_LENGTH);
 			bar.invalidate();
-			countDownText.setText("(00:"+format.format(millisUntilFinished/1000L)+"/"+TOTAL_MILLIS_STR+")");
+			countDownText.setText("(00:" + format.format(millisUntilFinished / 1000L) + "/" + TOTAL_MILLIS_STR + ")");
 			barLayout.updateViewLayout(bar, barParam);
 		}
 	}

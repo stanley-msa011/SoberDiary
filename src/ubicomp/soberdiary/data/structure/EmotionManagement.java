@@ -4,14 +4,14 @@ import java.util.Calendar;
 
 public class EmotionManagement {
 
-	public TimeValue tv;
-	public TimeValue recordTv;
-	public int emotion;
-	public int type;
-	public String reason;
-	public int score;
-	
-	public EmotionManagement(long ts, int rYear,int rMonth,int rDay,int emotion, int type, String reason, int score){
+	private TimeValue tv;
+	private TimeValue recordTv;
+	private int emotion;
+	private int type;
+	private String reason;
+	private int score;
+
+	public EmotionManagement(long ts, int rYear, int rMonth, int rDay, int emotion, int type, String reason, int score) {
 		this.tv = TimeValue.generate(ts);
 		Calendar cal = Calendar.getInstance();
 		cal.set(rYear, rMonth, rDay, 0, 0, 0);
@@ -19,11 +19,12 @@ public class EmotionManagement {
 		this.recordTv = TimeValue.generate(cal.getTimeInMillis());
 		this.emotion = emotion;
 		this.type = type;
-		this.reason = reason==null?"":reason;
+		this.reason = reason == null ? "" : reason;
 		this.score = score;
 	}
-	
-	public EmotionManagement(long ts, int rYear,int rMonth,int rDay,int emotion, int type, String reason, int score, boolean ver1){
+
+	public EmotionManagement(long ts, int rYear, int rMonth, int rDay, int emotion, int type, String reason, int score,
+			boolean ver1) {
 		this.tv = TimeValue.generate(ts);
 		Calendar cal = Calendar.getInstance();
 		cal.set(rYear, rMonth, rDay, 0, 0, 0);
@@ -31,12 +32,12 @@ public class EmotionManagement {
 		this.recordTv = TimeValueVer1.generate(cal.getTimeInMillis());
 		this.emotion = emotion;
 		this.type = type;
-		this.reason = reason==null?"":reason;
+		this.reason = reason == null ? "" : reason;
 		this.score = score;
 	}
-	
+
 	@Override
-	public String toString(){
+	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(tv.toString());
 		sb.append(' ');
@@ -51,4 +52,29 @@ public class EmotionManagement {
 		sb.append(score);
 		return sb.toString();
 	}
+
+	public TimeValue getTv() {
+		return tv;
+	}
+
+	public TimeValue getRecordTv() {
+		return recordTv;
+	}
+
+	public int getEmotion() {
+		return emotion;
+	}
+
+	public int getType() {
+		return type;
+	}
+
+	public String getReason() {
+		return reason;
+	}
+
+	public int getScore() {
+		return score;
+	}
+
 }

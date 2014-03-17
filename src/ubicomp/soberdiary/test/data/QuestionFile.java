@@ -10,13 +10,14 @@ public class QuestionFile {
 	private File file;
 	private BufferedWriter writer;
 	private File directory;
-	public QuestionFile(File directory){
+
+	public QuestionFile(File directory) {
 		this.directory = directory;
 	}
-	
-	public void write(int emotion,int craving){
-		String a = emotion+"\t"+craving;
-		file = new File(directory,"question.txt");
+
+	public void write(int emotion, int craving) {
+		String a = emotion + "\t" + craving;
+		file = new File(directory, "question.txt");
 		try {
 			writer = new BufferedWriter(new FileWriter(file));
 		} catch (IOException e) {
@@ -24,12 +25,13 @@ public class QuestionFile {
 		}
 		try {
 			writer.write(a);
-		} catch (IOException e) {	}
-		finally{
+		} catch (IOException e) {
+		} finally {
 			try {
 				writer.close();
-			} catch (IOException e) {	}
+			} catch (IOException e) {
+			}
 		}
 	}
-	
+
 }

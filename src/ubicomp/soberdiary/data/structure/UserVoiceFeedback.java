@@ -1,16 +1,32 @@
 package ubicomp.soberdiary.data.structure;
 
 public class UserVoiceFeedback {
-	public TimeValue tv;
-	public TimeValue detectionTv;
-	public boolean testSuccess = false;
-	public boolean hasData = false;
-	
-	public UserVoiceFeedback(long ts, long detectionTs,boolean testSuccess, boolean hasData){
+	private TimeValue tv;
+	private TimeValue detectionTv;
+	private boolean testSuccess = false;
+	private boolean hasData = false;
+
+	public UserVoiceFeedback(long ts, long detectionTs, boolean testSuccess, boolean hasData) {
 		tv = TimeValue.generate(ts);
 		detectionTv = TimeValue.generate(detectionTs);
 		this.testSuccess = testSuccess;
 		this.hasData = hasData;
+	}
+
+	public TimeValue getTv() {
+		return tv;
+	}
+
+	public TimeValue getDetectionTv() {
+		return detectionTv;
+	}
+
+	public boolean isTestSuccess() {
+		return testSuccess;
+	}
+
+	public boolean hasData() {
+		return hasData;
 	}
 
 }

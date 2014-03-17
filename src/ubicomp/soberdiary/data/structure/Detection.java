@@ -1,18 +1,19 @@
 package ubicomp.soberdiary.data.structure;
 
-public class Detection{
+public class Detection {
 
-	public float brac;
-	public TimeValue tv;
-	public int emotion;
-	public int craving;
-	public boolean isPrime;
-	public int weeklyScore,score;
+	private float brac;
+	private TimeValue tv;
+	private int emotion;
+	private int craving;
+	private boolean isPrime;
+	private int weeklyScore;
+	private int score;
 	public static final float BRAC_THRESHOLD = 0.06f;
 	public static final float BRAC_THRESHOLD_HIGH = 0.25f;
 	private final static int MAX_WEEKLY_SCORE = 42;
-	
-	public Detection(float brac, long timestamp, int emotion, int craving, boolean isPrime,int weeklyScore, int score) {
+
+	public Detection(float brac, long timestamp, int emotion, int craving, boolean isPrime, int weeklyScore, int score) {
 		this.brac = brac;
 		this.tv = TimeValue.generate(timestamp);
 		this.emotion = emotion;
@@ -21,8 +22,9 @@ public class Detection{
 		this.weeklyScore = weeklyScore;
 		this.score = score;
 	}
-	
-	public Detection(float brac, long timestamp, int emotion, int craving, boolean isPrime,int weeklyScore, int score,boolean ver1) {
+
+	public Detection(float brac, long timestamp, int emotion, int craving, boolean isPrime, int weeklyScore, int score,
+			boolean ver1) {
 		this.brac = brac;
 		this.tv = TimeValueVer1.generate(timestamp);
 		this.emotion = emotion;
@@ -31,24 +33,24 @@ public class Detection{
 		this.weeklyScore = weeklyScore;
 		this.score = score;
 	}
-	
-	public boolean isSameTimeBlock(Detection d){
-		return d!=null && tv!=null && tv.isSameTimeBlock(d.tv);
+
+	public boolean isSameTimeBlock(Detection d) {
+		return d != null && tv != null && tv.isSameTimeBlock(d.tv);
 	}
-	
-	public boolean isPass(){
-		return brac<BRAC_THRESHOLD;
+
+	public boolean isPass() {
+		return brac < BRAC_THRESHOLD;
 	}
-	
-	public static float weeklyScoreToProgress(int score){
-		float progress =  (float)score*100F/MAX_WEEKLY_SCORE;
+
+	public static float weeklyScoreToProgress(int score) {
+		float progress = (float) score * 100F / MAX_WEEKLY_SCORE;
 		if (progress > 100.f)
 			return 100.f;
 		return progress;
 	}
-	
+
 	@Override
-	public String toString(){
+	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(tv.toString());
 		sb.append(' ');
@@ -63,5 +65,33 @@ public class Detection{
 		sb.append(score);
 		return sb.toString();
 	}
-	
+
+	public float getBrac() {
+		return brac;
+	}
+
+	public TimeValue getTv() {
+		return tv;
+	}
+
+	public int getEmotion() {
+		return emotion;
+	}
+
+	public int getCraving() {
+		return craving;
+	}
+
+	public boolean isPrime() {
+		return isPrime;
+	}
+
+	public int getWeeklyScore() {
+		return weeklyScore;
+	}
+
+	public int getScore() {
+		return score;
+	}
+
 }

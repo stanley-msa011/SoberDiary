@@ -17,7 +17,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/emotion_title_layout"
-        android:background="@drawable/activities_background" >
+        android:background="@drawable/activity_bg" >
 
         <LinearLayout
             android:id="@+id/emotion_main_layout"

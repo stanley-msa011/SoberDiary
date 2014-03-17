@@ -74,7 +74,8 @@ import android.widget.RelativeLayout.LayoutParams;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-public class StorytellingFragment extends Fragment implements EnablePage, PageAnimationCaller, RecorderCaller, ChartCaller {
+public class StorytellingFragment extends Fragment implements EnablePage, PageAnimationCaller, RecorderCaller,
+		ChartCaller {
 
 	private View view;
 
@@ -94,16 +95,16 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 	private TextView quoteHiddenText, quoteText;
 	private RelativeLayout stageLayout;
 	private TextView stageMessageText, stageMessage, stageRateText;
-	
+
 	private DatabaseControl db = new DatabaseControl();
-	
+
 	private ArrayList<BarInfo> bars = new ArrayList<BarInfo>();
 	private ArrayList<Boolean> hasAudio = new ArrayList<Boolean>();
 
 	private int NUM_OF_BARS, page_week;
 
 	private GestureListener gListener = new GestureListener();
-	private GestureDetector gDetector = new GestureDetector(App.context, gListener);
+	private GestureDetector gDetector = new GestureDetector(App.getContext(), gListener);
 	private PageTouchListener gtListener = new PageTouchListener();
 	private boolean isAnimation = false;
 	private static int page_width = 0, page_height = 0;
@@ -111,45 +112,45 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 	private PointF from, to;
 	private StorytellingFragment storytellingFragment;
 	private LoadingHandler loadHandler = new LoadingHandler();
-	private Typeface wordTypefaceBold,  digitTypefaceBold;
+	private Typeface wordTypefaceBold, digitTypefaceBold;
 	private DecimalFormat format;
 	private Calendar from_cal, to_cal;
 
 	private static final int MAX_PAGE_WEEK = 11;
 	private int max_week;
 	private Integer[] page_states;
-	private static String[] QUOTE_STR = App.context.getResources().getStringArray(R.array.quote_message);
-	private String doneStr = App.context.getResources().getString(R.string.done);
+	private static String[] QUOTE_STR = App.getContext().getResources().getStringArray(R.array.quote_message);
+	private String doneStr = App.getContext().getResources().getString(R.string.done);
 
 	private ScrollToHandler scrollToHandler = new ScrollToHandler();
 	private QuoteScrollHandler quoteScrollHandler = new QuoteScrollHandler();
 	private ScrollHandler scrollHandler = new ScrollHandler();
 	private Thread infiniteThread;
-	
+
 	private ImageView storytellingButton, fbButton;
-	private StorytellingTestOnClickListener storytellingOnClickListener  = new StorytellingTestOnClickListener();
+	private StorytellingTestOnClickListener storytellingOnClickListener = new StorytellingTestOnClickListener();
 	private FacebookOnClickListener facebookOnClickListener = new FacebookOnClickListener();
 	private final RecordBoxOnKeyListener recordBoxOnKeyListener = new RecordBoxOnKeyListener();
 	private QuoteScrollListener quoteScrollListener = new QuoteScrollListener();
 	private Animation animation, arrowAnimation;
-	private int text_color = App.context.getResources().getColor(R.color.page_gray);
-	private int value_color = App.context.getResources().getColor(R.color.lite_orange);
+	private int text_color = App.getContext().getResources().getColor(R.color.page_gray);
+	private int value_color = App.getContext().getResources().getColor(R.color.lite_orange);
 	private static final long READING_PAGE_TIME = Config.READING_PAGE_TIME;
 	private RecordBox recordBox;
 	private QuoteMsgBox quoteMsgBox;
 
-	private final static int[] PAGE_ARROW_RES = {
-		R.drawable.small_arrow_left_up, R.drawable.small_arrow_up, R.drawable.small_arrow_up, R.drawable.small_arrow_right_up,
-		R.drawable.small_arrow_left, R.drawable.small_arrow_left, R.drawable.small_arrow_right, R.drawable.small_arrow_right,
-		R.drawable.small_arrow_left, R.drawable.small_arrow_left, R.drawable.small_arrow_right, R.drawable.small_arrow_right,
-		R.drawable.small_arrow_left_down, R.drawable.small_arrow_down, R.drawable.small_arrow_down, R.drawable.small_arrow_right_down
-	};
+	private final static int[] PAGE_ARROW_RES = { R.drawable.small_arrow_left_up, R.drawable.small_arrow_up,
+			R.drawable.small_arrow_up, R.drawable.small_arrow_right_up, R.drawable.small_arrow_left,
+			R.drawable.small_arrow_left, R.drawable.small_arrow_right, R.drawable.small_arrow_right,
+			R.drawable.small_arrow_left, R.drawable.small_arrow_left, R.drawable.small_arrow_right,
+			R.drawable.small_arrow_right, R.drawable.small_arrow_left_down, R.drawable.small_arrow_down,
+			R.drawable.small_arrow_down, R.drawable.small_arrow_right_down };
 	private Point[] page_update_pos = new Point[16];
-	
-	//private static final String TAG = "STORYTELLING";
+
+	// private static final String TAG = "STORYTELLING";
 
 	private int notify_action = 0;
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -163,44 +164,47 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 		format.setMinimumIntegerDigits(1);
 		format.setMinimumFractionDigits(0);
 		format.setMaximumFractionDigits(0);
-		
-		animation = AnimationUtils.loadAnimation(getActivity(), R.anim.page_change_animation);
-		animation.setAnimationListener(
-				new AnimationListener(){
-					@Override
-					public void onAnimationEnd(Animation animation) {
-						prevPageImage.setImageDrawable(null);
-					}
-					@Override
-					public void onAnimationRepeat(Animation animation) {	}
-					@Override
-					public void onAnimationStart(Animation animation) {
-					}
-				});
-		arrowAnimation = AnimationUtils.loadAnimation(getActivity(), R.anim.page_arrow_animation);
-		arrowAnimation.setAnimationListener(
-				new AnimationListener(){
-					@Override
-					public void onAnimationEnd(Animation animation) {
-						isAnimation = false;
-						if (notify_action == MainActivity.ACTION_RECORD){
-							showToday();
-							notify_action = 0;
-						}
-					}
-					@Override
-					public void onAnimationRepeat(Animation animation) {
-					}
-					@Override
-					public void onAnimationStart(Animation animation) {
-						isAnimation = true;
-					}
-				});
+
+		animation = AnimationUtils.loadAnimation(getActivity(), R.anim.animation_page_change);
+		animation.setAnimationListener(new AnimationListener() {
+			@Override
+			public void onAnimationEnd(Animation animation) {
+				prevPageImage.setImageDrawable(null);
+			}
+
+			@Override
+			public void onAnimationRepeat(Animation animation) {
+			}
+
+			@Override
+			public void onAnimationStart(Animation animation) {
+			}
+		});
+		arrowAnimation = AnimationUtils.loadAnimation(getActivity(), R.anim.animation_page_arrow);
+		arrowAnimation.setAnimationListener(new AnimationListener() {
+			@Override
+			public void onAnimationEnd(Animation animation) {
+				isAnimation = false;
+				if (notify_action == MainActivity.ACTION_RECORD) {
+					showToday();
+					notify_action = 0;
+				}
+			}
+
+			@Override
+			public void onAnimationRepeat(Animation animation) {
+			}
+
+			@Override
+			public void onAnimationStart(Animation animation) {
+				isAnimation = true;
+			}
+		});
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		view = inflater.inflate(R.layout.storytelling_fragment, container, false);
+		view = inflater.inflate(R.layout.fragment_storytelling, container, false);
 
 		topLayout = (RelativeLayout) view.findViewById(R.id.story_top_layout);
 		pageLayout = (RelativeLayout) view.findViewById(R.id.story_book_layout);
@@ -223,20 +227,20 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 		chartYAxis = (ChartYAxisView) view.findViewById(R.id.chartYAxisView);
 		chartTitle = (ChartTitleView) view.findViewById(R.id.chartTitleView);
 		chartLabel = (ChartLabelView) view.findViewById(R.id.chartLabelView);
-		
+
 		stageMessage.setTypeface(wordTypefaceBold);
 		stageMessageText.setTypeface(digitTypefaceBold);
 		quoteText.setTypeface(wordTypefaceBold);
 		quoteHiddenText.setTypeface(wordTypefaceBold);
-		
+
 		storytellingButton.setOnClickListener(storytellingOnClickListener);
 		fbButton.setOnClickListener(facebookOnClickListener);
 		quoteScrollView.setOnTouchListener(quoteScrollListener);
 		scrollView.setSmoothScrollingEnabled(true);
-		
+
 		recordBox = new RecordBox(storytellingFragment, getActivity());
 		quoteMsgBox = new QuoteMsgBox(storytellingFragment, (RelativeLayout) view);
-		
+
 		loadHandler.sendEmptyMessage(0);
 		return view;
 	}
@@ -250,12 +254,12 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 		settingBars();
 		checkHasRecorder();
 		reopenRecordBox();
-		
+
 		Bundle data = getArguments();
 		if (data != null) {
 			int action = data.getInt("action");
 			data.putInt("action", 0);
-			if (action == MainActivity.ACTION_RECORD){
+			if (action == MainActivity.ACTION_RECORD) {
 				notify_action = action;
 			}
 		}
@@ -279,7 +283,7 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 			recordBox.cleanRecordBox();
 			recordBox = null;
 		}
-		
+
 		bars.clear();
 		hasAudio.clear();
 
@@ -302,7 +306,7 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 		}
 		if (quoteMsgBox != null)
 			quoteMsgBox.closeBox();
-		
+
 		quoteScrollView.scrollTo(0, 0);
 		pageLayout.removeView(pageWidget);
 
@@ -316,7 +320,7 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 			pageAnimationTask.cancel(true);
 		if (pageAnimationTask2 != null && !pageAnimationTask2.isCancelled())
 			pageAnimationTask2.cancel(true);
-		
+
 		if (cur_bg_bmp != null && !cur_bg_bmp.isRecycled())
 			cur_bg_bmp.recycle();
 		if (next_bg_bmp != null && !next_bg_bmp.isRecycled())
@@ -347,33 +351,35 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 	private void endAnimation() {
 		setStorytellingTexts();
 		setStageVisible(true);
-		MainActivity.enableTabAndClick(true);
+		MainActivity.getMainActivity().enableTabAndClick(true);
 		isAnimation = false;
 		chartView.invalidate();
 	}
 
-	private void showUpdateAnimation() {
+	private void showUpdateAnimation(int startOffset) {
 		if (PreferenceControl.getPageChange()) {
 			isAnimation = true;
 			int curState = StorytellingGraphics.getPageIdx(page_states[page_week], page_week);
 			int prevStateId = StorytellingGraphics.getPageByIdx(curState - 1, page_week);
-			
+
 			int posIdx = StorytellingGraphics.getArrowPos(curState, page_week);
 			pageArrow.setImageResource(PAGE_ARROW_RES[posIdx]);
 			Rect rect = pageArrow.getDrawable().getBounds();
-			RelativeLayout.LayoutParams param = (RelativeLayout.LayoutParams)pageArrow.getLayoutParams();
-			param.leftMargin = page_update_pos[posIdx].x - rect.width()/2;
-			param.topMargin = page_update_pos[posIdx].y - rect.height()/2;
-			
+			RelativeLayout.LayoutParams param = (RelativeLayout.LayoutParams) pageArrow.getLayoutParams();
+			param.leftMargin = page_update_pos[posIdx].x - rect.width() / 2;
+			param.topMargin = page_update_pos[posIdx].y - rect.height() / 2;
+
 			prevPageImage.setImageResource(prevStateId);
 			prevPageImage.setAnimation(animation);
 			pageArrow.setAnimation(arrowAnimation);
+			animation.setStartOffset(startOffset);
+			arrowAnimation.setStartOffset(startOffset);
 			animation.start();
 			arrowAnimation.start();
 			PreferenceControl.setPrevShowWeekState(page_week, curState);
 			PreferenceControl.setPageChange(false);
-		}else{
-			if (notify_action == MainActivity.ACTION_RECORD){
+		} else {
+			if (notify_action == MainActivity.ACTION_RECORD) {
 				showToday();
 				notify_action = 0;
 			}
@@ -383,7 +389,7 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 	@Override
 	public void endOnViewCreateAnimation() {
 		endAnimation();
-		showUpdateAnimation();
+		showUpdateAnimation(0);
 	}
 
 	@Override
@@ -428,12 +434,12 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 				page_week = 0;
 		}
 		Integer score = page_states[page_week];
-		Bitmap tmp = BitmapFactory.decodeResource(App.context.getResources(),
+		Bitmap tmp = BitmapFactory.decodeResource(App.getContext().getResources(),
 				StorytellingGraphics.getPage(score, page_week));
 		cur_bg_bmp = Bitmap.createScaledBitmap(tmp, page_width, page_height, true);
 		tmp.recycle();
 		pageWidget.setBitmaps(cur_bg_bmp, next_bg_bmp);
-		
+
 		int scroll_value = chartView.getScrollValue(page_week);
 		if (scroll_value < 0)
 			scroll_value = 0;
@@ -460,40 +466,47 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 
 		public void handleMessage(Message msg) {
 
-			page_width = page_width==0?topLayout.getWidth():page_width;
-			page_height = page_height==0?topLayout.getHeight():page_height;
-			
-			for (int i=0; i<4;++i){
-				int pos_y = page_height * (1+i*2)/8;
-				for (int j=0;j<4;++j){
-					int pos_x = page_width * (1+j*2)/8;
-					page_update_pos[i*4+j] = new Point(pos_x,pos_y);
+			page_width = page_width == 0 ? topLayout.getWidth() : page_width;
+			page_height = page_height == 0 ? topLayout.getHeight() : page_height;
+
+			if (page_width == 0 || page_height == 0) {
+				Point imageSize = PreferenceControl.getStorytellingImageSize();
+				page_width = imageSize.x;
+				page_height = imageSize.y;
+			} else
+				PreferenceControl.setStorytellingImageSize(page_width, page_height);
+
+			for (int i = 0; i < 4; ++i) {
+				int pos_y = page_height * (1 + i * 2) / 8;
+				for (int j = 0; j < 4; ++j) {
+					int pos_x = page_width * (1 + j * 2) / 8;
+					page_update_pos[i * 4 + j] = new Point(pos_x, pos_y);
 				}
 			}
-			
-			from = new PointF(page_width, page_height);
-			to = new PointF(page_width / 2, -page_height*4/3);
 
-			if (pageWidget!=null){
-				if (pageWidget.getParent()!=null && pageWidget.getParent().equals(pageLayout))
+			from = new PointF(page_width, page_height);
+			to = new PointF(page_width / 2, -page_height * 4 / 3);
+
+			if (pageWidget != null) {
+				if (pageWidget.getParent() != null && pageWidget.getParent().equals(pageLayout))
 					pageLayout.removeView(pageWidget);
 				pageWidget.clear();
 				pageWidget = null;
 			}
-			
+
 			pageWidget = new PageWidgetVertical(getActivity());
 			pageLayout.addView(pageWidget, 0);
-			
+
 			pageWidget.setting(page_width, page_height);
-			
+
 			LayoutParams prevParam = (LayoutParams) prevPageImage.getLayoutParams();
 			prevParam.width = page_width;
 			prevParam.height = page_height;
-			
+
 			LayoutParams param = (LayoutParams) pageWidget.getLayoutParams();
 			param.width = page_width;
 			param.height = page_height;
-			
+
 			pageWidget.invalidate();
 
 			chartView.setting(bars, page_week, hasAudio, scrollView, storytellingFragment);
@@ -502,11 +515,11 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 				chartWidth = page_width;
 			ViewGroup.LayoutParams chartParam = chartView.getLayoutParams();
 			chartParam.width = chartWidth;
-			chartParam.height = App.context.getResources().getDimensionPixelSize(R.dimen.chart_height);
+			chartParam.height = App.getContext().getResources().getDimensionPixelSize(R.dimen.chart_height);
 			frame.updateViewLayout(chartView, chartParam);
 			chartTitle.setting(storytellingFragment);
 			setChartType(chart_type);
-			
+
 			pageWidget.setOnTouchListener(gtListener);
 			storytellingButton.setVisibility(View.VISIBLE);
 			storytellingButton.bringToFront();
@@ -526,8 +539,8 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 			if (page_week == 0) {
 				resetPage(0);
 				pageWidget.invalidate();
-				showUpdateAnimation();
-				if (notify_action == MainActivity.ACTION_RECORD){
+				showUpdateAnimation(900);
+				if (notify_action == MainActivity.ACTION_RECORD) {
 					showToday();
 					notify_action = 0;
 				}
@@ -542,7 +555,7 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 	private void startAnim() {
 
 		isAnimation = true;
-		MainActivity.enableTabAndClick(false);
+		MainActivity.getMainActivity().enableTabAndClick(false);
 		int[] aBgs = StorytellingGraphics.getAnimationBgs(page_states);
 		int startIdx = page_week - 1;
 		setStageVisible(false);
@@ -614,12 +627,12 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 				if (pageIdx == max_week) {
 					isAnimation = false;
 					pageWidget.setOnTouchListener(gtListener);
-					MainActivity.enableTabAndClick(true);
+					MainActivity.getMainActivity().enableTabAndClick(true);
 					return true;
 				} else {
 					isAnimation = true;
 					pageWidget.setOnTouchListener(null);
-					MainActivity.enableTabAndClick(false);
+					MainActivity.getMainActivity().enableTabAndClick(false);
 				}
 				quoteScroll(page_week + 1);
 				setStageVisible(false);
@@ -636,12 +649,12 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 				if (pageIdx == 0) {
 					isAnimation = false;
 					pageWidget.setOnTouchListener(gtListener);
-					MainActivity.enableTabAndClick(true);
+					MainActivity.getMainActivity().enableTabAndClick(true);
 					return true;
 				} else {
 					isAnimation = true;
 					pageWidget.setOnTouchListener(null);
-					MainActivity.enableTabAndClick(false);
+					MainActivity.getMainActivity().enableTabAndClick(false);
 				}
 				quoteScroll(page_week - 1);
 				setStageVisible(false);
@@ -693,27 +706,28 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 			int pos = 0;
 
 			int bar_week = -1;
-			
-			if (detections != null){
+
+			if (detections != null) {
 				for (int j = pos; j < detections.length; ++j) {
 					Detection detection = detections[j];
-					if (detection.tv.timestamp >= from_t && detection.tv.timestamp < from_t + DAY_MILLIS) {
-						e_sum += (detection.emotion + 1 > 0) ? detection.emotion + 1 : 0;
-						c_sum += (detection.craving + 1 > 0) ? detection.craving + 1 : 0;
-						if (detection.emotion >= 0)
+					if (detection.getTv().getTimestamp() >= from_t
+							&& detection.getTv().getTimestamp() < from_t + DAY_MILLIS) {
+						e_sum += (detection.getEmotion() + 1 > 0) ? detection.getEmotion() + 1 : 0;
+						c_sum += (detection.getCraving() + 1 > 0) ? detection.getCraving() + 1 : 0;
+						if (detection.getEmotion() >= 0)
 							++q_count;
-						if (!(detection.brac < Detection.BRAC_THRESHOLD))
+						if (!(detection.getBrac() < Detection.BRAC_THRESHOLD))
 							drink = true;
-						bar_week = detection.tv.week;
-						b_sum += detection.brac;
+						bar_week = detection.getTv().getWeek();
+						b_sum += detection.getBrac();
 						++count;
-					} else if (detection.tv.timestamp >= from_t + DAY_MILLIS) {
+					} else if (detection.getTv().getTimestamp() >= from_t + DAY_MILLIS) {
 						pos = j;
 						break;
 					}
 				}
 			}
-			
+
 			boolean hasData = true;
 			if (count == 0) {
 				hasData = false;
@@ -743,12 +757,12 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 	private int chart_type = 0;
 
 	@Override
-	public void setChartType(int type){
+	public void setChartType(int type) {
 		chart_type = type;
-		switch(chart_type){
+		switch (chart_type) {
 		case 0:
 			chartAreaLayout.setBackgroundResource(R.drawable.chart_tab_0);
-			 break;
+			break;
 		case 1:
 			chartAreaLayout.setBackgroundResource(R.drawable.chart_tab_1);
 			break;
@@ -768,11 +782,11 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 		chartTitle.setChartType(chart_type);
 		chartTitle.invalidate();
 	}
-	
+
 	private void checkHasRecorder() {
 		hasAudio.clear();
 		for (int i = 0; i < bars.size(); ++i) {
-			if (db.hasAudio(bars.get(i).tv) || db.hasEmotionManagement(bars.get(i).tv))
+			if (db.hasAudio(bars.get(i).getTv()) || db.hasEmotionManagement(bars.get(i).getTv()))
 				hasAudio.add(true);
 			else
 				hasAudio.add(false);
@@ -784,7 +798,7 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 	@Override
 	public void updateHasRecorder(int idx) {
 		if (idx >= 0 && idx < bars.size())
-			hasAudio.set(idx, db.hasAudio(bars.get(idx).tv) || db.hasEmotionManagement(bars.get(idx).tv));
+			hasAudio.set(idx, db.hasAudio(bars.get(idx).getTv()) || db.hasEmotionManagement(bars.get(idx).getTv()));
 		chartView.invalidate();
 	}
 
@@ -822,7 +836,7 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 			if (time == page_week) {
 				PreferenceControl.addStorytellingReadTimes();
 				int limit = Config.STORYTELLING_READ_LIMIT;
-				if (db.getLatestStorytellingRead().tv.timestamp == 0)
+				if (db.getLatestStorytellingRead().getTv().getTimestamp() == 0)
 					limit /= 2;
 				int cur_time = PreferenceControl.getStorytellingReadTimes();
 				if (cur_time >= limit) {
@@ -968,7 +982,7 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 			chartView.setEnabled(true);
 		if (chartTitle != null)
 			chartTitle.setTouchable(true);
-		MainActivity.enableTabAndClick(true);
+		MainActivity.getMainActivity().enableTabAndClick(true);
 		storytellingButton.setEnabled(enable);
 		fbButton.setEnabled(enable);
 	}
@@ -983,7 +997,7 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 			chartView.setEnabled(enable);
 		if (chartTitle != null)
 			chartTitle.setTouchable(enable);
-		MainActivity.enableTabAndClick(enable);
+		MainActivity.getMainActivity().enableTabAndClick(enable);
 		storytellingButton.setEnabled(enable);
 		fbButton.setEnabled(enable);
 	}
@@ -1000,47 +1014,47 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 			return false;
 		}
 	}
-	
-	private class FacebookOnClickListener implements View.OnClickListener{
-			@Override
-			public void onClick(View arg0) {
-				if (!NetworkCheck.networkCheck()) {
-					CustomToastSmall.generateToast(R.string.facebook_no_network);
-					return;
-				}
-				ClickLog.Log(ClickLogId.STORYTELLING_FACEBOOK);
-				Intent intent = new Intent(getActivity(), FacebookActivity.class);
-				intent.putExtra("image_week", page_week);
-				intent.putExtra("image_score", page_states[page_week]);
-				getActivity().startActivity(intent);
+
+	private class FacebookOnClickListener implements View.OnClickListener {
+		@Override
+		public void onClick(View arg0) {
+			if (!NetworkCheck.networkCheck()) {
+				CustomToastSmall.generateToast(R.string.facebook_no_network);
+				return;
 			}
+			ClickLog.Log(ClickLogId.STORYTELLING_FACEBOOK);
+			Intent intent = new Intent(getActivity(), FacebookActivity.class);
+			intent.putExtra("image_week", page_week);
+			intent.putExtra("image_score", page_states[page_week]);
+			getActivity().startActivity(intent);
+		}
 	}
 
 	@Override
 	public int getPageWidth() {
 		return page_width;
 	}
-	
+
 	@Override
 	public int getPageHeight() {
 		return page_height;
 	}
-	
+
 	@Override
 	public void invalidatePage() {
-		if (pageWidget!=null){
+		if (pageWidget != null) {
 			if (from != null)
 				pageWidget.setTouchPosition(from);
 			pageWidget.invalidate();
 		}
 	}
-	
-	private void showToday(){
+
+	private void showToday() {
 		int size = bars.size();
-		if (size > 0){
-			TimeValue tv = bars.get(size-1).tv;
-			openRecordBox(tv, size-1);
+		if (size > 0) {
+			TimeValue tv = bars.get(size - 1).getTv();
+			openRecordBox(tv, size - 1);
 		}
 	}
-	
+
 }

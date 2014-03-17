@@ -50,7 +50,7 @@ public class StatisticMonthView extends StatisticPageView {
 	private Calendar startDate;
 	
 	private static final float ALPHA = 0.4F; 
-	private static final int text_color = App.context.getResources().getColor(R.color.text_gray);
+	private static final int text_color = App.getContext().getResources().getColor(R.color.text_gray);
 	
 	public StatisticMonthView() {
 		super(R.layout.statistic_month_view);
@@ -81,7 +81,7 @@ public class StatisticMonthView extends StatisticPageView {
 		
 		time_labels = new TextView[nBlocks];
 		
-		int textSize = (int) App.context.getResources().getDimensionPixelSize(R.dimen.normal_text_size);
+		int textSize = (int) App.getContext().getResources().getDimensionPixelSize(R.dimen.normal_text_size);
 		for (int i=0;i<nBlocks;++i){
 			time_labels[i] = new TextView(context);
 			time_labels[i].setTextSize(TypedValue.COMPLEX_UNIT_PX,textSize);

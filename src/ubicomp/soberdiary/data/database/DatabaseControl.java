@@ -35,7 +35,7 @@ public class DatabaseControl {
 	private SQLiteDatabase db = null;
 
 	public DatabaseControl() {
-		dbHelper = new DBHelper(App.context);
+		dbHelper = new DBHelper(App.getContext());
 	}
 
 	static final Object sqlLock = new Object();
@@ -99,10 +99,10 @@ public class DatabaseControl {
 		synchronized (sqlLock) {
 
 			Detection prev_data = getLatestDetection();
-			int weeklyScore = prev_data.weeklyScore;
-			if (prev_data.tv.week < data.tv.week)
+			int weeklyScore = prev_data.getWeeklyScore();
+			if (prev_data.getTv().getWeek() < data.getTv().getWeek())
 				weeklyScore = 0;
-			int score = prev_data.score;
+			int score = prev_data.getScore();
 			db = dbHelper.getWritableDatabase();
 			if (!update) {
 				boolean isPrime = !(data.isSameTimeBlock(prev_data));
@@ -114,15 +114,15 @@ public class DatabaseControl {
 					addScore = 0;
 				
 				ContentValues content = new ContentValues();
-				content.put("brac", data.brac);
-				content.put("year", data.tv.year);
-				content.put("month", data.tv.month);
-				content.put("day", data.tv.day);
-				content.put("ts", data.tv.timestamp);
-				content.put("week", data.tv.week);
-				content.put("timeslot", data.tv.timeslot);
-				content.put("emotion", data.emotion);
-				content.put("craving", data.craving);
+				content.put("brac", data.getBrac());
+				content.put("year", data.getTv().getYear());
+				content.put("month", data.getTv().getMonth());
+				content.put("day", data.getTv().getDay());
+				content.put("ts", data.getTv().getTimestamp());
+				content.put("week", data.getTv().getWeek());
+				content.put("timeslot", data.getTv().getTimeslot());
+				content.put("emotion", data.getEmotion());
+				content.put("craving", data.getCraving());
 				content.put("isPrime", isPrimeValue);
 				content.put("weeklyScore", weeklyScore + addScore);
 				content.put("score", score + addScore);
@@ -133,18 +133,18 @@ public class DatabaseControl {
 				int addScore = data.isPass() ? 1 : 0;
 				if (!StartDateCheck.afterStartDate())
 					addScore = 0;
-				String sql = "UPDATE Detection SET isPrime = 0 WHERE ts =" + prev_data.tv.timestamp;
+				String sql = "UPDATE Detection SET isPrime = 0 WHERE ts =" + prev_data.getTv().getTimestamp();
 				db.execSQL(sql);
 				ContentValues content = new ContentValues();
-				content.put("brac", data.brac);
-				content.put("year", data.tv.year);
-				content.put("month", data.tv.month);
-				content.put("day", data.tv.day);
-				content.put("ts", data.tv.timestamp);
-				content.put("week", data.tv.week);
-				content.put("timeslot", data.tv.timeslot);
-				content.put("emotion", data.emotion);
-				content.put("craving", data.craving);
+				content.put("brac", data.getBrac());
+				content.put("year", data.getTv().getYear());
+				content.put("month", data.getTv().getMonth());
+				content.put("day", data.getTv().getDay());
+				content.put("ts", data.getTv().getTimestamp());
+				content.put("week", data.getTv().getWeek());
+				content.put("timeslot", data.getTv().getTimeslot());
+				content.put("emotion", data.getEmotion());
+				content.put("craving", data.getCraving());
 				content.put("isPrime", 1);
 				content.put("weeklyScore", weeklyScore + addScore);
 				content.put("score", score + addScore);
@@ -322,8 +322,8 @@ public class DatabaseControl {
 		db = dbHelper.getReadableDatabase();
 		long ts = System.currentTimeMillis();
 		TimeValue tv = TimeValue.generate(ts);
-		String sql = "SELECT id FROM Detection WHERE" + " year =" + tv.year + " AND month = " + tv.month + " AND day= "
-				+ tv.day + " AND timeSlot= " + tv.timeslot;
+		String sql = "SELECT id FROM Detection WHERE" + " year =" + tv.getYear() + " AND month = " + tv.getMonth() + " AND day= "
+				+ tv.getDay() + " AND timeSlot= " + tv.getTimeslot();
 		Cursor cursor = db.rawQuery(sql, null);
 		boolean result = cursor.getCount() > 0;
 		cursor.close();
@@ -343,10 +343,10 @@ public class DatabaseControl {
 
 	public boolean canTryAgain() {
 		TimeValue curTV = TimeValue.generate(System.currentTimeMillis());
-		int year = curTV.year;
-		int month = curTV.month;
-		int day = curTV.day;
-		int timeslot = curTV.timeslot;
+		int year = curTV.getYear();
+		int month = curTV.getMonth();
+		int day = curTV.getDay();
+		int timeslot = curTV.getTimeslot();
 		db = dbHelper.getReadableDatabase();
 		String sql = "SELECT * FROM DETECTION WHERE year=" + year + " AND month=" + month + " AND day=" + day
 				+ " AND timeSlot=" + timeslot;
@@ -444,34 +444,34 @@ public class DatabaseControl {
 	public void updateRank(Rank data) {
 		synchronized (sqlLock) {
 			db = dbHelper.getWritableDatabase();
-			String sql = "SELECT * FROM Ranking WHERE user_id = '" + data.uid + "'";
+			String sql = "SELECT * FROM Ranking WHERE user_id = '" + data.getUid() + "'";
 			Cursor cursor = db.rawQuery(sql, null);
 			if (cursor.getCount() == 0) {
 				ContentValues content = new ContentValues();
-				content.put("user_id", data.uid);
-				content.put("total_score", data.score);
-				content.put("test_score", data.test);
-				content.put("advice_score", data.advice);
-				content.put("manage_score", data.manage);
-				content.put("story_score", data.story);
-				content.put("advice_questionnaire", data.advice_questionnaire);
-				content.put("advice_emotion_diy", data.advice_emotion_diy);
-				content.put("manage_voice", data.manage_voice);
-				content.put("manage_emotion", data.manage_emotion);
-				content.put("manage_additional", data.manage_additional);
-				content.put("story_read", data.story_read);
-				content.put("story_test", data.story_test);
-				content.put("story_fb", data.story_fb);
+				content.put("user_id", data.getUid());
+				content.put("total_score", data.getScore());
+				content.put("test_score", data.getTest());
+				content.put("advice_score", data.getAdvice());
+				content.put("manage_score", data.getManage());
+				content.put("story_score", data.getStory());
+				content.put("advice_questionnaire", data.getAdviceQuestionnaire());
+				content.put("advice_emotion_diy", data.getAdviceEmotionDiy());
+				content.put("manage_voice", data.getManageVoice());
+				content.put("manage_emotion", data.getManageEmotion());
+				content.put("manage_additional", data.getManageAdditional());
+				content.put("story_read", data.getStoryRead());
+				content.put("story_test", data.getStoryTest());
+				content.put("story_fb", data.getStoryFb());
 				db.insert("Ranking", null, content);
 			} else {
-				sql = "UPDATE Ranking SET" + " total_score = " + data.score + "," + " test_score = " + data.test + ","
-						+ " advice_score = " + data.advice + "," + " manage_score=" + data.manage + ","
-						+ " story_score = " + data.story + "," + " advice_questionnaire=" + data.advice_questionnaire
-						+ "," + " advice_emotion_diy=" + data.advice_emotion_diy + "," + " manage_voice="
-						+ data.manage_voice + "," + " manage_emotion=" + data.manage_emotion + ","
-						+ " manage_additional=" + data.manage_additional + "," + " story_read=" + data.story_read + ","
-						+ " story_test=" + data.story_test + "," + " story_fb=" + data.story_fb + " WHERE user_id = "
-						+ "'" + data.uid + "'";
+				sql = "UPDATE Ranking SET" + " total_score = " + data.getScore() + "," + " test_score = " + data.getTest() + ","
+						+ " advice_score = " + data.getAdvice() + "," + " manage_score=" + data.getManage() + ","
+						+ " story_score = " + data.getStory() + "," + " advice_questionnaire=" + data.getAdviceQuestionnaire()
+						+ "," + " advice_emotion_diy=" + data.getAdviceEmotionDiy() + "," + " manage_voice="
+						+ data.getManageVoice() + "," + " manage_emotion=" + data.getManageEmotion() + ","
+						+ " manage_additional=" + data.getManageAdditional() + "," + " story_read=" + data.getStoryRead() + ","
+						+ " story_test=" + data.getStoryTest() + "," + " story_fb=" + data.getStoryFb() + " WHERE user_id = "
+						+ "'" + data.getUid() + "'";
 				db.execSQL(sql);
 			}
 			cursor.close();
@@ -491,15 +491,15 @@ public class DatabaseControl {
 	public void updateRankShort(Rank data) {
 		synchronized (sqlLock) {
 			db = dbHelper.getWritableDatabase();
-			String sql = "SELECT * FROM RankingShort WHERE user_id = '" + data.uid + "'";
+			String sql = "SELECT * FROM RankingShort WHERE user_id = '" + data.getUid() + "'";
 			Cursor cursor = db.rawQuery(sql, null);
 			if (cursor.getCount() == 0) {
 				ContentValues content = new ContentValues();
-				content.put("user_id", data.uid);
-				content.put("total_score", data.score);
+				content.put("user_id", data.getUid());
+				content.put("total_score", data.getScore());
 				db.insert("RankingShort", null, content);
 			} else {
-				sql = "UPDATE RankingShort SET" + " total_score = " + data.score + " WHERE user_id = " + "'" + data.uid
+				sql = "UPDATE RankingShort SET" + " total_score = " + data.getScore() + " WHERE user_id = " + "'" + data.getUid()
 						+ "'";
 				db.execSQL(sql);
 			}
@@ -532,21 +532,21 @@ public class DatabaseControl {
 		synchronized (sqlLock) {
 			Questionnaire prev_data = getLatestQuestionnaire();
 			int addScore = 0;
-			if (!prev_data.tv.isSameTimeBlock(data.tv) && data.type >= 0)
+			if (!prev_data.getTv().isSameTimeBlock(data.getTv()) && data.getType() >= 0)
 				addScore = 1;
 			if (!StartDateCheck.afterStartDate())
 				addScore = 0;
 			db = dbHelper.getWritableDatabase();
 			ContentValues content = new ContentValues();
-			content.put("year", data.tv.year);
-			content.put("month", data.tv.month);
-			content.put("day", data.tv.day);
-			content.put("ts", data.tv.timestamp);
-			content.put("week", data.tv.week);
-			content.put("timeslot", data.tv.timeslot);
-			content.put("type", data.type);
-			content.put("sequence", data.seq);
-			content.put("score", prev_data.score + addScore);
+			content.put("year", data.getTv().getYear());
+			content.put("month", data.getTv().getMonth());
+			content.put("day", data.getTv().getDay());
+			content.put("ts", data.getTv().getTimestamp());
+			content.put("week", data.getTv().getWeek());
+			content.put("timeslot", data.getTv().getTimeslot());
+			content.put("type", data.getType());
+			content.put("sequence", data.getSeq());
+			content.put("score", prev_data.getScore() + addScore);
 			db.insert("Questionnaire", null, content);
 			db.close();
 			return addScore;
@@ -620,21 +620,21 @@ public class DatabaseControl {
 		synchronized (sqlLock) {
 			EmotionDIY prev_data = getLatestEmotionDIY();
 			int addScore = 0;
-			if (!prev_data.tv.isSameTimeBlock(data.tv))
+			if (!prev_data.getTv().isSameTimeBlock(data.getTv()))
 				addScore = 1;
 			if (!StartDateCheck.afterStartDate())
 				addScore = 0;
 			db = dbHelper.getWritableDatabase();
 			ContentValues content = new ContentValues();
-			content.put("year", data.tv.year);
-			content.put("month", data.tv.month);
-			content.put("day", data.tv.day);
-			content.put("ts", data.tv.timestamp);
-			content.put("week", data.tv.week);
-			content.put("timeslot", data.tv.timeslot);
-			content.put("selection", data.selection);
-			content.put("recreation", data.recreation);
-			content.put("score", prev_data.score + addScore);
+			content.put("year", data.getTv().getYear());
+			content.put("month", data.getTv().getMonth());
+			content.put("day", data.getTv().getDay());
+			content.put("ts", data.getTv().getTimestamp());
+			content.put("week", data.getTv().getWeek());
+			content.put("timeslot", data.getTv().getTimeslot());
+			content.put("selection", data.getSelection());
+			content.put("recreation", data.getRecreation());
+			content.put("score", prev_data.getScore() + addScore);
 			db.insert("EmotionDIY", null, content);
 			db.close();
 			return addScore;
@@ -716,26 +716,26 @@ public class DatabaseControl {
 		synchronized (sqlLock) {
 			EmotionManagement prev_data = getLatestEmotionManagement();
 			int addScore = 0;
-			if (!prev_data.tv.isSameTimeBlock(data.tv))
+			if (!prev_data.getTv().isSameTimeBlock(data.getTv()))
 				addScore = 1;
 			if (!StartDateCheck.afterStartDate())
 				addScore = 0;
 			
 			db = dbHelper.getWritableDatabase();
 			ContentValues content = new ContentValues();
-			content.put("year", data.tv.year);
-			content.put("month", data.tv.month);
-			content.put("day", data.tv.day);
-			content.put("ts", data.tv.timestamp);
-			content.put("week", data.tv.week);
-			content.put("timeslot", data.tv.timeslot);
-			content.put("recordYear", data.recordTv.year);
-			content.put("recordMonth", data.recordTv.month);
-			content.put("recordDay", data.recordTv.day);
-			content.put("emotion", data.emotion);
-			content.put("type", data.type);
-			content.put("reason", data.reason);
-			content.put("score", prev_data.score + addScore);
+			content.put("year", data.getTv().getYear());
+			content.put("month", data.getTv().getMonth());
+			content.put("day", data.getTv().getDay());
+			content.put("ts", data.getTv().getTimestamp());
+			content.put("week", data.getTv().getWeek());
+			content.put("timeslot", data.getTv().getTimeslot());
+			content.put("recordYear", data.getRecordTv().getYear());
+			content.put("recordMonth", data.getRecordTv().getMonth());
+			content.put("recordDay", data.getRecordTv().getDay());
+			content.put("emotion", data.getEmotion());
+			content.put("type", data.getType());
+			content.put("reason", data.getReason());
+			content.put("score", prev_data.getScore() + addScore);
 			db.insert("EmotionManagement", null, content);
 			db.close();
 			return addScore;
@@ -855,8 +855,8 @@ public class DatabaseControl {
 		String sql;
 		Cursor cursor;
 
-		sql = "SELECT * FROM EmotionManagement WHERE" + " recordYear =" + tv.year + " AND recordMonth=" + tv.month
-				+ " AND recordDay =" + tv.day;
+		sql = "SELECT * FROM EmotionManagement WHERE" + " recordYear =" + tv.getYear() + " AND recordMonth=" + tv.getMonth()
+				+ " AND recordDay =" + tv.getDay();
 		cursor = db.rawQuery(sql, null);
 		int count = cursor.getCount();
 		cursor.close();
@@ -889,24 +889,24 @@ public class DatabaseControl {
 		synchronized (sqlLock) {
 			StorytellingTest prev_data = getLatestStorytellingTest();
 			int addScore = 0;
-			if (!prev_data.tv.isSameTimeBlock(data.tv) && data.isCorrect)
+			if (!prev_data.getTv().isSameTimeBlock(data.getTv()) && data.isCorrect())
 				addScore = 1;
 			if (!StartDateCheck.afterStartDate())
 				addScore = 0;
 			
 			db = dbHelper.getWritableDatabase();
 			ContentValues content = new ContentValues();
-			content.put("year", data.tv.year);
-			content.put("month", data.tv.month);
-			content.put("day", data.tv.day);
-			content.put("ts", data.tv.timestamp);
-			content.put("week", data.tv.week);
-			content.put("timeslot", data.tv.timeslot);
-			content.put("questionPage", data.questionPage);
-			content.put("isCorrect", data.isCorrect ? 1 : 0);
-			content.put("selection", data.selection);
-			content.put("agreement", data.agreement);
-			content.put("score", prev_data.score + addScore);
+			content.put("year", data.getTv().getYear());
+			content.put("month", data.getTv().getMonth());
+			content.put("day", data.getTv().getDay());
+			content.put("ts", data.getTv().getTimestamp());
+			content.put("week", data.getTv().getWeek());
+			content.put("timeslot", data.getTv().getTimeslot());
+			content.put("questionPage", data.getQuestionPage());
+			content.put("isCorrect", data.isCorrect() ? 1 : 0);
+			content.put("selection", data.getSelection());
+			content.put("agreement", data.getAgreement());
+			content.put("score", prev_data.getScore() + addScore);
 			db.insert("StorytellingTest", null, content);
 			db.close();
 			return addScore;
@@ -985,23 +985,23 @@ public class DatabaseControl {
 		synchronized (sqlLock) {
 			UserVoiceRecord prev_data = getLatestUserVoiceRecord();
 			int addScore = 0;
-			if (!prev_data.tv.isSameTimeBlock(data.tv))
+			if (!prev_data.getTv().isSameTimeBlock(data.getTv()))
 				addScore = 1;
 			if (!StartDateCheck.afterStartDate())
 				addScore = 0;
 			
 			db = dbHelper.getWritableDatabase();
 			ContentValues content = new ContentValues();
-			content.put("year", data.tv.year);
-			content.put("month", data.tv.month);
-			content.put("day", data.tv.day);
-			content.put("ts", data.tv.timestamp);
-			content.put("week", data.tv.week);
-			content.put("timeSlot", data.tv.timeslot);
-			content.put("recordYear", data.recordTv.year);
-			content.put("recordMonth", data.recordTv.month);
-			content.put("recordDay", data.recordTv.day);
-			content.put("score", prev_data.score + addScore);
+			content.put("year", data.getTv().getYear());
+			content.put("month", data.getTv().getMonth());
+			content.put("day", data.getTv().getDay());
+			content.put("ts", data.getTv().getTimestamp());
+			content.put("week", data.getTv().getWeek());
+			content.put("timeSlot", data.getTv().getTimeslot());
+			content.put("recordYear", data.getRecordTv().getYear());
+			content.put("recordMonth", data.getRecordTv().getMonth());
+			content.put("recordDay", data.getRecordTv().getDay());
+			content.put("score", prev_data.getScore() + addScore);
 			db.insert("UserVoiceRecord", null, content);
 			db.close();
 			return addScore;
@@ -1057,8 +1057,8 @@ public class DatabaseControl {
 		String sql;
 		Cursor cursor;
 
-		sql = "SELECT * FROM UserVoiceRecord WHERE" + " recordYear =" + tv.year + " AND recordMonth=" + tv.month
-				+ " AND recordDay =" + tv.day;
+		sql = "SELECT * FROM UserVoiceRecord WHERE" + " recordYear =" + tv.getYear() + " AND recordMonth=" + tv.getMonth()
+				+ " AND recordDay =" + tv.getDay();
 		cursor = db.rawQuery(sql, null);
 		int count = cursor.getCount();
 		cursor.close();
@@ -1090,7 +1090,7 @@ public class DatabaseControl {
 			StorytellingRead prev_data = getLatestStorytellingRead();
 			int addScore = 0;
 			int addedScore = 0;
-			if (data.tv.afterADay(prev_data.tv)) {
+			if (data.getTv().afterADay(prev_data.getTv())) {
 				addScore = 3;
 				addedScore = 1;
 			}
@@ -1101,15 +1101,15 @@ public class DatabaseControl {
 			
 			db = dbHelper.getWritableDatabase();
 			ContentValues content = new ContentValues();
-			content.put("year", data.tv.year);
-			content.put("month", data.tv.month);
-			content.put("day", data.tv.day);
-			content.put("ts", data.tv.timestamp);
-			content.put("week", data.tv.week);
-			content.put("timeSlot", data.tv.timeslot);
+			content.put("year", data.getTv().getYear());
+			content.put("month", data.getTv().getMonth());
+			content.put("day", data.getTv().getDay());
+			content.put("ts", data.getTv().getTimestamp());
+			content.put("week", data.getTv().getWeek());
+			content.put("timeSlot", data.getTv().getTimeslot());
 			content.put("addedScore", addedScore);
-			content.put("page", data.page);
-			content.put("score", prev_data.score + addScore);
+			content.put("page", data.getPage());
+			content.put("score", prev_data.getScore() + addScore);
 			db.insert("StorytellingRead", null, content);
 			db.close();
 			return addScore;
@@ -1181,9 +1181,9 @@ public class DatabaseControl {
 			db = dbHelper.getWritableDatabase();
 
 			ContentValues content = new ContentValues();
-			content.put("ts", data.tv.timestamp);
-			content.put("message", data.message);
-			content.put("read", data.read ? 1 : 0);
+			content.put("ts", data.getTv().getTimestamp());
+			content.put("message", data.getMessage());
+			content.put("read", data.isRead() ? 1 : 0);
 			db.insert("GCMRead", null, content);
 			db.close();
 		}
@@ -1193,7 +1193,7 @@ public class DatabaseControl {
 		synchronized (sqlLock) {
 			String sql;
 			db = dbHelper.getWritableDatabase();
-			sql = "UPDATE GCMRead SET  read = 1, readTs =" + data.readTv.timestamp + " WHERE ts=" + data.tv.timestamp;
+			sql = "UPDATE GCMRead SET  read = 1, readTs =" + data.getReadTv().getTimestamp() + " WHERE ts=" + data.getTv().getTimestamp();
 			db.execSQL(sql);
 			db.close();
 		}
@@ -1300,26 +1300,26 @@ public class DatabaseControl {
 		synchronized (sqlLock) {
 			FacebookInfo prev_data = getLatestFacebookInfo();
 			int addScore = 0;
-			if (data.tv.afterAWeek(prev_data.tv) && data.uploadSuccess)
+			if (data.getTv().afterAWeek(prev_data.getTv()) && data.isUploadSuccess())
 				addScore = 1;
 			if (!StartDateCheck.afterStartDate())
 				addScore = 0;
 			
 			db = dbHelper.getWritableDatabase();
 			ContentValues content = new ContentValues();
-			content.put("year", data.tv.year);
-			content.put("month", data.tv.month);
-			content.put("day", data.tv.day);
-			content.put("ts", data.tv.timestamp);
-			content.put("week", data.tv.week);
-			content.put("timeslot", data.tv.timeslot);
-			content.put("pageWeek", data.pageWeek);
-			content.put("pageLevel", data.pageLevel);
-			content.put("text", data.text);
+			content.put("year", data.getTv().getYear());
+			content.put("month", data.getTv().getMonth());
+			content.put("day", data.getTv().getDay());
+			content.put("ts", data.getTv().getTimestamp());
+			content.put("week", data.getTv().getWeek());
+			content.put("timeslot", data.getTv().getTimeslot());
+			content.put("pageWeek", data.getPageWeek());
+			content.put("pageLevel", data.getPageLevel());
+			content.put("text", data.getText());
 			content.put("addedScore", addScore);
-			content.put("uploadSuccess", data.uploadSuccess ? 1 : 0);
-			content.put("privacy", data.privacy);
-			content.put("score", prev_data.score + addScore);
+			content.put("uploadSuccess", data.isUploadSuccess() ? 1 : 0);
+			content.put("privacy", data.getPrivacy());
+			content.put("score", prev_data.getScore() + addScore);
 			db.insert("FacebookInfo", null, content);
 			db.close();
 			return addScore;
@@ -1396,24 +1396,24 @@ public class DatabaseControl {
 	public int insertAdditionalQuestionnaire(AdditionalQuestionnaire data) {
 		synchronized (sqlLock) {
 			AdditionalQuestionnaire prev_data = getLatestAdditionalQuestionnaire();
-			int addScore = data.addedScore ? 1 : 0;
+			int addScore = data.isAddedScore() ? 1 : 0;
 			if (!StartDateCheck.afterStartDate())
 				addScore = 0;
-			if (prev_data.tv.isSameDay(data.tv))
+			if (prev_data.getTv().isSameDay(data.getTv()))
 				addScore = 0;
 			
 			db = dbHelper.getWritableDatabase();
 			ContentValues content = new ContentValues();
-			content.put("year", data.tv.year);
-			content.put("month", data.tv.month);
-			content.put("day", data.tv.day);
-			content.put("ts", data.tv.timestamp);
-			content.put("week", data.tv.week);
-			content.put("timeSlot", data.tv.timeslot);
+			content.put("year", data.getTv().getYear());
+			content.put("month", data.getTv().getMonth());
+			content.put("day", data.getTv().getDay());
+			content.put("ts", data.getTv().getTimestamp());
+			content.put("week", data.getTv().getWeek());
+			content.put("timeSlot", data.getTv().getTimeslot());
 			content.put("addedScore", addScore);
-			content.put("emotion", data.emotion);
-			content.put("craving", data.craving);
-			content.put("score", prev_data.score + addScore);
+			content.put("emotion", data.getEmotion());
+			content.put("craving", data.getCraving());
+			content.put("score", prev_data.getScore() + addScore);
 			db.insert("AdditionalQuestionnaire", null, content);
 			db.close();
 			return addScore;
@@ -1469,10 +1469,10 @@ public class DatabaseControl {
 		synchronized (sqlLock) {
 			db = dbHelper.getWritableDatabase();
 			ContentValues content = new ContentValues();
-			content.put("ts", data.tv.timestamp);
-			content.put("detectionTs", data.detectionTv.timestamp);
-			content.put("testSuccess", data.testSuccess ? 1 : 0);
-			content.put("hasData", data.hasData ? 1 : 0);
+			content.put("ts", data.getTv().getTimestamp());
+			content.put("detectionTs", data.getDetectionTv().getTimestamp());
+			content.put("testSuccess", data.isTestSuccess() ? 1 : 0);
+			content.put("hasData", data.hasData() ? 1 : 0);
 			db.insert("UserVoiceFeedback", null, content);
 			db.close();
 		}
@@ -1532,8 +1532,8 @@ public class DatabaseControl {
 		synchronized (sqlLock) {
 			db = dbHelper.getWritableDatabase();
 			ContentValues content = new ContentValues();
-			content.put("ts", data.tv.timestamp);
-			content.put("exchangeCounter", data.exchangeNum);
+			content.put("ts", data.getTv().getTimestamp());
+			content.put("exchangeCounter", data.getExchangeNum());
 			db.insert("ExchangeHistory", null, content);
 			db.close();
 		}

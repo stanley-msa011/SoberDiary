@@ -43,8 +43,8 @@ public class StatisticDayView extends StatisticPageView {
 	private String[] blockHintTime = new String[3];
 	
 	
-	private static final int text_color = App.context.getResources().getColor(R.color.text_gray);
-	private static final int value_color = App.context.getResources().getColor(R.color.white);
+	private static final int text_color = App.getContext().getResources().getColor(R.color.text_gray);
+	private static final int value_color = App.getContext().getResources().getColor(R.color.white);
 	
 	private static final int nBlocks = 3;
 	
@@ -112,14 +112,14 @@ public class StatisticDayView extends StatisticPageView {
 		
 		Detection detection = db.getLatestDetection();
 		
-		brac = detection.brac;
-		brac_time = detection.tv.timestamp;
-		e_idx = detection.emotion;
-		c_idx = detection.craving;
+		brac = detection.getBrac();
+		brac_time = detection.getTv().getTimestamp();
+		e_idx = detection.getEmotion();
+		c_idx = detection.getCraving();
 		
 		circleImages = new ImageView[nBlocks];
 		
-		int textSize = (int) App.context.getResources().getDimensionPixelSize(R.dimen.normal_text_size);
+		int textSize = (int) App.getContext().getResources().getDimensionPixelSize(R.dimen.normal_text_size);
 		circleTexts =new TextView[nBlocks];
 		circleValues = new TextView[nBlocks];
 		for (int i=0;i<nBlocks;++i){
@@ -245,8 +245,8 @@ public class StatisticDayView extends StatisticPageView {
 			craving.setImageDrawable(desireDrawable);
 		
 		Float[] bracs = db.getTodayPrimeBrac();
-		int blockMargin = App.context.getResources().getDimensionPixelSize(R.dimen.day_block_margin_size);
-		int circle_size =  App.context.getResources().getDimensionPixelSize(R.dimen.day_circle_size);
+		int blockMargin = App.getContext().getResources().getDimensionPixelSize(R.dimen.day_block_margin_size);
+		int circle_size =  App.getContext().getResources().getDimensionPixelSize(R.dimen.day_circle_size);
 		
 		int cur_hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
 		

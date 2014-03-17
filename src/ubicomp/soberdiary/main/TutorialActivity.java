@@ -35,7 +35,7 @@ public class TutorialActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if (PreferenceControl.getUseNewSensor())
-			setContentView(R.layout.activity_tutorial_new);
+			setContentView(R.layout.activity_tutorial_new_sensor);
 		else
 			setContentView(R.layout.activity_tutorial);
 
@@ -60,9 +60,9 @@ public class TutorialActivity extends Activity {
 		tab = (ImageView) this.findViewById(R.id.tutorial_tab);
 		layout = (RelativeLayout) this.findViewById(R.id.tutorial_layout);
 
-		anim1 = AnimationUtils.loadAnimation(this, R.anim.tutorial_arrow_animation);
-		anim2 = AnimationUtils.loadAnimation(this, R.anim.tutorial_arrow_animation);
-		anim3 = AnimationUtils.loadAnimation(this, R.anim.tutorial_arrow_animation);
+		anim1 = AnimationUtils.loadAnimation(this, R.anim.animation_tutorial_arrow);
+		anim2 = AnimationUtils.loadAnimation(this, R.anim.animation_tutorial_arrow);
+		anim3 = AnimationUtils.loadAnimation(this, R.anim.animation_tutorial_arrow);
 		
 	}
 

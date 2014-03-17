@@ -12,51 +12,50 @@ import android.graphics.Paint.Align;
 
 public class BitmapGenerator {
 
-	static String[] QUOTE_STR;
-	
-	static public Bitmap generateBitmap(int week,int score){
+	private static String[] QUOTE_STR;
+
+	public static Bitmap generateBitmap(int week, int score) {
 		int res_id = StorytellingGraphics.getPage(score, week);
-		
-		QUOTE_STR = App.context.getResources().getStringArray(R.array.quote_message);
-		Bitmap bmp_t = BitmapFactory.decodeResource(App.context.getResources(), res_id);
+
+		QUOTE_STR = App.getContext().getResources().getStringArray(R.array.quote_message);
+		Bitmap bmp_t = BitmapFactory.decodeResource(App.getContext().getResources(), res_id);
 		Bitmap bmp = bmp_t.copy(Bitmap.Config.ARGB_8888, true);
 		bmp_t.recycle();
-		
-		
+
 		Canvas canvas = new Canvas(bmp);
-		
+
 		int image_x = bmp.getWidth();
 		int image_y = bmp.getHeight();
-		int textSize = image_x * 21/480;
-		
-		
-		//Draw quote
-		int text_color = App.context.getResources().getColor(R.color.page_gray);
+		int textSize = image_x * 21 / 480;
+
+		// Draw quote
+		int text_color = App.getContext().getResources().getColor(R.color.page_gray);
 		Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		paint.setColor(text_color);
 		paint.setTextSize(textSize);
 		paint.setTextAlign(Paint.Align.LEFT);
 		paint.setTypeface(Typefaces.getWordTypeface());
-		
-		int black = App.context.getResources().getColor(R.color.black);
+
+		int black = App.getContext().getResources().getColor(R.color.black);
 		Paint titlePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		titlePaint.setColor(black);
 		titlePaint.setAlpha(35);
-		titlePaint.setTextSize(textSize*3);
+		titlePaint.setTextSize(textSize * 3);
 		titlePaint.setTypeface(Typefaces.getWordTypefaceBold());
 		titlePaint.setTextAlign(Align.CENTER);
-		
-		int top_margin = 	image_y*428/480;
-		int left_margin = image_x*90/480;
-		
+
+		int top_margin = image_y * 428 / 480;
+		int left_margin = image_x * 90 / 480;
+
 		String[] strs = QUOTE_STR[week].split("\n");
-		for (int i=0;i<strs.length;++i){
+		for (int i = 0; i < strs.length; ++i) {
 			canvas.drawText(strs[i], left_margin, top_margin, paint);
 			top_margin += textSize;
 		}
-		
-		canvas.drawText(App.context.getString(R.string.app_name)+" \u00a9", image_x>>1, image_y>>1, titlePaint);
-		
+
+		canvas.drawText(App.getContext().getString(R.string.app_name) + " \u00a9", image_x >> 1, image_y >> 1,
+				titlePaint);
+
 		return bmp;
 	}
 }

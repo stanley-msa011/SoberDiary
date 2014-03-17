@@ -26,7 +26,7 @@ public class SingleRadioGroup {
 	public SingleRadioGroup(Context context,String[] choices,int select_id,long clicklogid){
 		inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		this.choices = choices;
-		layout = (LinearLayout) inflater.inflate(R.layout.question_multi_radio_group, null);
+		layout = (LinearLayout) inflater.inflate(R.layout.bar_radio_group, null);
 		
 		this.select_id = select_id;
 		icons = new ImageView[choices.length];
@@ -48,7 +48,7 @@ public class SingleRadioGroup {
 	
 	public View createItem(int id) {
 
-		LinearLayout layout = (LinearLayout) inflater.inflate(R.layout.question_multi_radio_item, null);
+		LinearLayout layout = (LinearLayout) inflater.inflate(R.layout.bar_radio_item, null);
 		TextView text = (TextView) layout.findViewById(R.id.question_description);
 		text.setTypeface(wordTypeface);
 		text.setText(choices[id]);

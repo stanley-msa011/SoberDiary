@@ -22,18 +22,18 @@ public class ChartLabelView extends View {
 	private String[] type_str = new String[3];
 	private String[] pass_str = new String[2];
 	
-	private int textSize = App.context.getResources().getDimensionPixelSize(R.dimen.sn_text_size);
-	private int base = App.context.getResources().getDimensionPixelSize(R.dimen.chart_label_base);
-	private int gap = App.context.getResources().getDimensionPixelSize(R.dimen.chart_label_gap);
-	private int top = App.context.getResources().getDimensionPixelSize(R.dimen.chart_label_top);
-	private int top2 = App.context.getResources().getDimensionPixelSize(R.dimen.chart_label_top2);
+	private int textSize = App.getContext().getResources().getDimensionPixelSize(R.dimen.sn_text_size);
+	private int base = App.getContext().getResources().getDimensionPixelSize(R.dimen.chart_label_base);
+	private int gap = App.getContext().getResources().getDimensionPixelSize(R.dimen.chart_label_gap);
+	private int top = App.getContext().getResources().getDimensionPixelSize(R.dimen.chart_label_top);
+	private int top2 = App.getContext().getResources().getDimensionPixelSize(R.dimen.chart_label_top2);
 	
 	private int chart_type = 0;
 	
-	private static final int text_color = App.context.getResources().getColor(R.color.chart_text);
-	private static final int green = App.context.getResources().getColor(R.color.green);
-	private static final int orange = App.context.getResources().getColor(R.color.lite_orange);
-	private static final int white = App.context.getResources().getColor(R.color.white);
+	private static final int text_color = App.getContext().getResources().getColor(R.color.chart_text);
+	private static final int green = App.getContext().getResources().getColor(R.color.green);
+	private static final int orange = App.getContext().getResources().getColor(R.color.lite_orange);
+	private static final int white = App.getContext().getResources().getColor(R.color.white);
 	
 	public ChartLabelView(Context context, AttributeSet attrs) {
 		super(context, attrs);

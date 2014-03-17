@@ -4,33 +4,33 @@ import ubicomp.soberdiary.main.App;
 import android.graphics.Typeface;
 
 public class Typefaces {
-	private static Typeface wordTypeface,digitTypeface,wordTypefaceBold,digitTypefaceBold;
-	
-	static public Typeface getDigitTypeface(){
+	private static Typeface wordTypeface, digitTypeface, wordTypefaceBold, digitTypefaceBold;
+
+	public static Typeface getDigitTypeface() {
 		if (digitTypeface == null)
-			digitTypeface =Typeface.createFromAsset(App.context.getAssets(), "fonts/dinproregular.ttf");
+			digitTypeface = Typeface.createFromAsset(App.getContext().getAssets(), "fonts/dinproregular.ttf");
 		return digitTypeface;
 	}
-	
-	static public Typeface getDigitTypefaceBold(){
+
+	public static Typeface getDigitTypefaceBold() {
 		if (digitTypefaceBold == null)
-			digitTypefaceBold =Typeface.createFromAsset(App.context.getAssets(),  "fonts/dinpromedium.ttf");
+			digitTypefaceBold = Typeface.createFromAsset(App.getContext().getAssets(), "fonts/dinpromedium.ttf");
 		return digitTypefaceBold;
 	}
-	
-	static public Typeface getWordTypeface(){
+
+	public static Typeface getWordTypeface() {
 		if (wordTypeface == null)
-			wordTypeface =Typeface.createFromAsset(App.context.getAssets(), "fonts/DFLiHeiStd-W3.otf");
+			wordTypeface = Typeface.createFromAsset(App.getContext().getAssets(), "fonts/DFLiHeiStd-W3.otf");
 		return wordTypeface;
 	}
-	
-	static public Typeface getWordTypefaceBold(){
+
+	public static Typeface getWordTypefaceBold() {
 		if (wordTypefaceBold == null)
-			wordTypefaceBold =Typeface.createFromAsset(App.context.getAssets(), "fonts/DFLiHeiStd-W5.otf");
+			wordTypefaceBold = Typeface.createFromAsset(App.getContext().getAssets(), "fonts/DFLiHeiStd-W5.otf");
 		return wordTypefaceBold;
 	}
-	
-	static public void initAll(){
+
+	public static void initAll() {
 		getDigitTypeface();
 		getDigitTypefaceBold();
 		getWordTypeface();

@@ -27,9 +27,10 @@ public class CameraRecorder {
 
 	private CameraCaller cameraCaller;
 	private Context context;
-	protected Camera camera;
-	protected Camera.PictureCallback pictureCallback;
-	protected ImageFileHandler imgFileHandler;
+	private Camera camera;
+
+	private Camera.PictureCallback pictureCallback;
+	private ImageFileHandler imgFileHandler;
 
 	private PreviewWindow preview;
 	private FrameLayout previewFrame = null;
@@ -38,10 +39,10 @@ public class CameraRecorder {
 	public int picture_count = 0;
 
 	private static final String TAG = "CAM_RECORDER";
-	
+
 	public CameraRecorder(CameraCaller cameraCaller, ImageFileHandler imgFileHandler) {
 		this.cameraCaller = cameraCaller;
-		this.context = App.context;
+		this.context = App.getContext();
 		this.imgFileHandler = imgFileHandler;
 		imgFileHandler.setRecorder(this);
 		pictureCallback = new PictureCallback();
@@ -64,17 +65,16 @@ public class CameraRecorder {
 		try {
 			camera.setParameters(params);
 		} catch (Exception e) {
-			Log.d(TAG,"setParamError "+e.toString());
+			Log.d(TAG, "setParamError " + e.toString());
 		}
-		
-		camera.setErrorCallback(
-				new ErrorCallback(){
-					@Override
-					public void onError(int error, Camera cam) {
-						Log.d(TAG,"ERROR_UNKNOWN "+(error==Camera.CAMERA_ERROR_UNKNOWN));
-						Log.d(TAG,"SERVER_DIED "+(error==Camera.CAMERA_ERROR_SERVER_DIED));
-						Log.d(TAG,"ERROR NUM="+error);
-					}
+
+		camera.setErrorCallback(new ErrorCallback() {
+			@Override
+			public void onError(int error, Camera cam) {
+				Log.d(TAG, "ERROR_UNKNOWN " + (error == Camera.CAMERA_ERROR_UNKNOWN));
+				Log.d(TAG, "SERVER_DIED " + (error == Camera.CAMERA_ERROR_SERVER_DIED));
+				Log.d(TAG, "ERROR NUM=" + error);
+			}
 		});
 
 		setSurfaceCallback();
@@ -108,7 +108,7 @@ public class CameraRecorder {
 		if (previewFrame != null) {
 			preview = new PreviewWindow(context, this);
 			previewHolder = preview.getHolder();
-			if (Build.VERSION.SDK_INT<11)
+			if (Build.VERSION.SDK_INT < 11)
 				previewHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 			previewHolder.addCallback(preview);
 			Point size = cameraCaller.getPreviewSize();
@@ -172,4 +172,7 @@ public class CameraRecorder {
 		cameraCaller.stopByFail(type);
 	}
 
+	public Camera getCamera() {
+		return camera;
+	}
 }

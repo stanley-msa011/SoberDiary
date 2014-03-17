@@ -68,11 +68,12 @@ public class DataUploader {
 		cleanThread.start();
 		try {
 			cleanThread.join(500);
-		} catch (InterruptedException e) {}
-		
+		} catch (InterruptedException e) {
+		}
+
 		if (DefaultCheck.check() || !NetworkCheck.networkCheck())
 			return;
-		
+
 		if (SynchronizedLock.sharedLock.tryLock()) {
 			SynchronizedLock.sharedLock.lock();
 			uploader = new DataUploadTask();
@@ -86,7 +87,7 @@ public class DataUploader {
 		public static final int ERROR = -1;
 		public static final int SUCCESS = 1;
 		private File logDir;
-		
+
 		public DataUploadTask() {
 			db = new DatabaseControl();
 			logDir = new File(MainStorage.getMainStorageDirectory(), "sequence_log");
@@ -95,8 +96,8 @@ public class DataUploader {
 		@Override
 		protected Void doInBackground(Void... arg0) {
 
-			Log.d(TAG,"upload start");
-			
+			Log.d(TAG, "upload start");
+
 			// UserInfo
 			if (connectToServer() == ERROR) {
 				Log.d(TAG, "FAIL TO CONNECT TO THE SERVER");
@@ -128,7 +129,7 @@ public class DataUploader {
 				}
 			}
 
-			//Questionnaire
+			// Questionnaire
 			Questionnaire[] q_data = db.getNotUploadedQuestionnaire();
 			if (q_data != null) {
 				for (int i = 0; i < q_data.length; ++i) {
@@ -137,7 +138,7 @@ public class DataUploader {
 				}
 			}
 
-			//StorytellingTest
+			// StorytellingTest
 			StorytellingTest[] sTest = db.getNotUploadedStorytellingTest();
 			if (sTest != null) {
 				for (int i = 0; i < sTest.length; ++i) {
@@ -146,7 +147,7 @@ public class DataUploader {
 				}
 			}
 
-			//StorytellingRead
+			// StorytellingRead
 			StorytellingRead[] sRead = db.getNotUploadedStorytellingRead();
 			if (sRead != null) {
 				for (int i = 0; i < sRead.length; ++i) {
@@ -155,7 +156,7 @@ public class DataUploader {
 				}
 			}
 
-			//GCMRead
+			// GCMRead
 			GCMRead[] gcm = db.getNotUploadedGCMRead();
 			if (gcm != null) {
 				for (int i = 0; i < gcm.length; ++i) {
@@ -164,7 +165,7 @@ public class DataUploader {
 				}
 			}
 
-			//FacebookInfo
+			// FacebookInfo
 			FacebookInfo[] finfo = db.getNotUploadedFacebookInfo();
 			if (finfo != null) {
 				for (int i = 0; i < finfo.length; ++i) {
@@ -173,7 +174,7 @@ public class DataUploader {
 				}
 			}
 
-			//UserVoiceRecord
+			// UserVoiceRecord
 			UserVoiceRecord[] record = db.getNotUploadedUserVoiceRecord();
 			if (record != null) {
 				for (int i = 0; i < record.length; ++i) {
@@ -181,8 +182,8 @@ public class DataUploader {
 						Log.d(TAG, "FAIL TO UPLOAD - UserVoice");
 				}
 			}
-			
-			//Additional Questionnaire
+
+			// Additional Questionnaire
 			AdditionalQuestionnaire[] addq = db.getNotUploadedAdditionalQuestionnaire();
 			if (addq != null) {
 				for (int i = 0; i < addq.length; ++i) {
@@ -190,67 +191,68 @@ public class DataUploader {
 						Log.d(TAG, "FAIL TO UPLOAD - AdditionalQuestionnaire");
 				}
 			}
-			
-			//ClickLog
+
+			// ClickLog
 			String not_uploaded_files[] = getNotUploadedClickLog();
-			if (not_uploaded_files != null){
-				for (int i=0; i<not_uploaded_files.length; ++i){
+			if (not_uploaded_files != null) {
+				for (int i = 0; i < not_uploaded_files.length; ++i) {
 					File logFile = new File(logDir.getPath(), not_uploaded_files[i]);
-					if(logFile.exists()){
-						Log.d(TAG, "file = "+logFile.getPath());
+					if (logFile.exists()) {
+						Log.d(TAG, "file = " + logFile.getPath());
 						if (connectToServer(logFile) == ERROR)
 							Log.d(TAG, "FAIL TO UPLOAD - Clicklog");
 					}
 				}
-			}			
-			
-			//UserVoiceFeedback
+			}
+
+			// UserVoiceFeedback
 			UserVoiceFeedback[] uvfs = db.getNotUploadedUserVoiceFeedback();
-			if (uvfs != null){
-				Log.d(TAG,"uvfs != null "+uvfs.length);
-				for (int i=0; i<uvfs.length; ++i){
+			if (uvfs != null) {
+				Log.d(TAG, "uvfs != null " + uvfs.length);
+				for (int i = 0; i < uvfs.length; ++i) {
 					if (connectToServer(uvfs[i]) == ERROR)
 						Log.d(TAG, "FAIL TO UPLOAD - UserVoiceFeedback");
 				}
-			}		
-			
-			//ExchangeHistory
+			}
+
+			// ExchangeHistory
 			ExchangeHistory[] ehs = db.getNotUploadedExchangeHistory();
-			if (ehs != null){
-				for (int i=0; i<ehs.length; ++i){
+			if (ehs != null) {
+				for (int i = 0; i < ehs.length; ++i) {
 					if (connectToServer(ehs[i]) == ERROR)
 						Log.d(TAG, "FAIL TO UPLOAD - ExchangeHistory");
 				}
-			}		
-			
+			}
+
 			return null;
 		}
 
 		private String[] getNotUploadedClickLog() {
-			if(!logDir.exists()){
-				Log.d(TAG,"Cannot find clicklog dir");
+			if (!logDir.exists()) {
+				Log.d(TAG, "Cannot find clicklog dir");
 				return null;
 			}
-			
+
 			String[] all_logs = null;
 			String latestUpload = null;
 			File latestUploadFile = new File(logDir, "latest_uploaded");
-			if(latestUploadFile.exists()){	
+			if (latestUploadFile.exists()) {
 				try {
-				    BufferedReader br = new BufferedReader(new FileReader(latestUploadFile));
-				    latestUpload = br.readLine();
-				}catch (IOException e) {}
+					BufferedReader br = new BufferedReader(new FileReader(latestUploadFile));
+					latestUpload = br.readLine();
+				} catch (IOException e) {
+				}
 			}
 			all_logs = logDir.list(new logFilter(latestUpload));
 			return all_logs;
 		}
-		
-		private class logFilter implements FilenameFilter{
+
+		private class logFilter implements FilenameFilter {
 			String _latestUpload;
 			String today;
-			
+
 			@SuppressLint("SimpleDateFormat")
-			public logFilter(String latestUpload){
+			public logFilter(String latestUpload) {
 				_latestUpload = latestUpload;
 				Calendar cal = Calendar.getInstance();
 				cal.setTimeInMillis(System.currentTimeMillis());
@@ -260,21 +262,21 @@ public class DataUploader {
 
 			@Override
 			public boolean accept(File arg0, String arg1) {
-				if(arg1.equals("latest_uploaded"))
+				if (arg1.equals("latest_uploaded"))
 					return false;
-				else{
-					if(today.compareTo(arg1) > 0)
-						if(_latestUpload == null || (_latestUpload != null && (arg1.compareTo(_latestUpload)) > 0))
+				else {
+					if (today.compareTo(arg1) > 0)
+						if (_latestUpload == null || (_latestUpload != null && (arg1.compareTo(_latestUpload)) > 0))
 							return true;
 					return false;
 				}
 			}
 		}
-		
+
 		private void set_uploaded_logfile(String name) {
 			File latestUploadFile = new File(logDir, "latest_uploaded");
 			BufferedWriter writer;
-			try {			
+			try {
 				writer = new BufferedWriter(new FileWriter(latestUploadFile));
 				writer.write(name);
 				writer.newLine();
@@ -284,7 +286,7 @@ public class DataUploader {
 				writer = null;
 			}
 		}
-		
+
 		@Override
 		protected void onPostExecute(Void result) {
 			uploader = null;
@@ -296,8 +298,6 @@ public class DataUploader {
 			uploader = null;
 			SynchronizedLock.sharedLock.unlock();
 		}
-
-		
 
 		private int connectToServer() {
 			try {
@@ -317,8 +317,8 @@ public class DataUploader {
 				DefaultHttpClient httpClient = HttpSecureClientGenerator.getSecureHttpClient();
 				HttpPost httpPost = HttpPostGenerator.genPost(detection);
 				if (upload(httpClient, httpPost)) {
-					db.setDetectionUploaded(detection.tv.timestamp);
-				}else
+					db.setDetectionUploaded(detection.getTv().getTimestamp());
+				} else
 					return ERROR;
 			} catch (Exception e) {
 				Log.d(TAG, "EXCEPTION:" + e.toString());
@@ -327,26 +327,12 @@ public class DataUploader {
 			return SUCCESS;
 		}
 
-		private int connectToServer(EmotionDIY data){
+		private int connectToServer(EmotionDIY data) {
 			try {
 				DefaultHttpClient httpClient = HttpSecureClientGenerator.getSecureHttpClient();
 				HttpPost httpPost = HttpPostGenerator.genPost(data);
 				if (upload(httpClient, httpPost))
-					db.setEmotionDIYUploaded(data.tv.timestamp);
-				else return ERROR;
-			} catch (Exception e) {
-				Log.d(TAG, "EXCEPTION:" + e.toString());
-				return ERROR;
-			}
-			return SUCCESS;
-		}
-		
-		private int connectToServer(EmotionManagement data){
-			try {
-				DefaultHttpClient httpClient = HttpSecureClientGenerator.getSecureHttpClient();
-				HttpPost httpPost = HttpPostGenerator.genPost(data);
-				if (upload(httpClient, httpPost))
-					db.setEmotionManagementUploaded(data.tv.timestamp);
+					db.setEmotionDIYUploaded(data.getTv().getTimestamp());
 				else
 					return ERROR;
 			} catch (Exception e) {
@@ -356,12 +342,12 @@ public class DataUploader {
 			return SUCCESS;
 		}
 
-		private int connectToServer(StorytellingRead data){
+		private int connectToServer(EmotionManagement data) {
 			try {
 				DefaultHttpClient httpClient = HttpSecureClientGenerator.getSecureHttpClient();
 				HttpPost httpPost = HttpPostGenerator.genPost(data);
 				if (upload(httpClient, httpPost))
-					db.setStorytellingReadUploaded(data.tv.timestamp);
+					db.setEmotionManagementUploaded(data.getTv().getTimestamp());
 				else
 					return ERROR;
 			} catch (Exception e) {
@@ -370,13 +356,13 @@ public class DataUploader {
 			}
 			return SUCCESS;
 		}
-		
-		private int connectToServer(StorytellingTest data){
+
+		private int connectToServer(StorytellingRead data) {
 			try {
 				DefaultHttpClient httpClient = HttpSecureClientGenerator.getSecureHttpClient();
 				HttpPost httpPost = HttpPostGenerator.genPost(data);
 				if (upload(httpClient, httpPost))
-					db.setStorytellingTestUploaded(data.tv.timestamp);
+					db.setStorytellingReadUploaded(data.getTv().getTimestamp());
 				else
 					return ERROR;
 			} catch (Exception e) {
@@ -385,13 +371,13 @@ public class DataUploader {
 			}
 			return SUCCESS;
 		}
-		
-		private int connectToServer(GCMRead data){
+
+		private int connectToServer(StorytellingTest data) {
 			try {
 				DefaultHttpClient httpClient = HttpSecureClientGenerator.getSecureHttpClient();
 				HttpPost httpPost = HttpPostGenerator.genPost(data);
 				if (upload(httpClient, httpPost))
-					db.setGCMReadUploaded(data.tv.timestamp);
+					db.setStorytellingTestUploaded(data.getTv().getTimestamp());
 				else
 					return ERROR;
 			} catch (Exception e) {
@@ -400,13 +386,13 @@ public class DataUploader {
 			}
 			return SUCCESS;
 		}
-		
-		private int connectToServer(FacebookInfo data){
+
+		private int connectToServer(GCMRead data) {
 			try {
 				DefaultHttpClient httpClient = HttpSecureClientGenerator.getSecureHttpClient();
 				HttpPost httpPost = HttpPostGenerator.genPost(data);
 				if (upload(httpClient, httpPost))
-					db.setFacebookInfoUploaded(data.tv.timestamp);
+					db.setGCMReadUploaded(data.getTv().getTimestamp());
 				else
 					return ERROR;
 			} catch (Exception e) {
@@ -415,13 +401,13 @@ public class DataUploader {
 			}
 			return SUCCESS;
 		}
-		
-		private int connectToServer(UserVoiceRecord data){
+
+		private int connectToServer(FacebookInfo data) {
 			try {
 				DefaultHttpClient httpClient = HttpSecureClientGenerator.getSecureHttpClient();
 				HttpPost httpPost = HttpPostGenerator.genPost(data);
 				if (upload(httpClient, httpPost))
-					db.setUserVoiceRecordUploaded(data.tv.timestamp);
+					db.setFacebookInfoUploaded(data.getTv().getTimestamp());
 				else
 					return ERROR;
 			} catch (Exception e) {
@@ -430,13 +416,13 @@ public class DataUploader {
 			}
 			return SUCCESS;
 		}
-		
-		private int connectToServer(Questionnaire data){
+
+		private int connectToServer(UserVoiceRecord data) {
 			try {
 				DefaultHttpClient httpClient = HttpSecureClientGenerator.getSecureHttpClient();
 				HttpPost httpPost = HttpPostGenerator.genPost(data);
 				if (upload(httpClient, httpPost))
-					db.setQuestionnaireUploaded(data.tv.timestamp);
+					db.setUserVoiceRecordUploaded(data.getTv().getTimestamp());
 				else
 					return ERROR;
 			} catch (Exception e) {
@@ -445,13 +431,13 @@ public class DataUploader {
 			}
 			return SUCCESS;
 		}
-		
-		private int connectToServer(AdditionalQuestionnaire data){
+
+		private int connectToServer(Questionnaire data) {
 			try {
 				DefaultHttpClient httpClient = HttpSecureClientGenerator.getSecureHttpClient();
 				HttpPost httpPost = HttpPostGenerator.genPost(data);
 				if (upload(httpClient, httpPost))
-					db.setAdditionalQuestionnaireUploaded(data.tv.timestamp);
+					db.setQuestionnaireUploaded(data.getTv().getTimestamp());
 				else
 					return ERROR;
 			} catch (Exception e) {
@@ -460,8 +446,23 @@ public class DataUploader {
 			}
 			return SUCCESS;
 		}
-		
-		private int connectToServer(File data){//ClickLog
+
+		private int connectToServer(AdditionalQuestionnaire data) {
+			try {
+				DefaultHttpClient httpClient = HttpSecureClientGenerator.getSecureHttpClient();
+				HttpPost httpPost = HttpPostGenerator.genPost(data);
+				if (upload(httpClient, httpPost))
+					db.setAdditionalQuestionnaireUploaded(data.getTv().getTimestamp());
+				else
+					return ERROR;
+			} catch (Exception e) {
+				Log.d(TAG, "EXCEPTION:" + e.toString());
+				return ERROR;
+			}
+			return SUCCESS;
+		}
+
+		private int connectToServer(File data) {// ClickLog
 			try {
 				DefaultHttpClient httpClient = HttpSecureClientGenerator.getSecureHttpClient();
 				HttpPost httpPost = HttpPostGenerator.genPost(data);
@@ -475,13 +476,13 @@ public class DataUploader {
 			}
 			return SUCCESS;
 		}
-		
-		private int connectToServer(UserVoiceFeedback data){//UserVoiceFeedback
+
+		private int connectToServer(UserVoiceFeedback data) {// UserVoiceFeedback
 			try {
 				DefaultHttpClient httpClient = HttpSecureClientGenerator.getSecureHttpClient();
 				HttpPost httpPost = HttpPostGenerator.genPost(data);
 				if (upload(httpClient, httpPost))
-					db.setUserVoiceFeedbackUploaded(data.tv.timestamp);
+					db.setUserVoiceFeedbackUploaded(data.getTv().getTimestamp());
 				else
 					return ERROR;
 			} catch (Exception e) {
@@ -490,13 +491,13 @@ public class DataUploader {
 			}
 			return SUCCESS;
 		}
-		
-		private int connectToServer(ExchangeHistory data){//ExchangeHistory
+
+		private int connectToServer(ExchangeHistory data) {// ExchangeHistory
 			try {
 				DefaultHttpClient httpClient = HttpSecureClientGenerator.getSecureHttpClient();
 				HttpPost httpPost = HttpPostGenerator.genPost(data);
 				if (upload(httpClient, httpPost))
-					db.setExchangeHistoryUploaded(data.tv.timestamp);
+					db.setExchangeHistoryUploaded(data.getTv().getTimestamp());
 				else
 					return ERROR;
 			} catch (Exception e) {
@@ -519,13 +520,13 @@ public class DataUploader {
 					Log.d(TAG, "response=" + response);
 					result &= (response.contains("upload success"));
 					Log.d(TAG, "result=" + result);
-				}else{
+				} else {
 					Log.d(TAG, "fail result=" + result);
 				}
 			} catch (ClientProtocolException e) {
-				Log.d(TAG,"ClientProtocolException "+e.toString());
+				Log.d(TAG, "ClientProtocolException " + e.toString());
 			} catch (IOException e) {
-				Log.d(TAG,"IOException "+e.toString());
+				Log.d(TAG, "IOException " + e.toString());
 			} finally {
 				if (httpClient != null) {
 					ClientConnectionManager ccm = httpClient.getConnectionManager();

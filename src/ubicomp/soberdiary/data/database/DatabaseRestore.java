@@ -314,11 +314,11 @@ public class DatabaseRestore extends AsyncTask<Void, Void, Void> {
 						UserVoiceRecord uvr = new UserVoiceRecord(timestamp, year, month, day, score);
 						db.restoreUserVoiceRecord(uvr);
 
-						File src = new File(dir + "/" + uid + "/audio_records/" + uvr.recordTv.toFileString() + ".3gp");
+						File src = new File(dir + "/" + uid + "/audio_records/" + uvr.getRecordTv().toFileString() + ".3gp");
 						File audio_dir = new File(dir + "/audio_records");
 						if (!audio_dir.exists())
 							audio_dir.mkdirs();
-						File dst = new File(audio_dir + "/" + uvr.recordTv.toFileString() + ".3gp");
+						File dst = new File(audio_dir + "/" + uvr.getRecordTv().toFileString() + ".3gp");
 						moveFiles(src, dst);
 
 					}
