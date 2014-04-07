@@ -214,7 +214,6 @@ public class TestFragment extends Fragment implements GPSInterface, TestQuestion
 			startText.setText(R.string.start);
 			helpButton.setOnClickListener(new TutorialOnClickListener());
 			face.setVisibility(View.INVISIBLE);
-
 			break;
 		}
 	}
@@ -744,6 +743,9 @@ public class TestFragment extends Fragment implements GPSInterface, TestQuestion
 		case 4:
 			data.putInt("msg", R.string.test_guide_zero_duration);
 			break;
+		case 6:
+			data.putInt("msg", R.string.test_guide_pressure_error);
+			break;
 		default:
 			data.putInt("msg", R.string.test_guide_test_timeout);
 			break;
@@ -835,8 +837,10 @@ public class TestFragment extends Fragment implements GPSInterface, TestQuestion
 	}
 
 	public void setGuideMessage(int str_id_top, int str_id_bottom) {
-		guideTop.setText(str_id_top);
-		guideBottom.setText(str_id_bottom);
+		if (guideTop != null)
+			guideTop.setText(str_id_top);
+		if (guideBottom != null)
+			guideBottom.setText(str_id_bottom);
 	}
 
 	public void setStartButtonText(int str_id) {

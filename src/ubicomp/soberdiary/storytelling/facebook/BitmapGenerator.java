@@ -18,7 +18,15 @@ public class BitmapGenerator {
 		int res_id = StorytellingGraphics.getPage(score, week);
 
 		QUOTE_STR = App.getContext().getResources().getStringArray(R.array.quote_message);
-		Bitmap bmp_t = BitmapFactory.decodeResource(App.getContext().getResources(), res_id);
+		
+		Bitmap bmp_temp = BitmapFactory.decodeResource(App.getContext().getResources(), res_id);
+		int temp_x = bmp_temp.getWidth();
+		int temp_y = bmp_temp.getHeight();
+		
+		//Bitmap bmp_t = BitmapFactory.decodeResource(App.getContext().getResources(), res_id);
+		Bitmap bmp_t = Bitmap.createScaledBitmap(bmp_temp, temp_x*2/3, temp_y*2/3, true);
+		bmp_temp.recycle();
+		
 		Bitmap bmp = bmp_t.copy(Bitmap.Config.ARGB_8888, true);
 		bmp_t.recycle();
 
@@ -45,7 +53,7 @@ public class BitmapGenerator {
 		titlePaint.setTextAlign(Align.CENTER);
 
 		int top_margin = image_y * 428 / 480;
-		int left_margin = image_x * 90 / 480;
+		int left_margin = image_x * 45 / 480;
 
 		String[] strs = QUOTE_STR[week].split("\n");
 		for (int i = 0; i < strs.length; ++i) {

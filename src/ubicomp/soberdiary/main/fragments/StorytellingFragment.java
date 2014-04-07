@@ -998,8 +998,10 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 		if (chartTitle != null)
 			chartTitle.setTouchable(enable);
 		MainActivity.getMainActivity().enableTabAndClick(enable);
-		storytellingButton.setEnabled(enable);
-		fbButton.setEnabled(enable);
+		if (storytellingButton != null)
+			storytellingButton.setEnabled(enable);
+		if (fbButton != null)
+			fbButton.setEnabled(enable);
 	}
 
 	private class RecordBoxOnKeyListener implements OnKeyListener {

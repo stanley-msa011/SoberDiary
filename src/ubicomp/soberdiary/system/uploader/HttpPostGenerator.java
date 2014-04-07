@@ -9,10 +9,8 @@ import java.util.List;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.mime.MultipartEntity;
-import org.apache.http.entity.mime.content.ContentBody;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.FileBody;
-import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 
@@ -86,26 +84,22 @@ public class HttpPostGenerator {
 		File mainStorageDir = MainStorage.getMainStorageDirectory();
 		String uid = PreferenceControl.getUID();
 		HttpPost httpPost = new HttpPost(SERVER_URL_DETECTION);
-		MultipartEntity mpEntity = new MultipartEntity();
-
-		try {
-			mpEntity.addPart("uid", new StringBody(uid));
-			mpEntity.addPart("data[]", new StringBody(String.valueOf(detection.getTv().getTimestamp())));
-			mpEntity.addPart("data[]", new StringBody(String.valueOf(detection.getTv().getWeek())));
-			mpEntity.addPart("data[]", new StringBody(String.valueOf(detection.getEmotion())));
-			mpEntity.addPart("data[]", new StringBody(String.valueOf(detection.getCraving())));
-			mpEntity.addPart("data[]", new StringBody(String.valueOf(detection.isPrime() ? 1 : 0)));
-			mpEntity.addPart("data[]", new StringBody(String.valueOf(detection.getWeeklyScore())));
-			mpEntity.addPart("data[]", new StringBody(String.valueOf(detection.getScore())));
-		} catch (UnsupportedEncodingException e) {
-		}
+		MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+		builder.addTextBody("uid", uid);
+		builder.addTextBody("data[]", String.valueOf(detection.getTv().getTimestamp()));
+		builder.addTextBody("data[]", String.valueOf(detection.getTv().getWeek()));
+		builder.addTextBody("data[]", String.valueOf(detection.getEmotion()));
+		builder.addTextBody("data[]", String.valueOf(detection.getCraving()));
+		builder.addTextBody("data[]", String.valueOf(detection.isPrime() ? 1 : 0));
+		builder.addTextBody("data[]", String.valueOf(detection.getWeeklyScore()));
+		builder.addTextBody("data[]", String.valueOf(detection.getScore()));
 
 		String _ts = String.valueOf(detection.getTv().getTimestamp());
 		File[] imageFiles;
-		File textFile, geoFile, detectionFile, geoAccuracyFile;
+		File testFile, geoFile, detectionFile, geoAccuracyFile;
 		imageFiles = new File[3];
 
-		textFile = new File(mainStorageDir.getPath() + File.separator + _ts + File.separator + _ts + ".txt");
+		testFile = new File(mainStorageDir.getPath() + File.separator + _ts + File.separator + _ts + ".txt");
 		geoFile = new File(mainStorageDir.getPath() + File.separator + _ts + File.separator + "geo.txt");
 		detectionFile = new File(mainStorageDir.getPath() + File.separator + _ts + File.separator
 				+ "detection_detail.txt");
@@ -115,28 +109,19 @@ public class HttpPostGenerator {
 			imageFiles[i] = new File(mainStorageDir.getPath() + File.separator + _ts + File.separator + "IMG_" + _ts
 					+ "_" + (i + 1) + ".sob");
 
-		ContentBody cbFile = new FileBody(textFile, "application/octet-stream");
-		mpEntity.addPart("file[]", cbFile);
-		if (geoFile.exists()) {
-			ContentBody cbGeoFile = new FileBody(geoFile, "application/octet-stream");
-			mpEntity.addPart("file[]", cbGeoFile);
-		}
-		if (geoAccuracyFile.exists()) {
-			ContentBody cbGeoAccuracyFile = new FileBody(geoAccuracyFile, "application/octet-stream");
-			mpEntity.addPart("file[]", cbGeoAccuracyFile);
-		}
-
-		if (detectionFile.exists()) {
-			ContentBody cbDetectionFile = new FileBody(detectionFile, "application/octet-stream");
-			mpEntity.addPart("file[]", cbDetectionFile);
-		}
-
-		for (int i = 0; i < imageFiles.length; ++i) {
+		if (testFile.exists())
+			builder.addPart("file[]", new FileBody(testFile));
+		if (geoFile.exists())
+			builder.addPart("file[]", new FileBody(geoFile));
+		if (geoAccuracyFile.exists())
+			builder.addPart("file[]", new FileBody(geoAccuracyFile));
+		if (detectionFile.exists())
+			builder.addPart("file[]", new FileBody(detectionFile));
+		for (int i = 0; i < imageFiles.length; ++i)
 			if (imageFiles[i].exists())
-				mpEntity.addPart("file[]", new FileBody(imageFiles[i], "image/jpeg"));
-		}
+				builder.addPart("file[]", new FileBody(imageFiles[i]));
 
-		httpPost.setEntity(mpEntity);
+		httpPost.setEntity(builder.build());
 		return httpPost;
 	}
 
@@ -290,27 +275,24 @@ public class HttpPostGenerator {
 			mainStorageDir.mkdirs();
 		boolean uploadFile = PreferenceControl.uploadVoiceRecord();
 
-		MultipartEntity mpEntity = new MultipartEntity();
+		MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+		builder.addTextBody("uid", uid);
+		builder.addTextBody("data[]", String.valueOf(data.getTv().getTimestamp()));
+		builder.addTextBody("data[]", String.valueOf(data.getTv().getWeek()));
+		builder.addTextBody("data[]", String.valueOf(data.getRecordTv().getYear()));
+		builder.addTextBody("data[]", String.valueOf(data.getRecordTv().getMonth() + 1));
+		builder.addTextBody("data[]", String.valueOf(data.getRecordTv().getDay()));
+		builder.addTextBody("data[]", String.valueOf(data.getScore()));
+		builder.addTextBody("data[]", String.valueOf(uploadFile ? 1 : 0));
 
-		try {
-			mpEntity.addPart("uid", new StringBody(uid));
-			mpEntity.addPart("data[]", new StringBody(String.valueOf(data.getTv().getTimestamp())));
-			mpEntity.addPart("data[]", new StringBody(String.valueOf(data.getTv().getWeek())));
-			mpEntity.addPart("data[]", new StringBody(String.valueOf(data.getRecordTv().getYear())));
-			mpEntity.addPart("data[]", new StringBody(String.valueOf(data.getRecordTv().getMonth() + 1)));
-			mpEntity.addPart("data[]", new StringBody(String.valueOf(data.getRecordTv().getDay())));
-			mpEntity.addPart("data[]", new StringBody(String.valueOf(data.getScore())));
-			mpEntity.addPart("data[]", new StringBody(String.valueOf(uploadFile ? 1 : 0)));
-		} catch (UnsupportedEncodingException e) {
-		}
 		if (mainStorageDir != null) {
 			File audio = new File(mainStorageDir, data.toFileString() + ".3gp");
-			if (uploadFile && audio.exists()) {
-				ContentBody aFile = new FileBody(audio, "application/octet-stream");
-				mpEntity.addPart("file[]", aFile);
-			}
+			if (uploadFile && audio.exists())
+				builder.addPart("file[]", new FileBody(audio));
 		}
-		httpPost.setEntity(mpEntity);
+
+		httpPost.setEntity(builder.build());
+
 		return httpPost;
 	}
 
@@ -338,18 +320,14 @@ public class HttpPostGenerator {
 		SERVER_URL_CLICKLOG = ServerUrl.SERVER_URL_CLICKLOG();
 		HttpPost httpPost = new HttpPost(SERVER_URL_CLICKLOG);
 		String uid = PreferenceControl.getUID();
-		MultipartEntity mpEntity = new MultipartEntity();
-		try {
-			mpEntity.addPart("uid", new StringBody(uid));
-		} catch (UnsupportedEncodingException e) {
-		}
 
+		MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+		builder.addTextBody("uid", uid);
 		if (logFile.exists()) {
-			ContentBody cbLogFile = new FileBody(logFile, "application/octet-stream");
-			mpEntity.addPart("file[]", cbLogFile);
+			builder.addPart("file[]", new FileBody(logFile));
 		}
+		httpPost.setEntity(builder.build());
 
-		httpPost.setEntity(mpEntity);
 		return httpPost;
 	}
 
@@ -361,24 +339,21 @@ public class HttpPostGenerator {
 		if (!mainStorageDir.exists())
 			mainStorageDir.mkdirs();
 
-		MultipartEntity mpEntity = new MultipartEntity();
-
-		try {
-			mpEntity.addPart("uid", new StringBody(uid));
-			mpEntity.addPart("data[]", new StringBody(String.valueOf(data.getTv().getTimestamp())));
-			mpEntity.addPart("data[]", new StringBody(String.valueOf(data.getDetectionTv().getTimestamp())));
-			mpEntity.addPart("data[]", new StringBody(String.valueOf(data.isTestSuccess() ? 1 : 0)));
-			mpEntity.addPart("data[]", new StringBody(String.valueOf(data.hasData() ? 1 : 0)));
-		} catch (UnsupportedEncodingException e) {
-		}
+		MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+		builder.addTextBody("uid", uid);
+		builder.addTextBody("data[]", String.valueOf(data.getTv().getTimestamp()));
+		builder.addTextBody("data[]", String.valueOf(data.getDetectionTv().getTimestamp()));
+		builder.addTextBody("data[]", String.valueOf(data.isTestSuccess() ? 1 : 0));
+		builder.addTextBody("data[]", String.valueOf(data.hasData() ? 1 : 0));
 		if (mainStorageDir != null) {
 			File audio = new File(mainStorageDir, data.getDetectionTv().getTimestamp() + ".3gp");
 			if (audio.exists() && data.hasData()) {
-				ContentBody aFile = new FileBody(audio, "application/octet-stream");
-				mpEntity.addPart("file[]", aFile);
+				builder.addPart("file[]", new FileBody(audio));
 			}
 		}
-		httpPost.setEntity(mpEntity);
+
+		httpPost.setEntity(builder.build());
+
 		return httpPost;
 	}
 

@@ -43,19 +43,47 @@ public class DatabaseControl {
 	// Detection
 
 	public Detection[] getAllPrimeDetection() {
-		db = dbHelper.getReadableDatabase();
-		String sql = "SELECT * FROM DETECTION WHERE isPrime = 1 ORDER BY ts ASC";
-		Cursor cursor = db.rawQuery(sql, null);
-		int count = cursor.getCount();
-		if (count == 0) {
+		synchronized (sqlLock) {
+			db = dbHelper.getReadableDatabase();
+			String sql = "SELECT * FROM DETECTION WHERE isPrime = 1 ORDER BY ts ASC";
+			Cursor cursor = db.rawQuery(sql, null);
+			int count = cursor.getCount();
+			if (count == 0) {
+				cursor.close();
+				db.close();
+				return null;
+			}
+
+			Detection[] detections = new Detection[count];
+			for (int i = 0; i < count; ++i) {
+				cursor.moveToPosition(i);
+				float brac = cursor.getFloat(1);
+				long ts = cursor.getLong(5);
+				int emotion = cursor.getInt(8);
+				int craving = cursor.getInt(9);
+				boolean isPrime = cursor.getInt(10) == 1;
+				int weeklyScore = cursor.getInt(11);
+				int score = cursor.getInt(12);
+				detections[i] = new Detection(brac, ts, emotion, craving, isPrime, weeklyScore, score);
+			}
+
 			cursor.close();
 			db.close();
-			return null;
+			return detections;
 		}
+	}
 
-		Detection[] detections = new Detection[count];
-		for (int i = 0; i < count; ++i) {
-			cursor.moveToPosition(i);
+	public Detection getLatestDetection() {
+		synchronized (sqlLock) {
+			db = dbHelper.getReadableDatabase();
+			String sql = "SELECT * FROM DETECTION ORDER BY ts DESC LIMIT 1";
+			Cursor cursor = db.rawQuery(sql, null);
+			if (!cursor.moveToFirst()) {
+				cursor.close();
+				db.close();
+				return new Detection(0f, 0, -1, -1, false, 0, 0);
+			}
+
 			float brac = cursor.getFloat(1);
 			long ts = cursor.getLong(5);
 			int emotion = cursor.getInt(8);
@@ -63,36 +91,12 @@ public class DatabaseControl {
 			boolean isPrime = cursor.getInt(10) == 1;
 			int weeklyScore = cursor.getInt(11);
 			int score = cursor.getInt(12);
-			detections[i] = new Detection(brac, ts, emotion, craving, isPrime, weeklyScore, score);
-		}
+			Detection detection = new Detection(brac, ts, emotion, craving, isPrime, weeklyScore, score);
 
-		cursor.close();
-		db.close();
-		return detections;
-	}
-
-	public Detection getLatestDetection() {
-		db = dbHelper.getReadableDatabase();
-		String sql = "SELECT * FROM DETECTION ORDER BY ts DESC LIMIT 1";
-		Cursor cursor = db.rawQuery(sql, null);
-		if (!cursor.moveToFirst()) {
 			cursor.close();
 			db.close();
-			return new Detection(0f, 0, -1, -1, false, 0, 0);
+			return detection;
 		}
-
-		float brac = cursor.getFloat(1);
-		long ts = cursor.getLong(5);
-		int emotion = cursor.getInt(8);
-		int craving = cursor.getInt(9);
-		boolean isPrime = cursor.getInt(10) == 1;
-		int weeklyScore = cursor.getInt(11);
-		int score = cursor.getInt(12);
-		Detection detection = new Detection(brac, ts, emotion, craving, isPrime, weeklyScore, score);
-
-		cursor.close();
-		db.close();
-		return detection;
 	}
 
 	public int insertDetection(Detection data, boolean update, Context context) {
@@ -112,7 +116,7 @@ public class DatabaseControl {
 				addScore += isPrime && data.isPass() ? 1 : 0;
 				if (!StartDateCheck.afterStartDate())
 					addScore = 0;
-				
+
 				ContentValues content = new ContentValues();
 				content.put("brac", data.getBrac());
 				content.put("year", data.getTv().getYear());
@@ -156,87 +160,91 @@ public class DatabaseControl {
 	}
 
 	public Float[] getTodayPrimeBrac() {
-		Float[] brac = new Float[3];
-		Calendar cal = Calendar.getInstance();
-		int year = cal.get(Calendar.YEAR);
-		int month = cal.get(Calendar.MONTH);
-		int day = cal.get(Calendar.DATE);
+		synchronized (sqlLock) {
+			Float[] brac = new Float[3];
+			Calendar cal = Calendar.getInstance();
+			int year = cal.get(Calendar.YEAR);
+			int month = cal.get(Calendar.MONTH);
+			int day = cal.get(Calendar.DATE);
 
-		db = dbHelper.getReadableDatabase();
+			db = dbHelper.getReadableDatabase();
 
-		String sql = "SELECT brac,timeSlot FROM Detection WHERE year = " + year + " AND month = " + month
-				+ " AND day = " + day + " AND isPrime = 1" + " ORDER BY timeSlot ASC";
-		Cursor cursor = db.rawQuery(sql, null);
+			String sql = "SELECT brac,timeSlot FROM Detection WHERE year = " + year + " AND month = " + month
+					+ " AND day = " + day + " AND isPrime = 1" + " ORDER BY timeSlot ASC";
+			Cursor cursor = db.rawQuery(sql, null);
 
-		int count = cursor.getCount();
+			int count = cursor.getCount();
 
-		for (int i = 0; i < count; ++i) {
-			cursor.moveToPosition(i);
-			float _brac = cursor.getFloat(0);
-			int _timeSlot = cursor.getInt(1);
-			brac[_timeSlot] = _brac;
+			for (int i = 0; i < count; ++i) {
+				cursor.moveToPosition(i);
+				float _brac = cursor.getFloat(0);
+				int _timeSlot = cursor.getInt(1);
+				brac[_timeSlot] = _brac;
+			}
+			cursor.close();
+			db.close();
+			return brac;
 		}
-		cursor.close();
-		db.close();
-		return brac;
 	}
 
 	public Float[] getMultiDaysPrimeBrac(int n_days) {
-		Calendar cal = Calendar.getInstance();
-		cal.set(Calendar.HOUR_OF_DAY, 0);
-		cal.set(Calendar.MINUTE, 0);
-		cal.set(Calendar.SECOND, 0);
-		cal.set(Calendar.MILLISECOND, 0);
-		final long DAY = AlarmManager.INTERVAL_DAY;
-		long ts_days = (long) (n_days - 1) * DAY;
-		long start_ts = cal.getTimeInMillis() - ts_days;
+		synchronized (sqlLock) {
+			Calendar cal = Calendar.getInstance();
+			cal.set(Calendar.HOUR_OF_DAY, 0);
+			cal.set(Calendar.MINUTE, 0);
+			cal.set(Calendar.SECOND, 0);
+			cal.set(Calendar.MILLISECOND, 0);
+			final long DAY = AlarmManager.INTERVAL_DAY;
+			long ts_days = (long) (n_days - 1) * DAY;
+			long start_ts = cal.getTimeInMillis() - ts_days;
 
-		String sql = "SELECT brac,ts,timeSlot FROM Detection WHERE ts >=" + start_ts + " AND isPrime = 1"
-				+ " ORDER BY ts ASC";
-		db = dbHelper.getReadableDatabase();
-		Cursor cursor = db.rawQuery(sql, null);
+			String sql = "SELECT brac,ts,timeSlot FROM Detection WHERE ts >=" + start_ts + " AND isPrime = 1"
+					+ " ORDER BY ts ASC";
+			db = dbHelper.getReadableDatabase();
+			Cursor cursor = db.rawQuery(sql, null);
 
-		Float[] brac = new Float[3 * n_days];
-		long ts_from = start_ts;
-		long ts_to = start_ts + DAY;
-		int pointer = 0;
-		int count = cursor.getCount();
+			Float[] brac = new Float[3 * n_days];
+			long ts_from = start_ts;
+			long ts_to = start_ts + DAY;
+			int pointer = 0;
+			int count = cursor.getCount();
 
-		for (int i = 0; i < brac.length; ++i) {
-			int timeSlot = i % 3;
+			for (int i = 0; i < brac.length; ++i) {
+				int timeSlot = i % 3;
 
-			float _brac;
-			long _ts;
-			int _timeSlot;
-			while (pointer < count) {
-				cursor.moveToPosition(pointer);
-				_brac = cursor.getFloat(0);
-				_ts = cursor.getLong(1);
-				_timeSlot = cursor.getInt(2);
-				if (_ts < ts_from) {
-					++pointer;
-					continue;
-				} else if (_ts >= ts_to) {
+				float _brac;
+				long _ts;
+				int _timeSlot;
+				while (pointer < count) {
+					cursor.moveToPosition(pointer);
+					_brac = cursor.getFloat(0);
+					_ts = cursor.getLong(1);
+					_timeSlot = cursor.getInt(2);
+					if (_ts < ts_from) {
+						++pointer;
+						continue;
+					} else if (_ts >= ts_to) {
+						break;
+					}
+					if (_timeSlot > timeSlot)
+						break;
+					else if (_timeSlot < timeSlot) {
+						++pointer;
+						continue;
+					}
+					brac[i] = _brac;
 					break;
 				}
-				if (_timeSlot > timeSlot)
-					break;
-				else if (_timeSlot < timeSlot) {
-					++pointer;
-					continue;
-				}
-				brac[i] = _brac;
-				break;
-			}
 
-			if (timeSlot == 2) {
-				ts_from += DAY;
-				ts_to += DAY;
+				if (timeSlot == 2) {
+					ts_from += DAY;
+					ts_to += DAY;
+				}
 			}
+			cursor.close();
+			db.close();
+			return brac;
 		}
-		cursor.close();
-		db.close();
-		return brac;
 	}
 
 	public void setDetectionUploaded(long ts) {
@@ -249,150 +257,132 @@ public class DatabaseControl {
 	}
 
 	public Integer[] getDetectionScoreByWeek() {
-		db = dbHelper.getReadableDatabase();
-		int curWeek = WeekNumCheck.getWeek(Calendar.getInstance().getTimeInMillis());
-		Integer[] scores = new Integer[curWeek + 1];
+		synchronized (sqlLock) {
+			db = dbHelper.getReadableDatabase();
+			int curWeek = WeekNumCheck.getWeek(Calendar.getInstance().getTimeInMillis());
+			Integer[] scores = new Integer[curWeek + 1];
 
-		String sql = "SELECT weeklyScore, week FROM Detection WHERE week<=" + curWeek + " GROUP BY week";
+			String sql = "SELECT weeklyScore, week FROM Detection WHERE week<=" + curWeek + " GROUP BY week";
 
-		Cursor cursor = db.rawQuery(sql, null);
-		int count = cursor.getCount();
-		int pointer = 0;
-		int week = 0;
-		for (int i = 0; i < scores.length; ++i) {
-			while (pointer < count) {
-				cursor.moveToPosition(pointer);
-				week = cursor.getInt(1);
-				if (week < i) {
-					++pointer;
-					continue;
-				} else if (week > i)
+			Cursor cursor = db.rawQuery(sql, null);
+			int count = cursor.getCount();
+			int pointer = 0;
+			int week = 0;
+			for (int i = 0; i < scores.length; ++i) {
+				while (pointer < count) {
+					cursor.moveToPosition(pointer);
+					week = cursor.getInt(1);
+					if (week < i) {
+						++pointer;
+						continue;
+					} else if (week > i)
+						break;
+					int weeklyScore = cursor.getInt(0);
+					scores[i] = weeklyScore;
 					break;
-				int weeklyScore = cursor.getInt(0);
-				scores[i] = weeklyScore;
-				break;
+				}
 			}
-		}
-		for (int i = 0; i < scores.length; ++i)
-			if (scores[i] == null)
-				scores[i] = 0;
+			for (int i = 0; i < scores.length; ++i)
+				if (scores[i] == null)
+					scores[i] = 0;
 
-		cursor.close();
-		db.close();
-		return scores;
+			cursor.close();
+			db.close();
+			return scores;
+		}
 	}
 
 	public Detection[] getAllNotUploadedDetection() {
-		db = dbHelper.getReadableDatabase();
-		long cur_ts = System.currentTimeMillis();
-		long gps_ts = PreferenceControl.getGPSStartTime() + GPSService.GPS_TOTAL_TIME;
-		String sql;
-		if (cur_ts <= gps_ts) {
-			long gps_detection_ts = PreferenceControl.getDetectionTimestamp();
-			sql = "SELECT * FROM Detection WHERE upload = 0 AND ts <> " + gps_detection_ts + " ORDER BY ts ASC";
-		} else {
-			sql = "SELECT * FROM Detection WHERE upload = 0  ORDER BY ts ASC";
-		}
-		Cursor cursor = db.rawQuery(sql, null);
-		int count = cursor.getCount();
-		if (count == 0) {
+		synchronized (sqlLock) {
+			db = dbHelper.getReadableDatabase();
+			long cur_ts = System.currentTimeMillis();
+			long gps_ts = PreferenceControl.getGPSStartTime() + GPSService.GPS_TOTAL_TIME;
+			String sql;
+			if (cur_ts <= gps_ts) {
+				long gps_detection_ts = PreferenceControl.getDetectionTimestamp();
+				sql = "SELECT * FROM Detection WHERE upload = 0 AND ts <> " + gps_detection_ts + " ORDER BY ts ASC";
+			} else {
+				sql = "SELECT * FROM Detection WHERE upload = 0  ORDER BY ts ASC";
+			}
+			Cursor cursor = db.rawQuery(sql, null);
+			int count = cursor.getCount();
+			if (count == 0) {
+				cursor.close();
+				db.close();
+				return null;
+			}
+
+			Detection[] detections = new Detection[count];
+			for (int i = 0; i < count; ++i) {
+				cursor.moveToPosition(i);
+				float brac = cursor.getFloat(1);
+				long ts = cursor.getLong(5);
+				int emotion = cursor.getInt(8);
+				int craving = cursor.getInt(9);
+				boolean isPrime = cursor.getInt(10) == 1;
+				int weeklyScore = cursor.getInt(11);
+				int score = cursor.getInt(12);
+				detections[i] = new Detection(brac, ts, emotion, craving, isPrime, weeklyScore, score);
+			}
 			cursor.close();
 			db.close();
-			return null;
+			return detections;
 		}
-
-		Detection[] detections = new Detection[count];
-		for (int i = 0; i < count; ++i) {
-			cursor.moveToPosition(i);
-			float brac = cursor.getFloat(1);
-			long ts = cursor.getLong(5);
-			int emotion = cursor.getInt(8);
-			int craving = cursor.getInt(9);
-			boolean isPrime = cursor.getInt(10) == 1;
-			int weeklyScore = cursor.getInt(11);
-			int score = cursor.getInt(12);
-			detections[i] = new Detection(brac, ts, emotion, craving, isPrime, weeklyScore, score);
-		}
-		cursor.close();
-		db.close();
-		return detections;
 	}
 
 	public boolean detectionIsDone() {
-		db = dbHelper.getReadableDatabase();
-		long ts = System.currentTimeMillis();
-		TimeValue tv = TimeValue.generate(ts);
-		String sql = "SELECT id FROM Detection WHERE" + " year =" + tv.getYear() + " AND month = " + tv.getMonth() + " AND day= "
-				+ tv.getDay() + " AND timeSlot= " + tv.getTimeslot();
-		Cursor cursor = db.rawQuery(sql, null);
-		boolean result = cursor.getCount() > 0;
-		cursor.close();
-		db.close();
-		return result;
+		synchronized (sqlLock) {
+			db = dbHelper.getReadableDatabase();
+			long ts = System.currentTimeMillis();
+			TimeValue tv = TimeValue.generate(ts);
+			String sql = "SELECT id FROM Detection WHERE" + " year =" + tv.getYear() + " AND month = " + tv.getMonth()
+					+ " AND day= " + tv.getDay() + " AND timeSlot= " + tv.getTimeslot();
+			Cursor cursor = db.rawQuery(sql, null);
+			boolean result = cursor.getCount() > 0;
+			cursor.close();
+			db.close();
+			return result;
+		}
 	}
 
 	public int getPrimeDetectionPassTimes() {
-		db = dbHelper.getReadableDatabase();
-		String sql = "SELECT * FROM Detection WHERE isPrime = 1 AND brac < " + Detection.BRAC_THRESHOLD;
-		Cursor cursor = db.rawQuery(sql, null);
-		int count = cursor.getCount();
-		cursor.close();
-		db.close();
-		return count;
+		synchronized (sqlLock) {
+			db = dbHelper.getReadableDatabase();
+			String sql = "SELECT * FROM Detection WHERE isPrime = 1 AND brac < " + Detection.BRAC_THRESHOLD;
+			Cursor cursor = db.rawQuery(sql, null);
+			int count = cursor.getCount();
+			cursor.close();
+			db.close();
+			return count;
+		}
 	}
 
 	public boolean canTryAgain() {
-		TimeValue curTV = TimeValue.generate(System.currentTimeMillis());
-		int year = curTV.getYear();
-		int month = curTV.getMonth();
-		int day = curTV.getDay();
-		int timeslot = curTV.getTimeslot();
-		db = dbHelper.getReadableDatabase();
-		String sql = "SELECT * FROM DETECTION WHERE year=" + year + " AND month=" + month + " AND day=" + day
-				+ " AND timeSlot=" + timeslot;
-		Cursor cursor = db.rawQuery(sql, null);
-		return (cursor.getCount() == 1);
+		synchronized (sqlLock) {
+			TimeValue curTV = TimeValue.generate(System.currentTimeMillis());
+			int year = curTV.getYear();
+			int month = curTV.getMonth();
+			int day = curTV.getDay();
+			int timeslot = curTV.getTimeslot();
+			db = dbHelper.getReadableDatabase();
+			String sql = "SELECT * FROM DETECTION WHERE year=" + year + " AND month=" + month + " AND day=" + day
+					+ " AND timeSlot=" + timeslot;
+			Cursor cursor = db.rawQuery(sql, null);
+			return (cursor.getCount() == 1);
+		}
 	}
 
 	// Ranking
 	public Rank getMyRank() {
-		db = dbHelper.getReadableDatabase();
-		String sql = "SELECT * FROM Ranking WHERE user_id='" + PreferenceControl.getUID() + "'";
-		Cursor cursor = db.rawQuery(sql, null);
-		if (!cursor.moveToFirst()) {
-			cursor.close();
-			db.close();
-			return new Rank("", 0);
-		}
-		String uid = cursor.getString(0);
-		int score = cursor.getInt(1);
-		int test = cursor.getInt(2);
-		int advice = cursor.getInt(3);
-		int manage = cursor.getInt(4);
-		int story = cursor.getInt(5);
-		int[] additionals = new int[8];
-		for (int j = 0; j < additionals.length; ++j)
-			additionals[j] = cursor.getInt(6 + j);
-		Rank rank = new Rank(uid, score, test, advice, manage, story, additionals);
-		cursor.close();
-		db.close();
-		return rank;
-	}
-
-	public Rank[] getAllRanks() {
-		Rank[] ranks = null;
-		db = dbHelper.getReadableDatabase();
-		String sql = "SELECT * FROM Ranking ORDER BY total_score DESC, user_id ASC";
-		Cursor cursor = db.rawQuery(sql, null);
-		int count = cursor.getCount();
-		if (count == 0) {
-			cursor.close();
-			db.close();
-			return null;
-		}
-		ranks = new Rank[count];
-		for (int i = 0; i < count; ++i) {
-			cursor.moveToPosition(i);
+		synchronized (sqlLock) {
+			db = dbHelper.getReadableDatabase();
+			String sql = "SELECT * FROM Ranking WHERE user_id='" + PreferenceControl.getUID() + "'";
+			Cursor cursor = db.rawQuery(sql, null);
+			if (!cursor.moveToFirst()) {
+				cursor.close();
+				db.close();
+				return new Rank("", 0);
+			}
 			String uid = cursor.getString(0);
 			int score = cursor.getInt(1);
 			int test = cursor.getInt(2);
@@ -402,34 +392,68 @@ public class DatabaseControl {
 			int[] additionals = new int[8];
 			for (int j = 0; j < additionals.length; ++j)
 				additionals[j] = cursor.getInt(6 + j);
-			ranks[i] = new Rank(uid, score, test, advice, manage, story, additionals);
+			Rank rank = new Rank(uid, score, test, advice, manage, story, additionals);
+			cursor.close();
+			db.close();
+			return rank;
 		}
-		cursor.close();
-		db.close();
-		return ranks;
+	}
+
+	public Rank[] getAllRanks() {
+		synchronized (sqlLock) {
+			Rank[] ranks = null;
+			db = dbHelper.getReadableDatabase();
+			String sql = "SELECT * FROM Ranking ORDER BY total_score DESC, user_id ASC";
+			Cursor cursor = db.rawQuery(sql, null);
+			int count = cursor.getCount();
+			if (count == 0) {
+				cursor.close();
+				db.close();
+				return null;
+			}
+			ranks = new Rank[count];
+			for (int i = 0; i < count; ++i) {
+				cursor.moveToPosition(i);
+				String uid = cursor.getString(0);
+				int score = cursor.getInt(1);
+				int test = cursor.getInt(2);
+				int advice = cursor.getInt(3);
+				int manage = cursor.getInt(4);
+				int story = cursor.getInt(5);
+				int[] additionals = new int[8];
+				for (int j = 0; j < additionals.length; ++j)
+					additionals[j] = cursor.getInt(6 + j);
+				ranks[i] = new Rank(uid, score, test, advice, manage, story, additionals);
+			}
+			cursor.close();
+			db.close();
+			return ranks;
+		}
 	}
 
 	public Rank[] getAllRankShort() {
-		Rank[] ranks = null;
-		db = dbHelper.getReadableDatabase();
-		String sql = "SELECT * FROM RankingShort ORDER BY total_score DESC, user_id ASC";
-		Cursor cursor = db.rawQuery(sql, null);
-		int count = cursor.getCount();
-		if (count == 0) {
+		synchronized (sqlLock) {
+			Rank[] ranks = null;
+			db = dbHelper.getReadableDatabase();
+			String sql = "SELECT * FROM RankingShort ORDER BY total_score DESC, user_id ASC";
+			Cursor cursor = db.rawQuery(sql, null);
+			int count = cursor.getCount();
+			if (count == 0) {
+				cursor.close();
+				db.close();
+				return null;
+			}
+			ranks = new Rank[count];
+			for (int i = 0; i < count; ++i) {
+				cursor.moveToPosition(i);
+				String uid = cursor.getString(0);
+				int score = cursor.getInt(1);
+				ranks[i] = new Rank(uid, score);
+			}
 			cursor.close();
 			db.close();
-			return null;
+			return ranks;
 		}
-		ranks = new Rank[count];
-		for (int i = 0; i < count; ++i) {
-			cursor.moveToPosition(i);
-			String uid = cursor.getString(0);
-			int score = cursor.getInt(1);
-			ranks[i] = new Rank(uid, score);
-		}
-		cursor.close();
-		db.close();
-		return ranks;
 	}
 
 	public void clearRank() {
@@ -464,14 +488,14 @@ public class DatabaseControl {
 				content.put("story_fb", data.getStoryFb());
 				db.insert("Ranking", null, content);
 			} else {
-				sql = "UPDATE Ranking SET" + " total_score = " + data.getScore() + "," + " test_score = " + data.getTest() + ","
-						+ " advice_score = " + data.getAdvice() + "," + " manage_score=" + data.getManage() + ","
-						+ " story_score = " + data.getStory() + "," + " advice_questionnaire=" + data.getAdviceQuestionnaire()
-						+ "," + " advice_emotion_diy=" + data.getAdviceEmotionDiy() + "," + " manage_voice="
-						+ data.getManageVoice() + "," + " manage_emotion=" + data.getManageEmotion() + ","
-						+ " manage_additional=" + data.getManageAdditional() + "," + " story_read=" + data.getStoryRead() + ","
-						+ " story_test=" + data.getStoryTest() + "," + " story_fb=" + data.getStoryFb() + " WHERE user_id = "
-						+ "'" + data.getUid() + "'";
+				sql = "UPDATE Ranking SET" + " total_score = " + data.getScore() + "," + " test_score = "
+						+ data.getTest() + "," + " advice_score = " + data.getAdvice() + "," + " manage_score="
+						+ data.getManage() + "," + " story_score = " + data.getStory() + "," + " advice_questionnaire="
+						+ data.getAdviceQuestionnaire() + "," + " advice_emotion_diy=" + data.getAdviceEmotionDiy()
+						+ "," + " manage_voice=" + data.getManageVoice() + "," + " manage_emotion="
+						+ data.getManageEmotion() + "," + " manage_additional=" + data.getManageAdditional() + ","
+						+ " story_read=" + data.getStoryRead() + "," + " story_test=" + data.getStoryTest() + ","
+						+ " story_fb=" + data.getStoryFb() + " WHERE user_id = " + "'" + data.getUid() + "'";
 				db.execSQL(sql);
 			}
 			cursor.close();
@@ -499,8 +523,8 @@ public class DatabaseControl {
 				content.put("total_score", data.getScore());
 				db.insert("RankingShort", null, content);
 			} else {
-				sql = "UPDATE RankingShort SET" + " total_score = " + data.getScore() + " WHERE user_id = " + "'" + data.getUid()
-						+ "'";
+				sql = "UPDATE RankingShort SET" + " total_score = " + data.getScore() + " WHERE user_id = " + "'"
+						+ data.getUid() + "'";
 				db.execSQL(sql);
 			}
 			cursor.close();
@@ -511,21 +535,23 @@ public class DatabaseControl {
 	// Questionnaire
 
 	public Questionnaire getLatestQuestionnaire() {
-		db = dbHelper.getReadableDatabase();
-		String sql;
-		Cursor cursor;
-		sql = "SELECT * FROM Questionnaire WHERE type >= 0 ORDER BY ts DESC LIMIT 1";
-		cursor = db.rawQuery(sql, null);
-		if (!cursor.moveToFirst()) {
-			cursor.close();
-			db.close();
-			return new Questionnaire(0, 0, null, 0);
+		synchronized (sqlLock) {
+			db = dbHelper.getReadableDatabase();
+			String sql;
+			Cursor cursor;
+			sql = "SELECT * FROM Questionnaire WHERE type >= 0 ORDER BY ts DESC LIMIT 1";
+			cursor = db.rawQuery(sql, null);
+			if (!cursor.moveToFirst()) {
+				cursor.close();
+				db.close();
+				return new Questionnaire(0, 0, null, 0);
+			}
+			long ts = cursor.getLong(4);
+			int type = cursor.getInt(7);
+			String seq = cursor.getString(8);
+			int score = cursor.getInt(9);
+			return new Questionnaire(ts, type, seq, score);
 		}
-		long ts = cursor.getLong(4);
-		int type = cursor.getInt(7);
-		String seq = cursor.getString(8);
-		int score = cursor.getInt(9);
-		return new Questionnaire(ts, type, seq, score);
 	}
 
 	public int insertQuestionnaire(Questionnaire data) {
@@ -554,37 +580,38 @@ public class DatabaseControl {
 	}
 
 	public Questionnaire[] getNotUploadedQuestionnaire() {
-		Questionnaire[] data = null;
+		synchronized (sqlLock) {
+			Questionnaire[] data = null;
 
-		db = dbHelper.getReadableDatabase();
-		String sql;
-		Cursor cursor;
+			db = dbHelper.getReadableDatabase();
+			String sql;
+			Cursor cursor;
 
-		sql = "SELECT * FROM Questionnaire WHERE upload = 0";
-		cursor = db.rawQuery(sql, null);
-		int count = cursor.getCount();
-		if (count == 0) {
+			sql = "SELECT * FROM Questionnaire WHERE upload = 0";
+			cursor = db.rawQuery(sql, null);
+			int count = cursor.getCount();
+			if (count == 0) {
+				cursor.close();
+				db.close();
+				return null;
+			}
+
+			data = new Questionnaire[count];
+
+			for (int i = 0; i < count; ++i) {
+				cursor.moveToPosition(i);
+				long ts = cursor.getLong(4);
+				int type = cursor.getInt(7);
+				String seq = cursor.getString(8);
+				int score = cursor.getInt(9);
+				data[i] = new Questionnaire(ts, type, seq, score);
+			}
+
 			cursor.close();
 			db.close();
-			return null;
+
+			return data;
 		}
-
-		data = new Questionnaire[count];
-
-		for (int i = 0; i < count; ++i) {
-			cursor.moveToPosition(i);
-			long ts = cursor.getLong(4);
-			int type = cursor.getInt(7);
-			String seq = cursor.getString(8);
-			int score = cursor.getInt(9);
-			data[i] = new Questionnaire(ts, type, seq, score);
-		}
-
-		cursor.close();
-		db.close();
-
-		return data;
-
 	}
 
 	public void setQuestionnaireUploaded(long ts) {
@@ -599,21 +626,23 @@ public class DatabaseControl {
 	// EmotionDIY
 
 	public EmotionDIY getLatestEmotionDIY() {
-		db = dbHelper.getReadableDatabase();
-		String sql;
-		Cursor cursor;
-		sql = "SELECT * FROM EmotionDIY ORDER BY ts DESC LIMIT 1";
-		cursor = db.rawQuery(sql, null);
-		if (!cursor.moveToFirst()) {
-			cursor.close();
-			db.close();
-			return new EmotionDIY(0, 0, null, 0);
+		synchronized (sqlLock) {
+			db = dbHelper.getReadableDatabase();
+			String sql;
+			Cursor cursor;
+			sql = "SELECT * FROM EmotionDIY ORDER BY ts DESC LIMIT 1";
+			cursor = db.rawQuery(sql, null);
+			if (!cursor.moveToFirst()) {
+				cursor.close();
+				db.close();
+				return new EmotionDIY(0, 0, null, 0);
+			}
+			long ts = cursor.getLong(4);
+			int selection = cursor.getInt(7);
+			String recreation = cursor.getString(8);
+			int score = cursor.getInt(9);
+			return new EmotionDIY(ts, selection, recreation, score);
 		}
-		long ts = cursor.getLong(4);
-		int selection = cursor.getInt(7);
-		String recreation = cursor.getString(8);
-		int score = cursor.getInt(9);
-		return new EmotionDIY(ts, selection, recreation, score);
 	}
 
 	public int insertEmotionDIY(EmotionDIY data) {
@@ -642,37 +671,38 @@ public class DatabaseControl {
 	}
 
 	public EmotionDIY[] getNotUploadedEmotionDIY() {
-		EmotionDIY[] data = null;
+		synchronized (sqlLock) {
+			EmotionDIY[] data = null;
 
-		db = dbHelper.getReadableDatabase();
-		String sql;
-		Cursor cursor;
+			db = dbHelper.getReadableDatabase();
+			String sql;
+			Cursor cursor;
 
-		sql = "SELECT * FROM EmotionDIY WHERE upload = 0";
-		cursor = db.rawQuery(sql, null);
-		int count = cursor.getCount();
-		if (count == 0) {
+			sql = "SELECT * FROM EmotionDIY WHERE upload = 0";
+			cursor = db.rawQuery(sql, null);
+			int count = cursor.getCount();
+			if (count == 0) {
+				cursor.close();
+				db.close();
+				return null;
+			}
+
+			data = new EmotionDIY[count];
+
+			for (int i = 0; i < count; ++i) {
+				cursor.moveToPosition(i);
+				long ts = cursor.getLong(4);
+				int selection = cursor.getInt(7);
+				String recreation = cursor.getString(8);
+				int score = cursor.getInt(9);
+				data[i] = new EmotionDIY(ts, selection, recreation, score);
+			}
+
 			cursor.close();
 			db.close();
-			return null;
+
+			return data;
 		}
-
-		data = new EmotionDIY[count];
-
-		for (int i = 0; i < count; ++i) {
-			cursor.moveToPosition(i);
-			long ts = cursor.getLong(4);
-			int selection = cursor.getInt(7);
-			String recreation = cursor.getString(8);
-			int score = cursor.getInt(9);
-			data[i] = new EmotionDIY(ts, selection, recreation, score);
-		}
-
-		cursor.close();
-		db.close();
-
-		return data;
-
 	}
 
 	public void setEmotionDIYUploaded(long ts) {
@@ -686,30 +716,32 @@ public class DatabaseControl {
 
 	// EmotionManagement
 	public EmotionManagement getLatestEmotionManagement() {
-		db = dbHelper.getReadableDatabase();
-		String sql;
-		Cursor cursor;
-		sql = "SELECT * FROM EmotionManagement ORDER BY ts DESC LIMIT 1";
-		cursor = db.rawQuery(sql, null);
-		if (!cursor.moveToFirst()) {
-			cursor.close();
-			db.close();
-			Calendar cal = Calendar.getInstance();
-			cal.setTimeInMillis(0);
-			int year = cal.get(Calendar.YEAR);
-			int month = cal.get(Calendar.MONTH);
-			int day = cal.get(Calendar.DAY_OF_MONTH);
-			return new EmotionManagement(0, year, month, day, 0, 0, null, 0);
+		synchronized (sqlLock) {
+			db = dbHelper.getReadableDatabase();
+			String sql;
+			Cursor cursor;
+			sql = "SELECT * FROM EmotionManagement ORDER BY ts DESC LIMIT 1";
+			cursor = db.rawQuery(sql, null);
+			if (!cursor.moveToFirst()) {
+				cursor.close();
+				db.close();
+				Calendar cal = Calendar.getInstance();
+				cal.setTimeInMillis(0);
+				int year = cal.get(Calendar.YEAR);
+				int month = cal.get(Calendar.MONTH);
+				int day = cal.get(Calendar.DAY_OF_MONTH);
+				return new EmotionManagement(0, year, month, day, 0, 0, null, 0);
+			}
+			long ts = cursor.getLong(4);
+			int year = cursor.getInt(7);
+			int month = cursor.getInt(8);
+			int day = cursor.getInt(9);
+			int emotion = cursor.getInt(10);
+			int type = cursor.getInt(11);
+			String reason = cursor.getString(12);
+			int score = cursor.getInt(13);
+			return new EmotionManagement(ts, year, month, day, emotion, type, reason, score);
 		}
-		long ts = cursor.getLong(4);
-		int year = cursor.getInt(7);
-		int month = cursor.getInt(8);
-		int day = cursor.getInt(9);
-		int emotion = cursor.getInt(10);
-		int type = cursor.getInt(11);
-		String reason = cursor.getString(12);
-		int score = cursor.getInt(13);
-		return new EmotionManagement(ts, year, month, day, emotion, type, reason, score);
 	}
 
 	public int insertEmotionManagement(EmotionManagement data) {
@@ -720,7 +752,7 @@ public class DatabaseControl {
 				addScore = 1;
 			if (!StartDateCheck.afterStartDate())
 				addScore = 0;
-			
+
 			db = dbHelper.getWritableDatabase();
 			ContentValues content = new ContentValues();
 			content.put("year", data.getTv().getYear());
@@ -743,80 +775,82 @@ public class DatabaseControl {
 	}
 
 	public EmotionManagement[] getNotUploadedEmotionManagement() {
-		EmotionManagement[] data = null;
+		synchronized (sqlLock) {
+			EmotionManagement[] data = null;
 
-		db = dbHelper.getReadableDatabase();
-		String sql;
-		Cursor cursor;
+			db = dbHelper.getReadableDatabase();
+			String sql;
+			Cursor cursor;
 
-		sql = "SELECT * FROM EmotionManagement WHERE upload = 0";
-		cursor = db.rawQuery(sql, null);
-		int count = cursor.getCount();
-		if (count == 0) {
+			sql = "SELECT * FROM EmotionManagement WHERE upload = 0";
+			cursor = db.rawQuery(sql, null);
+			int count = cursor.getCount();
+			if (count == 0) {
+				cursor.close();
+				db.close();
+				return null;
+			}
+
+			data = new EmotionManagement[count];
+
+			for (int i = 0; i < count; ++i) {
+				cursor.moveToPosition(i);
+				long ts = cursor.getLong(4);
+				int year = cursor.getInt(7);
+				int month = cursor.getInt(8);
+				int day = cursor.getInt(9);
+				int emotion = cursor.getInt(10);
+				int type = cursor.getInt(11);
+				String reason = cursor.getString(12);
+				int score = cursor.getInt(13);
+				data[i] = new EmotionManagement(ts, year, month, day, emotion, type, reason, score);
+			}
+
 			cursor.close();
 			db.close();
-			return null;
+
+			return data;
 		}
-
-		data = new EmotionManagement[count];
-
-		for (int i = 0; i < count; ++i) {
-			cursor.moveToPosition(i);
-			long ts = cursor.getLong(4);
-			int year = cursor.getInt(7);
-			int month = cursor.getInt(8);
-			int day = cursor.getInt(9);
-			int emotion = cursor.getInt(10);
-			int type = cursor.getInt(11);
-			String reason = cursor.getString(12);
-			int score = cursor.getInt(13);
-			data[i] = new EmotionManagement(ts, year, month, day, emotion, type, reason, score);
-		}
-
-		cursor.close();
-		db.close();
-
-		return data;
-
 	}
 
 	public EmotionManagement[] getDayEmotionManagement(int rYear, int rMonth, int rDay) {
-		EmotionManagement[] data = null;
+		synchronized (sqlLock) {
+			EmotionManagement[] data = null;
 
-		db = dbHelper.getReadableDatabase();
-		String sql;
-		Cursor cursor;
+			db = dbHelper.getReadableDatabase();
+			String sql;
+			Cursor cursor;
 
-		sql = "SELECT * FROM EmotionManagement WHERE recordYear = " + rYear + " AND recordMonth = " + rMonth
-				+ " AND recordDay = " + rDay + " ORDER BY id DESC";
-		cursor = db.rawQuery(sql, null);
-		int count = cursor.getCount();
-		if (count == 0) {
+			sql = "SELECT * FROM EmotionManagement WHERE recordYear = " + rYear + " AND recordMonth = " + rMonth
+					+ " AND recordDay = " + rDay + " ORDER BY id DESC";
+			cursor = db.rawQuery(sql, null);
+			int count = cursor.getCount();
+			if (count == 0) {
+				cursor.close();
+				db.close();
+				return null;
+			}
+
+			data = new EmotionManagement[count];
+
+			for (int i = 0; i < count; ++i) {
+				cursor.moveToPosition(i);
+				long ts = cursor.getLong(4);
+				int year = cursor.getInt(7);
+				int month = cursor.getInt(8);
+				int day = cursor.getInt(9);
+				int emotion = cursor.getInt(10);
+				int type = cursor.getInt(11);
+				String reason = cursor.getString(12);
+				int score = cursor.getInt(13);
+				data[i] = new EmotionManagement(ts, year, month, day, emotion, type, reason, score);
+			}
+
 			cursor.close();
 			db.close();
-			return null;
+
+			return data;
 		}
-
-		data = new EmotionManagement[count];
-
-		for (int i = 0; i < count; ++i) {
-			cursor.moveToPosition(i);
-			long ts = cursor.getLong(4);
-			int year = cursor.getInt(7);
-			int month = cursor.getInt(8);
-			int day = cursor.getInt(9);
-			int emotion = cursor.getInt(10);
-			int type = cursor.getInt(11);
-			String reason = cursor.getString(12);
-			int score = cursor.getInt(13);
-			data[i] = new EmotionManagement(ts, year, month, day, emotion, type, reason, score);
-		}
-
-		cursor.close();
-		db.close();
-
-		return data;
-
 	}
 
 	public void setEmotionManagementUploaded(long ts) {
@@ -829,60 +863,67 @@ public class DatabaseControl {
 	}
 
 	public String[] getEmotionManagementString(int type) {
-		db = dbHelper.getReadableDatabase();
-		String sql = "SELECT DISTINCT reason FROM EmotionManagement WHERE type = " + type + " ORDER BY ts DESC LIMIT 4";
-		String[] out = null;
+		synchronized (sqlLock) {
+			db = dbHelper.getReadableDatabase();
+			String sql = "SELECT DISTINCT reason FROM EmotionManagement WHERE type = " + type
+					+ " ORDER BY ts DESC LIMIT 4";
+			String[] out = null;
 
-		Cursor cursor = db.rawQuery(sql, null);
-		if (cursor.getCount() == 0) {
+			Cursor cursor = db.rawQuery(sql, null);
+			if (cursor.getCount() == 0) {
+				cursor.close();
+				db.close();
+				return null;
+			}
+			out = new String[cursor.getCount()];
+
+			for (int i = 0; i < out.length; ++i)
+				if (cursor.moveToPosition(i))
+					out[i] = cursor.getString(0);
+
 			cursor.close();
 			db.close();
-			return null;
+			return out;
 		}
-		out = new String[cursor.getCount()];
-
-		for (int i = 0; i < out.length; ++i)
-			if (cursor.moveToPosition(i))
-				out[i] = cursor.getString(0);
-
-		cursor.close();
-		db.close();
-		return out;
 	}
 
 	public boolean hasEmotionManagement(TimeValue tv) {
-		db = dbHelper.getReadableDatabase();
-		String sql;
-		Cursor cursor;
+		synchronized (sqlLock) {
+			db = dbHelper.getReadableDatabase();
+			String sql;
+			Cursor cursor;
 
-		sql = "SELECT * FROM EmotionManagement WHERE" + " recordYear =" + tv.getYear() + " AND recordMonth=" + tv.getMonth()
-				+ " AND recordDay =" + tv.getDay();
-		cursor = db.rawQuery(sql, null);
-		int count = cursor.getCount();
-		cursor.close();
-		db.close();
-		return count > 0;
+			sql = "SELECT * FROM EmotionManagement WHERE" + " recordYear =" + tv.getYear() + " AND recordMonth="
+					+ tv.getMonth() + " AND recordDay =" + tv.getDay();
+			cursor = db.rawQuery(sql, null);
+			int count = cursor.getCount();
+			cursor.close();
+			db.close();
+			return count > 0;
+		}
 	}
 
 	// StorytellingTest
 	public StorytellingTest getLatestStorytellingTest() {
-		db = dbHelper.getReadableDatabase();
-		String sql;
-		Cursor cursor;
-		sql = "SELECT * FROM StorytellingTest WHERE isCorrect = 1 ORDER BY ts DESC LIMIT 1";
-		cursor = db.rawQuery(sql, null);
-		if (!cursor.moveToFirst()) {
-			cursor.close();
-			db.close();
-			return new StorytellingTest(0, 0, false, "", 0, 0);
+		synchronized (sqlLock) {
+			db = dbHelper.getReadableDatabase();
+			String sql;
+			Cursor cursor;
+			sql = "SELECT * FROM StorytellingTest WHERE isCorrect = 1 ORDER BY ts DESC LIMIT 1";
+			cursor = db.rawQuery(sql, null);
+			if (!cursor.moveToFirst()) {
+				cursor.close();
+				db.close();
+				return new StorytellingTest(0, 0, false, "", 0, 0);
+			}
+			long ts = cursor.getLong(4);
+			int page = cursor.getInt(7);
+			boolean isCorrect = (cursor.getInt(8) == 1) ? true : false;
+			String selection = cursor.getString(9);
+			int agreement = cursor.getInt(10);
+			int score = cursor.getInt(11);
+			return new StorytellingTest(ts, page, isCorrect, selection, agreement, score);
 		}
-		long ts = cursor.getLong(4);
-		int page = cursor.getInt(7);
-		boolean isCorrect = (cursor.getInt(8) == 1) ? true : false;
-		String selection = cursor.getString(9);
-		int agreement = cursor.getInt(10);
-		int score = cursor.getInt(11);
-		return new StorytellingTest(ts, page, isCorrect, selection, agreement, score);
 	}
 
 	public int insertStorytellingTest(StorytellingTest data) {
@@ -893,7 +934,7 @@ public class DatabaseControl {
 				addScore = 1;
 			if (!StartDateCheck.afterStartDate())
 				addScore = 0;
-			
+
 			db = dbHelper.getWritableDatabase();
 			ContentValues content = new ContentValues();
 			content.put("year", data.getTv().getYear());
@@ -914,39 +955,40 @@ public class DatabaseControl {
 	}
 
 	public StorytellingTest[] getNotUploadedStorytellingTest() {
-		StorytellingTest[] data = null;
+		synchronized (sqlLock) {
+			StorytellingTest[] data = null;
 
-		db = dbHelper.getReadableDatabase();
-		String sql;
-		Cursor cursor;
+			db = dbHelper.getReadableDatabase();
+			String sql;
+			Cursor cursor;
 
-		sql = "SELECT * FROM StorytellingTest  WHERE upload = 0";
-		cursor = db.rawQuery(sql, null);
-		int count = cursor.getCount();
-		if (count == 0) {
+			sql = "SELECT * FROM StorytellingTest  WHERE upload = 0";
+			cursor = db.rawQuery(sql, null);
+			int count = cursor.getCount();
+			if (count == 0) {
+				cursor.close();
+				db.close();
+				return null;
+			}
+
+			data = new StorytellingTest[count];
+
+			for (int i = 0; i < count; ++i) {
+				cursor.moveToPosition(i);
+				long ts = cursor.getLong(4);
+				int page = cursor.getInt(7);
+				boolean isCorrect = (cursor.getInt(8) == 1) ? true : false;
+				String selection = cursor.getString(9);
+				int agreement = cursor.getInt(10);
+				int score = cursor.getInt(11);
+				data[i] = new StorytellingTest(ts, page, isCorrect, selection, agreement, score);
+			}
+
 			cursor.close();
 			db.close();
-			return null;
+
+			return data;
 		}
-
-		data = new StorytellingTest[count];
-
-		for (int i = 0; i < count; ++i) {
-			cursor.moveToPosition(i);
-			long ts = cursor.getLong(4);
-			int page = cursor.getInt(7);
-			boolean isCorrect = (cursor.getInt(8) == 1) ? true : false;
-			String selection = cursor.getString(9);
-			int agreement = cursor.getInt(10);
-			int score = cursor.getInt(11);
-			data[i] = new StorytellingTest(ts, page, isCorrect, selection, agreement, score);
-		}
-
-		cursor.close();
-		db.close();
-
-		return data;
-
 	}
 
 	public void setStorytellingTestUploaded(long ts) {
@@ -960,25 +1002,27 @@ public class DatabaseControl {
 
 	// UserVoiceRecord
 	public UserVoiceRecord getLatestUserVoiceRecord() {
-		db = dbHelper.getReadableDatabase();
-		String sql;
-		Cursor cursor;
-		sql = "SELECT * FROM UserVoiceRecord ORDER BY ts DESC LIMIT 1";
-		cursor = db.rawQuery(sql, null);
-		if (!cursor.moveToFirst()) {
-			cursor.close();
-			db.close();
-			Calendar cal = Calendar.getInstance();
-			cal.setTimeInMillis(0);
-			return new UserVoiceRecord(0, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH),
-					cal.get(Calendar.DAY_OF_MONTH), 0);
+		synchronized (sqlLock) {
+			db = dbHelper.getReadableDatabase();
+			String sql;
+			Cursor cursor;
+			sql = "SELECT * FROM UserVoiceRecord ORDER BY ts DESC LIMIT 1";
+			cursor = db.rawQuery(sql, null);
+			if (!cursor.moveToFirst()) {
+				cursor.close();
+				db.close();
+				Calendar cal = Calendar.getInstance();
+				cal.setTimeInMillis(0);
+				return new UserVoiceRecord(0, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH),
+						cal.get(Calendar.DAY_OF_MONTH), 0);
+			}
+			long ts = cursor.getLong(4);
+			int rYear = cursor.getInt(7);
+			int rMonth = cursor.getInt(8);
+			int rDay = cursor.getInt(9);
+			int score = cursor.getInt(10);
+			return new UserVoiceRecord(ts, rYear, rMonth, rDay, score);
 		}
-		long ts = cursor.getLong(4);
-		int rYear = cursor.getInt(7);
-		int rMonth = cursor.getInt(8);
-		int rDay = cursor.getInt(9);
-		int score = cursor.getInt(10);
-		return new UserVoiceRecord(ts, rYear, rMonth, rDay, score);
 	}
 
 	public int insertUserVoiceRecord(UserVoiceRecord data) {
@@ -989,7 +1033,7 @@ public class DatabaseControl {
 				addScore = 1;
 			if (!StartDateCheck.afterStartDate())
 				addScore = 0;
-			
+
 			db = dbHelper.getWritableDatabase();
 			ContentValues content = new ContentValues();
 			content.put("year", data.getTv().getYear());
@@ -1009,38 +1053,39 @@ public class DatabaseControl {
 	}
 
 	public UserVoiceRecord[] getNotUploadedUserVoiceRecord() {
-		UserVoiceRecord[] data = null;
+		synchronized (sqlLock) {
+			UserVoiceRecord[] data = null;
 
-		db = dbHelper.getReadableDatabase();
-		String sql;
-		Cursor cursor;
+			db = dbHelper.getReadableDatabase();
+			String sql;
+			Cursor cursor;
 
-		sql = "SELECT * FROM UserVoiceRecord WHERE upload = 0";
-		cursor = db.rawQuery(sql, null);
-		int count = cursor.getCount();
-		if (count == 0) {
+			sql = "SELECT * FROM UserVoiceRecord WHERE upload = 0";
+			cursor = db.rawQuery(sql, null);
+			int count = cursor.getCount();
+			if (count == 0) {
+				cursor.close();
+				db.close();
+				return null;
+			}
+
+			data = new UserVoiceRecord[count];
+
+			for (int i = 0; i < count; ++i) {
+				cursor.moveToPosition(i);
+				long ts = cursor.getLong(4);
+				int rYear = cursor.getInt(7);
+				int rMonth = cursor.getInt(8);
+				int rDay = cursor.getInt(9);
+				int score = cursor.getInt(10);
+				data[i] = new UserVoiceRecord(ts, rYear, rMonth, rDay, score);
+			}
+
 			cursor.close();
 			db.close();
-			return null;
+
+			return data;
 		}
-
-		data = new UserVoiceRecord[count];
-
-		for (int i = 0; i < count; ++i) {
-			cursor.moveToPosition(i);
-			long ts = cursor.getLong(4);
-			int rYear = cursor.getInt(7);
-			int rMonth = cursor.getInt(8);
-			int rDay = cursor.getInt(9);
-			int score = cursor.getInt(10);
-			data[i] = new UserVoiceRecord(ts, rYear, rMonth, rDay, score);
-		}
-
-		cursor.close();
-		db.close();
-
-		return data;
-
 	}
 
 	public void setUserVoiceRecordUploaded(long ts) {
@@ -1053,36 +1098,40 @@ public class DatabaseControl {
 	}
 
 	public boolean hasAudio(TimeValue tv) {
-		db = dbHelper.getReadableDatabase();
-		String sql;
-		Cursor cursor;
+		synchronized (sqlLock) {
+			db = dbHelper.getReadableDatabase();
+			String sql;
+			Cursor cursor;
 
-		sql = "SELECT * FROM UserVoiceRecord WHERE" + " recordYear =" + tv.getYear() + " AND recordMonth=" + tv.getMonth()
-				+ " AND recordDay =" + tv.getDay();
-		cursor = db.rawQuery(sql, null);
-		int count = cursor.getCount();
-		cursor.close();
-		db.close();
-		return count > 0;
+			sql = "SELECT * FROM UserVoiceRecord WHERE" + " recordYear =" + tv.getYear() + " AND recordMonth="
+					+ tv.getMonth() + " AND recordDay =" + tv.getDay();
+			cursor = db.rawQuery(sql, null);
+			int count = cursor.getCount();
+			cursor.close();
+			db.close();
+			return count > 0;
+		}
 	}
 
 	// StorytellingRead
 	public StorytellingRead getLatestStorytellingRead() {
-		db = dbHelper.getReadableDatabase();
-		String sql;
-		Cursor cursor;
-		sql = "SELECT * FROM  StorytellingRead WHERE addedScore = 1 ORDER BY ts DESC LIMIT 1";
-		cursor = db.rawQuery(sql, null);
-		if (!cursor.moveToFirst()) {
-			cursor.close();
-			db.close();
-			return new StorytellingRead(0, false, 0, 0);
+		synchronized (sqlLock) {
+			db = dbHelper.getReadableDatabase();
+			String sql;
+			Cursor cursor;
+			sql = "SELECT * FROM  StorytellingRead WHERE addedScore = 1 ORDER BY ts DESC LIMIT 1";
+			cursor = db.rawQuery(sql, null);
+			if (!cursor.moveToFirst()) {
+				cursor.close();
+				db.close();
+				return new StorytellingRead(0, false, 0, 0);
+			}
+			long ts = cursor.getLong(4);
+			boolean addedScore = (cursor.getInt(7) == 1);
+			int page = cursor.getInt(8);
+			int score = cursor.getInt(9);
+			return new StorytellingRead(ts, addedScore, page, score);
 		}
-		long ts = cursor.getLong(4);
-		boolean addedScore = (cursor.getInt(7) == 1);
-		int page = cursor.getInt(8);
-		int score = cursor.getInt(9);
-		return new StorytellingRead(ts, addedScore, page, score);
 	}
 
 	public int insertStorytellingRead(StorytellingRead data) {
@@ -1098,7 +1147,7 @@ public class DatabaseControl {
 				addScore = 0;
 				addedScore = 0;
 			}
-			
+
 			db = dbHelper.getWritableDatabase();
 			ContentValues content = new ContentValues();
 			content.put("year", data.getTv().getYear());
@@ -1117,37 +1166,38 @@ public class DatabaseControl {
 	}
 
 	public StorytellingRead[] getNotUploadedStorytellingRead() {
-		StorytellingRead[] data = null;
+		synchronized (sqlLock) {
+			StorytellingRead[] data = null;
 
-		db = dbHelper.getReadableDatabase();
-		String sql;
-		Cursor cursor;
+			db = dbHelper.getReadableDatabase();
+			String sql;
+			Cursor cursor;
 
-		sql = "SELECT * FROM StorytellingRead WHERE upload = 0";
-		cursor = db.rawQuery(sql, null);
-		int count = cursor.getCount();
-		if (count == 0) {
+			sql = "SELECT * FROM StorytellingRead WHERE upload = 0";
+			cursor = db.rawQuery(sql, null);
+			int count = cursor.getCount();
+			if (count == 0) {
+				cursor.close();
+				db.close();
+				return null;
+			}
+
+			data = new StorytellingRead[count];
+
+			for (int i = 0; i < count; ++i) {
+				cursor.moveToPosition(i);
+				long ts = cursor.getLong(4);
+				boolean addedScore = (cursor.getInt(7) == 1);
+				int page = cursor.getInt(8);
+				int score = cursor.getInt(9);
+				data[i] = new StorytellingRead(ts, addedScore, page, score);
+			}
+
 			cursor.close();
 			db.close();
-			return null;
+
+			return data;
 		}
-
-		data = new StorytellingRead[count];
-
-		for (int i = 0; i < count; ++i) {
-			cursor.moveToPosition(i);
-			long ts = cursor.getLong(4);
-			boolean addedScore = (cursor.getInt(7) == 1);
-			int page = cursor.getInt(8);
-			int score = cursor.getInt(9);
-			data[i] = new StorytellingRead(ts, addedScore, page, score);
-		}
-
-		cursor.close();
-		db.close();
-
-		return data;
-
 	}
 
 	public void setStorytellingReadUploaded(long ts) {
@@ -1161,19 +1211,21 @@ public class DatabaseControl {
 
 	// GCMRead
 	public GCMRead getGCMRead(long timestamp) {
-		db = dbHelper.getReadableDatabase();
-		String sql = "SELECT * FROM GCMRead WHERE ts=" + timestamp + " LIMIT 1";
-		Cursor cursor = db.rawQuery(sql, null);
-		GCMRead data = null;
-		if (cursor.moveToFirst()) {
-			long ts = cursor.getLong(1);
-			long readTs = cursor.getLong(2);
-			String message = cursor.getString(3);
-			data = new GCMRead(ts, readTs, message, false);
+		synchronized (sqlLock) {
+			db = dbHelper.getReadableDatabase();
+			String sql = "SELECT * FROM GCMRead WHERE ts=" + timestamp + " LIMIT 1";
+			Cursor cursor = db.rawQuery(sql, null);
+			GCMRead data = null;
+			if (cursor.moveToFirst()) {
+				long ts = cursor.getLong(1);
+				long readTs = cursor.getLong(2);
+				String message = cursor.getString(3);
+				data = new GCMRead(ts, readTs, message, false);
+			}
+			cursor.close();
+			db.close();
+			return data;
 		}
-		cursor.close();
-		db.close();
-		return data;
 	}
 
 	public void insertGCMRead(GCMRead data) {
@@ -1193,75 +1245,80 @@ public class DatabaseControl {
 		synchronized (sqlLock) {
 			String sql;
 			db = dbHelper.getWritableDatabase();
-			sql = "UPDATE GCMRead SET  read = 1, readTs =" + data.getReadTv().getTimestamp() + " WHERE ts=" + data.getTv().getTimestamp();
+			sql = "UPDATE GCMRead SET  read = 1, readTs =" + data.getReadTv().getTimestamp() + " WHERE ts="
+					+ data.getTv().getTimestamp();
 			db.execSQL(sql);
 			db.close();
 		}
 	}
 
 	public GCMRead[] getNotReadGCMRead() {
-		GCMRead[] data = null;
+		synchronized (sqlLock) {
+			GCMRead[] data = null;
 
-		db = dbHelper.getReadableDatabase();
-		String sql;
-		Cursor cursor;
+			db = dbHelper.getReadableDatabase();
+			String sql;
+			Cursor cursor;
 
-		long ts_lower_bound = System.currentTimeMillis() - 7 * 24 * 60 * 60 * 1000;
-		sql = "SELECT * FROM GCMRead WHERE read = 0 AND ts>" + ts_lower_bound;
-		cursor = db.rawQuery(sql, null);
-		int count = cursor.getCount();
-		if (count == 0) {
+			long ts_lower_bound = System.currentTimeMillis() - 7 * 24 * 60 * 60 * 1000;
+			sql = "SELECT * FROM GCMRead WHERE read = 0 AND ts>" + ts_lower_bound;
+			cursor = db.rawQuery(sql, null);
+			int count = cursor.getCount();
+			if (count == 0) {
+				cursor.close();
+				db.close();
+				return null;
+			}
+
+			data = new GCMRead[count];
+
+			for (int i = 0; i < count; ++i) {
+				cursor.moveToPosition(i);
+				long ts = cursor.getLong(1);
+				long readTs = cursor.getLong(2);
+				String message = cursor.getString(3);
+				data[i] = new GCMRead(ts, readTs, message, false);
+			}
+
 			cursor.close();
 			db.close();
-			return null;
+
+			return data;
 		}
-
-		data = new GCMRead[count];
-
-		for (int i = 0; i < count; ++i) {
-			cursor.moveToPosition(i);
-			long ts = cursor.getLong(1);
-			long readTs = cursor.getLong(2);
-			String message = cursor.getString(3);
-			data[i] = new GCMRead(ts, readTs, message, false);
-		}
-
-		cursor.close();
-		db.close();
-
-		return data;
 	}
 
 	public GCMRead[] getNotUploadedGCMRead() {
-		GCMRead[] data = null;
+		synchronized (sqlLock) {
+			GCMRead[] data = null;
 
-		db = dbHelper.getReadableDatabase();
-		String sql;
-		Cursor cursor;
+			db = dbHelper.getReadableDatabase();
+			String sql;
+			Cursor cursor;
 
-		sql = "SELECT * FROM GCMRead WHERE read = 1 AND upload = 0";
-		cursor = db.rawQuery(sql, null);
-		int count = cursor.getCount();
-		if (count == 0) {
+			sql = "SELECT * FROM GCMRead WHERE read = 1 AND upload = 0";
+			cursor = db.rawQuery(sql, null);
+			int count = cursor.getCount();
+			if (count == 0) {
+				cursor.close();
+				db.close();
+				return null;
+			}
+
+			data = new GCMRead[count];
+
+			for (int i = 0; i < count; ++i) {
+				cursor.moveToPosition(i);
+				long ts = cursor.getLong(1);
+				long readTs = cursor.getLong(2);
+				String message = cursor.getString(3);
+				data[i] = new GCMRead(ts, readTs, message, false);
+			}
+
 			cursor.close();
 			db.close();
-			return null;
+
+			return data;
 		}
-
-		data = new GCMRead[count];
-
-		for (int i = 0; i < count; ++i) {
-			cursor.moveToPosition(i);
-			long ts = cursor.getLong(1);
-			long readTs = cursor.getLong(2);
-			String message = cursor.getString(3);
-			data[i] = new GCMRead(ts, readTs, message, false);
-		}
-
-		cursor.close();
-		db.close();
-
-		return data;
 	}
 
 	public void setGCMReadUploaded(long ts) {
@@ -1275,25 +1332,27 @@ public class DatabaseControl {
 
 	// FacebookInfo
 	public FacebookInfo getLatestFacebookInfo() {
-		db = dbHelper.getReadableDatabase();
-		String sql;
-		Cursor cursor;
-		sql = "SELECT * FROM  FacebookInfo WHERE addedScore = 1 ORDER BY ts DESC LIMIT 1";
-		cursor = db.rawQuery(sql, null);
-		if (!cursor.moveToFirst()) {
-			cursor.close();
-			db.close();
-			return new FacebookInfo(0, 0, 0, "", false, false, 0, 0);
+		synchronized (sqlLock) {
+			db = dbHelper.getReadableDatabase();
+			String sql;
+			Cursor cursor;
+			sql = "SELECT * FROM  FacebookInfo WHERE addedScore = 1 ORDER BY ts DESC LIMIT 1";
+			cursor = db.rawQuery(sql, null);
+			if (!cursor.moveToFirst()) {
+				cursor.close();
+				db.close();
+				return new FacebookInfo(0, 0, 0, "", false, false, 0, 0);
+			}
+			long ts = cursor.getLong(4);
+			int pageWeek = cursor.getInt(7);
+			int pageLevel = cursor.getInt(8);
+			String text = cursor.getString(9);
+			boolean addedScore = (cursor.getInt(10) == 1);
+			boolean uploadSuccess = (cursor.getInt(11) == 1);
+			int privacy = cursor.getInt(12);
+			int score = cursor.getInt(13);
+			return new FacebookInfo(ts, pageWeek, pageLevel, text, addedScore, uploadSuccess, privacy, score);
 		}
-		long ts = cursor.getLong(4);
-		int pageWeek = cursor.getInt(7);
-		int pageLevel = cursor.getInt(8);
-		String text = cursor.getString(9);
-		boolean addedScore = (cursor.getInt(10) == 1);
-		boolean uploadSuccess = (cursor.getInt(11) == 1);
-		int privacy = cursor.getInt(12);
-		int score = cursor.getInt(13);
-		return new FacebookInfo(ts, pageWeek, pageLevel, text, addedScore, uploadSuccess, privacy, score);
 	}
 
 	public int insertFacebookInfo(FacebookInfo data) {
@@ -1304,7 +1363,7 @@ public class DatabaseControl {
 				addScore = 1;
 			if (!StartDateCheck.afterStartDate())
 				addScore = 0;
-			
+
 			db = dbHelper.getWritableDatabase();
 			ContentValues content = new ContentValues();
 			content.put("year", data.getTv().getYear());
@@ -1327,41 +1386,42 @@ public class DatabaseControl {
 	}
 
 	public FacebookInfo[] getNotUploadedFacebookInfo() {
-		FacebookInfo[] data = null;
+		synchronized (sqlLock) {
+			FacebookInfo[] data = null;
 
-		db = dbHelper.getReadableDatabase();
-		String sql;
-		Cursor cursor;
+			db = dbHelper.getReadableDatabase();
+			String sql;
+			Cursor cursor;
 
-		sql = "SELECT * FROM FacebookInfo WHERE upload = 0";
-		cursor = db.rawQuery(sql, null);
-		int count = cursor.getCount();
-		if (count == 0) {
+			sql = "SELECT * FROM FacebookInfo WHERE upload = 0";
+			cursor = db.rawQuery(sql, null);
+			int count = cursor.getCount();
+			if (count == 0) {
+				cursor.close();
+				db.close();
+				return null;
+			}
+
+			data = new FacebookInfo[count];
+
+			for (int i = 0; i < count; ++i) {
+				cursor.moveToPosition(i);
+				long ts = cursor.getLong(4);
+				int pageWeek = cursor.getInt(7);
+				int pageLevel = cursor.getInt(8);
+				String text = cursor.getString(9);
+				boolean addedScore = (cursor.getInt(10) == 1);
+				boolean uploadSuccess = (cursor.getInt(11) == 1);
+				int privacy = cursor.getInt(12);
+				int score = cursor.getInt(13);
+				data[i] = new FacebookInfo(ts, pageWeek, pageLevel, text, addedScore, uploadSuccess, privacy, score);
+			}
+
 			cursor.close();
 			db.close();
-			return null;
+
+			return data;
 		}
-
-		data = new FacebookInfo[count];
-
-		for (int i = 0; i < count; ++i) {
-			cursor.moveToPosition(i);
-			long ts = cursor.getLong(4);
-			int pageWeek = cursor.getInt(7);
-			int pageLevel = cursor.getInt(8);
-			String text = cursor.getString(9);
-			boolean addedScore = (cursor.getInt(10) == 1);
-			boolean uploadSuccess = (cursor.getInt(11) == 1);
-			int privacy = cursor.getInt(12);
-			int score = cursor.getInt(13);
-			data[i] = new FacebookInfo(ts, pageWeek, pageLevel, text, addedScore, uploadSuccess, privacy, score);
-		}
-
-		cursor.close();
-		db.close();
-
-		return data;
-
 	}
 
 	public void setFacebookInfoUploaded(long ts) {
@@ -1375,22 +1435,24 @@ public class DatabaseControl {
 
 	// Additional Questionnaire
 	public AdditionalQuestionnaire getLatestAdditionalQuestionnaire() {
-		db = dbHelper.getReadableDatabase();
-		String sql;
-		Cursor cursor;
-		sql = "SELECT * FROM  AdditionalQuestionnaire ORDER BY ts DESC LIMIT 1";
-		cursor = db.rawQuery(sql, null);
-		if (!cursor.moveToFirst()) {
-			cursor.close();
-			db.close();
-			return new AdditionalQuestionnaire(0, false, 0, 0, 0);
+		synchronized (sqlLock) {
+			db = dbHelper.getReadableDatabase();
+			String sql;
+			Cursor cursor;
+			sql = "SELECT * FROM  AdditionalQuestionnaire ORDER BY ts DESC LIMIT 1";
+			cursor = db.rawQuery(sql, null);
+			if (!cursor.moveToFirst()) {
+				cursor.close();
+				db.close();
+				return new AdditionalQuestionnaire(0, false, 0, 0, 0);
+			}
+			long ts = cursor.getLong(4);
+			boolean addedScore = (cursor.getInt(7) == 1);
+			int emotion = cursor.getInt(8);
+			int craving = cursor.getInt(9);
+			int score = cursor.getInt(10);
+			return new AdditionalQuestionnaire(ts, addedScore, emotion, craving, score);
 		}
-		long ts = cursor.getLong(4);
-		boolean addedScore = (cursor.getInt(7) == 1);
-		int emotion = cursor.getInt(8);
-		int craving = cursor.getInt(9);
-		int score = cursor.getInt(10);
-		return new AdditionalQuestionnaire(ts, addedScore, emotion, craving, score);
 	}
 
 	public int insertAdditionalQuestionnaire(AdditionalQuestionnaire data) {
@@ -1401,7 +1463,7 @@ public class DatabaseControl {
 				addScore = 0;
 			if (prev_data.getTv().isSameDay(data.getTv()))
 				addScore = 0;
-			
+
 			db = dbHelper.getWritableDatabase();
 			ContentValues content = new ContentValues();
 			content.put("year", data.getTv().getYear());
@@ -1421,38 +1483,39 @@ public class DatabaseControl {
 	}
 
 	public AdditionalQuestionnaire[] getNotUploadedAdditionalQuestionnaire() {
-		AdditionalQuestionnaire[] data = null;
+		synchronized (sqlLock) {
+			AdditionalQuestionnaire[] data = null;
 
-		db = dbHelper.getReadableDatabase();
-		String sql;
-		Cursor cursor;
+			db = dbHelper.getReadableDatabase();
+			String sql;
+			Cursor cursor;
 
-		sql = "SELECT * FROM AdditionalQuestionnaire WHERE upload = 0";
-		cursor = db.rawQuery(sql, null);
-		int count = cursor.getCount();
-		if (count == 0) {
+			sql = "SELECT * FROM AdditionalQuestionnaire WHERE upload = 0";
+			cursor = db.rawQuery(sql, null);
+			int count = cursor.getCount();
+			if (count == 0) {
+				cursor.close();
+				db.close();
+				return null;
+			}
+
+			data = new AdditionalQuestionnaire[count];
+
+			for (int i = 0; i < count; ++i) {
+				cursor.moveToPosition(i);
+				long ts = cursor.getLong(4);
+				boolean addedScore = (cursor.getInt(7) == 1);
+				int emotion = cursor.getInt(8);
+				int craving = cursor.getInt(9);
+				int score = cursor.getInt(10);
+				data[i] = new AdditionalQuestionnaire(ts, addedScore, emotion, craving, score);
+			}
+
 			cursor.close();
 			db.close();
-			return null;
+
+			return data;
 		}
-
-		data = new AdditionalQuestionnaire[count];
-
-		for (int i = 0; i < count; ++i) {
-			cursor.moveToPosition(i);
-			long ts = cursor.getLong(4);
-			boolean addedScore = (cursor.getInt(7) == 1);
-			int emotion = cursor.getInt(8);
-			int craving = cursor.getInt(9);
-			int score = cursor.getInt(10);
-			data[i] = new AdditionalQuestionnaire(ts, addedScore, emotion, craving, score);
-		}
-
-		cursor.close();
-		db.close();
-
-		return data;
-
 	}
 
 	public void setAdditionalQuestionnaireUploaded(long ts) {
@@ -1479,43 +1542,45 @@ public class DatabaseControl {
 	}
 
 	public UserVoiceFeedback[] getNotUploadedUserVoiceFeedback() {
-		UserVoiceFeedback[] data = null;
-		db = dbHelper.getReadableDatabase();
-		String sql;
-		Cursor cursor;
-		long cur_ts = System.currentTimeMillis();
-		long gps_ts = PreferenceControl.getGPSStartTime() + GPSService.GPS_TOTAL_TIME;
+		synchronized (sqlLock) {
+			UserVoiceFeedback[] data = null;
+			db = dbHelper.getReadableDatabase();
+			String sql;
+			Cursor cursor;
+			long cur_ts = System.currentTimeMillis();
+			long gps_ts = PreferenceControl.getGPSStartTime() + GPSService.GPS_TOTAL_TIME;
 
-		if (cur_ts <= gps_ts) {
-			long gps_detection_ts = PreferenceControl.getDetectionTimestamp();
-			sql = "SELECT * FROM UserVoiceFeedback WHERE upload = 0 AND detectionTs <> " + gps_detection_ts
-					+ " ORDER BY ts ASC";
-		} else {
-			sql = "SELECT * FROM UserVoiceFeedback WHERE upload = 0";
-		}
-		cursor = db.rawQuery(sql, null);
-		int count = cursor.getCount();
-		if (count == 0) {
+			if (cur_ts <= gps_ts) {
+				long gps_detection_ts = PreferenceControl.getDetectionTimestamp();
+				sql = "SELECT * FROM UserVoiceFeedback WHERE upload = 0 AND detectionTs <> " + gps_detection_ts
+						+ " ORDER BY ts ASC";
+			} else {
+				sql = "SELECT * FROM UserVoiceFeedback WHERE upload = 0";
+			}
+			cursor = db.rawQuery(sql, null);
+			int count = cursor.getCount();
+			if (count == 0) {
+				cursor.close();
+				db.close();
+				return null;
+			}
+
+			data = new UserVoiceFeedback[count];
+
+			for (int i = 0; i < count; ++i) {
+				cursor.moveToPosition(i);
+				long ts = cursor.getLong(1);
+				long detectionTs = cursor.getLong(2);
+				boolean testSuccess = cursor.getInt(cursor.getColumnIndex("testSuccess")) == 1;
+				boolean hasData = cursor.getInt(cursor.getColumnIndex("hasData")) == 1;
+				data[i] = new UserVoiceFeedback(ts, detectionTs, testSuccess, hasData);
+			}
+
 			cursor.close();
 			db.close();
-			return null;
+
+			return data;
 		}
-
-		data = new UserVoiceFeedback[count];
-
-		for (int i = 0; i < count; ++i) {
-			cursor.moveToPosition(i);
-			long ts = cursor.getLong(1);
-			long detectionTs = cursor.getLong(2);
-			boolean testSuccess = cursor.getInt(cursor.getColumnIndex("testSuccess")) == 1;
-			boolean hasData = cursor.getInt(cursor.getColumnIndex("hasData")) == 1;
-			data[i] = new UserVoiceFeedback(ts, detectionTs, testSuccess, hasData);
-		}
-
-		cursor.close();
-		db.close();
-
-		return data;
 	}
 
 	public void setUserVoiceFeedbackUploaded(long ts) {
@@ -1540,30 +1605,32 @@ public class DatabaseControl {
 	}
 
 	public ExchangeHistory[] getNotUploadedExchangeHistory() {
-		ExchangeHistory[] data = null;
-		db = dbHelper.getReadableDatabase();
-		String sql;
-		Cursor cursor;
-		sql = "SELECT * FROM ExchangeHistory WHERE upload = 0";
-		cursor = db.rawQuery(sql, null);
-		int count = cursor.getCount();
-		if (count == 0) {
+		synchronized (sqlLock) {
+			ExchangeHistory[] data = null;
+			db = dbHelper.getReadableDatabase();
+			String sql;
+			Cursor cursor;
+			sql = "SELECT * FROM ExchangeHistory WHERE upload = 0";
+			cursor = db.rawQuery(sql, null);
+			int count = cursor.getCount();
+			if (count == 0) {
+				cursor.close();
+				db.close();
+				return null;
+			}
+
+			data = new ExchangeHistory[count];
+
+			for (int i = 0; i < count; ++i) {
+				cursor.moveToPosition(i);
+				long ts = cursor.getLong(1);
+				int exchangeCounter = cursor.getInt(2);
+				data[i] = new ExchangeHistory(ts, exchangeCounter);
+			}
 			cursor.close();
 			db.close();
-			return null;
+			return data;
 		}
-
-		data = new ExchangeHistory[count];
-
-		for (int i = 0; i < count; ++i) {
-			cursor.moveToPosition(i);
-			long ts = cursor.getLong(1);
-			int exchangeCounter = cursor.getInt(2);
-			data[i] = new ExchangeHistory(ts, exchangeCounter);
-		}
-		cursor.close();
-		db.close();
-		return data;
 	}
 
 	public void setExchangeHistoryUploaded(long ts) {

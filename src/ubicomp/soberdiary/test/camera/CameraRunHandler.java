@@ -24,6 +24,9 @@ public class CameraRunHandler extends Handler {
 			cameraRecorder.CloseFail(3);
 		else if (msg.what == 5)// zero duration
 			cameraRecorder.CloseFail(4);
+		else if (msg.what == 6){
+			cameraRecorder.CloseFail(5);// pressure error
+		}
 	}
 
 }

@@ -222,7 +222,7 @@ public class FacebookActivity extends Activity {
 			// Check for publish permissions
 			List<String> permissions = session.getPermissions();
 			if (!isSubsetOf(PERMISSIONS, permissions)) {
-				Session.NewPermissionsRequest newPermissionsRequest = new Session.NewPermissionsRequest(this,
+				Session.NewPermissionsRequest newPermissionsRequest = new Session.NewPermissionsRequest(getParent(),
 						PERMISSIONS);
 				session.requestNewPublishPermissions(newPermissionsRequest);
 				return;

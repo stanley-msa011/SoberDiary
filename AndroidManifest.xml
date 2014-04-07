@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ubicomp.soberdiary.main"
-    android:versionCode="54"
-    android:versionName="1.18" >
+    android:versionCode="60"
+    android:versionName="1.22c" >
 
     <uses-sdk
         android:maxSdkVersion="19"

@@ -265,12 +265,7 @@ public class MainActivity extends FragmentActivity {
 	private void setDefaultTab() {
 		ft = fm.beginTransaction();
 		fragments[0] = new TestFragment();
-		fragments[1] = new StatisticFragment();
-		fragments[2] = new StorytellingFragment();
-
-		for (int i = fragments.length - 1; i >= 0; --i)
-			ft.add(android.R.id.tabcontent, fragments[i], tabName[i]);
-		// ft.add(android.R.id.tabcontent, fragments[0], tabName[0]);
+		ft.add(android.R.id.tabcontent, fragments[0], tabName[0]);
 		setTabState(tabName[0]);
 
 		customTabs[1].showHighlight(PreferenceControl.getCouponChange());
@@ -332,6 +327,22 @@ public class MainActivity extends FragmentActivity {
 			}
 			for (int i = 0; i < tabName.length; ++i) {
 				if (tabId.equals(tabName[i])) {
+					boolean newFragment = false;
+					if (fragments[i] == null){
+						switch(i){
+						case 0:
+							fragments[i] = new TestFragment();
+							break;
+						case 1:
+							fragments[i] = new StatisticFragment();
+							break;
+						case 2:
+							fragments[i] = new StorytellingFragment();
+							break;
+						}
+						newFragment = true;
+					}
+					
 					if (notify_action == ACTION_RECORD) {
 						Bundle data = new Bundle();
 						data.putInt("action", notify_action);
@@ -343,7 +354,10 @@ public class MainActivity extends FragmentActivity {
 						fragments[i].setArguments(data);
 						notify_action = 0;
 					}
-					ft.attach(fragments[i]);
+					if (newFragment)
+						ft.add(android.R.id.tabcontent, fragments[i],tabName[i]);
+					else
+						ft.attach(fragments[i]);
 					break;
 				}
 			}
@@ -504,7 +518,8 @@ public class MainActivity extends FragmentActivity {
 				sensorCountDownTimer = new SensorCountDownTimer(0);
 			else {
 				isRecovery = true;
-				sensorCountDownTimer = new SensorCountDownTimer(TEST_GAP_DURATION - time);
+				long test_gap_time = TEST_GAP_DURATION - time;
+				sensorCountDownTimer = new SensorCountDownTimer(Math.min(test_gap_time,TEST_GAP_DURATION));
 			}
 			sensorCountDownTimer.start();
 		}
@@ -514,7 +529,7 @@ public class MainActivity extends FragmentActivity {
 		if (sensorCountDownTimer != null) {
 			sensorCountDownTimer.cancel();
 			sensorCountDownTimer = null;
-			if (tabHost.getCurrentTab() == 0) {
+			if (tabHost.getCurrentTab() == 0 && fragments[0] !=null && fragments[0].isAdded()) {
 				((TestFragment) fragments[0]).enableStartButton(true);
 			}
 		}
@@ -548,7 +563,7 @@ public class MainActivity extends FragmentActivity {
 			soundpool.play(timer_sound_id, 1f, 1f, 0, 0, 1f);
 			isRecovery = false;
 			count_down_layout.setVisibility(View.GONE);
-			if (tabHost.getCurrentTab() == 0) {
+			if (tabHost.getCurrentTab() == 0 && fragments[0] !=null && fragments[0].isAdded()) {
 				((TestFragment) fragments[0]).setState(TestFragment.STATE_INIT);
 				((TestFragment) fragments[0]).enableStartButton(true);
 			}
@@ -560,7 +575,7 @@ public class MainActivity extends FragmentActivity {
 			isRecovery = true;
 			count_down_text.setText(String.valueOf(time));
 			count_down_layout.setVisibility(View.VISIBLE);
-			if (tabHost.getCurrentTab() == 0) {
+			if (tabHost.getCurrentTab() == 0 && fragments[0] !=null && fragments[0].isAdded()) {
 				if (canUpdate) {
 					((TestFragment) fragments[0]).setGuideMessage(R.string.test_guide_recovery_update_top,
 							R.string.test_guide_recovery_update_bottom);
@@ -580,7 +595,7 @@ public class MainActivity extends FragmentActivity {
 		private static final long FIVE_MINUTES = 5 * 60 * 1000;
 
 		public UpdateTestTimer() {
-			super((PreferenceControl.getLatestTestCompleteTime() + FIVE_MINUTES - System.currentTimeMillis()), 100);
+			super((Math.min(PreferenceControl.getLatestTestCompleteTime() + FIVE_MINUTES - System.currentTimeMillis(),FIVE_MINUTES)), 100);
 		}
 
 		@Override
@@ -594,7 +609,7 @@ public class MainActivity extends FragmentActivity {
 			int time = (int) millisUntilFinished / 1000;
 			if (!isRecovery) {
 				count_down_text.setText(String.valueOf(time));
-				if (tabHost.getCurrentTab() == 0) {
+				if (tabHost.getCurrentTab() == 0 && fragments[0] !=null && fragments[0].isAdded()) {
 					((TestFragment) fragments[0]).setGuideMessage(R.string.test_guide_update_top,
 							R.string.test_guide_update_bottom);
 				}

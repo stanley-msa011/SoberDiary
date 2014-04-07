@@ -13,6 +13,7 @@ public class BluetoothDebugModeACVM extends Bluetooth {
 
 	protected static float PRESSURE_DIFF_MIN_RANGE = 50f;
 	protected static float PRESSURE_DIFF_MIN = 100.f;
+	protected final static long MAX_TEST_TIME = 50000;
 
 	public BluetoothDebugModeACVM(BluetoothDebugger debugger, BluetoothMessageUpdater updater,
 			CameraRunHandler cameraRunHandler, BracValueFileHandler bracFileHandler,
@@ -62,7 +63,7 @@ public class BluetoothDebugModeACVM extends Bluetooth {
 				if (first_start_time == -1)
 					first_start_time = time;
 				else if (time_gap > MAX_TEST_TIME)
-					throw new Exception("timeout");
+					throw new Exception(EXCEPTION_TIME_OUT);
 
 				for (int i = 0; i < bytes; ++i) {
 					if ((char) temp[i] == 'a') {
@@ -80,13 +81,15 @@ public class BluetoothDebugModeACVM extends Bluetooth {
 						sendDebugMsg(msg);
 						msg = "m";
 						read_type = READ_PRESSURE;
-					} else if ((char) temp[i] == 'b') {
-						throw new Exception("NO BATTERY");
 					} else if ((char) temp[i] == 'v') {
 						end = sendMsgToApp(msg);
 						sendDebugMsg(msg);
 						msg = "v";
 						read_type = READ_VOLTAGE;
+					} else if ((char) temp[i] == 'b') {
+						throw new Exception(EXCEPTION_NO_BATTERY);
+					} else if ((char) temp[i] == 'p') {
+						throw new Exception(EXCEPTION_PRESSURE_ERROR);
 					} else if (read_type != READ_NULL) {
 						msg += (char) temp[i];
 					}
@@ -96,6 +99,7 @@ public class BluetoothDebugModeACVM extends Bluetooth {
 
 				if (in.available() > 0) {
 					bytes = in.read(temp);
+					Thread.sleep(20);
 					zero_start_time = System.currentTimeMillis();
 				} else {
 					bytes = 0;
@@ -105,22 +109,36 @@ public class BluetoothDebugModeACVM extends Bluetooth {
 					zero_duration += (zero_end_time - zero_start_time);
 					zero_start_time = zero_end_time;
 					if (zero_duration > MAX_ZERO_DURATION)
-						throw new Exception("NO BATTERY");
-					Thread.sleep(50);
+						throw new Exception(EXCEPTION_ZERO_DURATION);
+					Thread.sleep(40);
 				}
 
 			}
 			close();
 		} catch (Exception e) {
-			Log.e(TAG, "FAIL TO READ DATA FROM THE SENSOR: " + e.toString());
 			close();
-			if (e.getMessage() != null && e.getMessage().equals("TIMEOUT")) {
-				debugger.showDebug("Close by timeout");
-				cameraRunHandler.sendEmptyMessage(3);
-			} else {
-				debugger.showDebug("Close by exception");
-				cameraRunHandler.sendEmptyMessage(2);
-			}
+			handleException(e);
+		}
+	}
+	
+	@Override
+	protected void handleException(Exception e){
+		Log.e(TAG, "FAIL TO READ DATA FROM THE SENSOR: " + e.toString());
+		if (e.getMessage() != null && e.getMessage().equals(EXCEPTION_TIME_OUT)) {
+			debugger.showDebug("Close by timeout");
+			cameraRunHandler.sendEmptyMessage(3);
+		} else if (e.getMessage() != null && e.getMessage().equals(EXCEPTION_BLOW_TWICE)) {
+			debugger.showDebug("Close by blowing twice");
+			cameraRunHandler.sendEmptyMessage(4);
+			debugger.showDebug("Close by bad connection");
+		} else if (e.getMessage() != null && e.getMessage().equals(EXCEPTION_ZERO_DURATION)) {
+			cameraRunHandler.sendEmptyMessage(5);
+		} else if (e.getMessage() != null && e.getMessage().equals(EXCEPTION_PRESSURE_ERROR)){
+			debugger.showDebug("Close by pressure sensor corrupt");
+			cameraRunHandler.sendEmptyMessage(6);
+		}else{
+			debugger.showDebug("Close by exception");
+			cameraRunHandler.sendEmptyMessage(2);
 		}
 	}
 

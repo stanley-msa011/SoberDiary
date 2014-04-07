@@ -7,8 +7,8 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.ClientConnectionManager;
-import org.apache.http.entity.mime.MultipartEntity;
-import org.apache.http.entity.mime.content.StringBody;
+import org.apache.http.entity.mime.HttpMultipartMode;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.CoreProtocolPNames;
@@ -32,10 +32,12 @@ public class GCMRegisterUtilities {
 			DefaultHttpClient httpClient = HttpSecureClientGenerator.getSecureHttpClient();
 			HttpPost httpPost = new HttpPost(serverUrl);
 			httpClient.getParams().setParameter(CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
-			MultipartEntity mpEntity = new MultipartEntity();
-			mpEntity.addPart("uid", new StringBody(uid));
-			mpEntity.addPart("regId", new StringBody(regId));
-			httpPost.setEntity(mpEntity);
+			MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+			builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
+			builder.addTextBody("uid", uid);
+			builder.addTextBody("regId", regId);
+			
+			httpPost.setEntity(builder.build());
 			boolean result =uploader(httpClient, httpPost);
 			GCMRegistrar.setRegisteredOnServer(context, result);
 			return result;

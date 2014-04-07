@@ -90,7 +90,7 @@ public class Bluetooth {
 	protected long zero_start_time;
 	protected long zero_end_time;
 	protected long zero_duration;
-	protected static final int MAX_ZERO_DURATION = 6000;
+	protected static final int MAX_ZERO_DURATION = 10000;
 
 	protected boolean start_recorder = false;
 
@@ -107,6 +107,12 @@ public class Bluetooth {
 
 	protected boolean btEnabledBeforeStart = true;
 	protected BluetoothDebugger debugger;
+
+	protected String EXCEPTION_NO_BATTERY = "NO BATTERY";
+	protected String EXCEPTION_BLOW_TWICE = "BLOW TWICE";
+	protected String EXCEPTION_ZERO_DURATION = "ZERO DURATION";
+	protected String EXCEPTION_TIME_OUT = "TIME OUT";
+	protected String EXCEPTION_PRESSURE_ERROR = "PRESSURE ERROR";
 
 	public Bluetooth(BluetoothDebugger debugger, BluetoothMessageUpdater updater, CameraRunHandler cameraRunHandler,
 			BracValueFileHandler bracFileHandler, boolean recordPressure) {
@@ -353,7 +359,7 @@ public class Bluetooth {
 				if (first_start_time == -1)
 					first_start_time = time;
 				else if (time_gap > MAX_TEST_TIME)
-					throw new Exception("TIMEOUT");
+					throw new Exception(EXCEPTION_TIME_OUT);
 
 				for (int i = 0; i < bytes; ++i) {
 					if ((char) temp[i] == 'a') {
@@ -364,12 +370,14 @@ public class Bluetooth {
 						end = sendMsgToApp(msg);
 						msg = "m";
 						read_type = READ_PRESSURE;
-					} else if ((char) temp[i] == 'b') {
-						throw new Exception("NO BATTERY");
 					} else if ((char) temp[i] == 'v') {
 						end = sendMsgToApp(msg);
 						msg = "v";
 						read_type = READ_VOLTAGE;
+					} else if ((char) temp[i] == 'b') {
+						throw new Exception(EXCEPTION_NO_BATTERY);
+					} else if ((char) temp[i] == 'p') {
+						throw new Exception(EXCEPTION_PRESSURE_ERROR);
 					} else if (read_type != READ_NULL)
 						msg += (char) temp[i];
 				}
@@ -385,34 +393,36 @@ public class Bluetooth {
 						zero_start_time = System.currentTimeMillis();
 					zero_end_time = System.currentTimeMillis();
 					zero_duration += (zero_end_time - zero_start_time);
-					Log.d(TAG, "zero>" + zero_duration + " " + (zero_end_time - zero_start_time));
 					zero_start_time = zero_end_time;
 					if (zero_duration > MAX_ZERO_DURATION)
-						throw new Exception("ZERO_DURATION");
+						throw new Exception(EXCEPTION_ZERO_DURATION);
 					Thread.sleep(40);
 				}
 			}
 			close();
 		} catch (Exception e) {
-			Log.e(TAG, "FAIL TO READ DATA FROM THE SENSOR: " + e.toString());
 			close();
-			if (e.getMessage() != null && e.getMessage().equals("TIMEOUT")) {
-				Log.d(TAG, "End zero duration : " + zero_duration);
-				cameraRunHandler.sendEmptyMessage(3);
-			} else if (e.getMessage() != null && e.getMessage().equals("BLOW_TWICE")) {
-				cameraRunHandler.sendEmptyMessage(4);
-			} else if (e.getMessage() != null && e.getMessage().equals("ZERO_DURATION")) {
-				cameraRunHandler.sendEmptyMessage(5);
-			} else
-				cameraRunHandler.sendEmptyMessage(2);
+			handleException(e);
 		}
+	}
+
+	protected void handleException(Exception e) {
+		Log.e(TAG, "FAIL TO READ DATA FROM THE SENSOR: " + e.toString());
+		if (e.getMessage() != null && e.getMessage().equals(EXCEPTION_TIME_OUT)) {
+			cameraRunHandler.sendEmptyMessage(3);
+		} else if (e.getMessage() != null && e.getMessage().equals(EXCEPTION_BLOW_TWICE)) {
+			cameraRunHandler.sendEmptyMessage(4);
+		} else if (e.getMessage() != null && e.getMessage().equals(EXCEPTION_ZERO_DURATION)) {
+			cameraRunHandler.sendEmptyMessage(5);
+		} else if (e.getMessage() != null && e.getMessage().equals(EXCEPTION_PRESSURE_ERROR)) {
+			cameraRunHandler.sendEmptyMessage(6);
+		} else
+			cameraRunHandler.sendEmptyMessage(2);
 	}
 
 	protected boolean sendMsgToApp(String msg) throws Exception {
 		synchronized (lock) {
-			if (msg == "")
-				;
-			// Do nothing
+			if (msg == "")	;// Do nothing
 			else if (msg.charAt(0) == 'a') {
 				if (isPeak) {
 					long timeStamp = System.currentTimeMillis() / 1000L;
@@ -435,12 +445,10 @@ public class Bluetooth {
 					Log.d(TAG, "absolute min setting: " + absolute_min);
 				}
 
-				// Log.i(TAG,absolute_min+"/"+now_pressure+"/"+(now_pressure-absolute_min));
 				if (!start)
 					return false;
 
 				float diff_limit = PRESSURE_DIFF_MIN_RANGE * (5000.f - temp_duration) / 5000.f + PRESSURE_DIFF_MIN;
-				// Log.i(TAG,"limit  "+diff_limit +"/" + temp_duration);
 				if (now_pressure > absolute_min + diff_limit && !isPeak) {
 					isPeak = true;
 					start_time = time;
@@ -450,7 +458,7 @@ public class Bluetooth {
 						PreferenceControl.setUpdateDetection(false);
 					}
 					if (start_times > 2) {
-						throw new Exception("BLOW_TWICE");
+						throw new Exception(EXCEPTION_BLOW_TWICE);
 					}
 					temp_duration = 0;
 					Log.d(TAG, "Peak Start");
@@ -503,7 +511,7 @@ public class Bluetooth {
 			} else if (msg.charAt(0) == 'v') {
 				if (!start)
 					init_voltage = Float.valueOf(msg.substring(1));
-			}
+			} 
 		}
 		return false;
 	}
