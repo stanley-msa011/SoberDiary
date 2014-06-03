@@ -7,14 +7,14 @@ import java.util.concurrent.locks.Condition;
 public class SynchronizedLock implements java.util.concurrent.locks.Lock {
 
 	@SuppressLint("UseValueOf")
-	private Integer lock_integer = new Integer(0);
+	private Integer lockInteger = new Integer(0);
 
 	public static final SynchronizedLock sharedLock = new SynchronizedLock();
 
 	@Override
 	public void lock() {
-		synchronized (lock_integer) {
-			lock_integer = 1;
+		synchronized (lockInteger) {
+			lockInteger = 1;
 		}
 	}
 
@@ -29,8 +29,8 @@ public class SynchronizedLock implements java.util.concurrent.locks.Lock {
 
 	@Override
 	public boolean tryLock() {
-		synchronized (lock_integer) {
-			return lock_integer == 0;
+		synchronized (lockInteger) {
+			return lockInteger == 0;
 		}
 	}
 
@@ -41,8 +41,8 @@ public class SynchronizedLock implements java.util.concurrent.locks.Lock {
 
 	@Override
 	public void unlock() {
-		synchronized (lock_integer) {
-			lock_integer = 0;
+		synchronized (lockInteger) {
+			lockInteger = 0;
 		}
 	}
 

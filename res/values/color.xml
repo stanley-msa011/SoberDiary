@@ -4,6 +4,7 @@
     <color name="page_gray">#FF848484</color>
     <color name="black_gray">#FF585858</color>
     <color name="text_gray">#FF727171</color>
+    <color name="near_white">#99dedede</color>
     <color name="gray">#FF777777</color>
     <color name="lite_gray">#FF7c7d7c</color>
     <color name="dark_gray">#FF898989</color>
@@ -23,4 +24,6 @@
     <color name="chart_axis">#FF5f5f5f</color>
     <color name="chart_x_axis">#FFc9c9ca</color>
     <color name="chart_y_axis">#FF434343</color>
+    <color name="setting_edit_bg_color">#FF494949</color>
+    <color name="setting_title_bg_color">#FF434343</color>
 </resources>

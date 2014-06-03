@@ -9,23 +9,23 @@
         android:id="@+id/story_chart_area_layout"
         android:layout_width="match_parent"
         android:layout_height="@dimen/chart_height"
-        android:layout_alignParentBottom="true"
-        >
+        android:layout_alignParentBottom="true" >
 
         <HorizontalScrollView
             android:id="@+id/story_scroll_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            >
-            <FrameLayout 
+            android:layout_height="match_parent" >
+
+            <FrameLayout
                 android:id="@+id/story_frame_layout"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content" >
+
                 <ubicomp.soberdiary.storytelling.ui.ChartView
                     android:id="@+id/chartView"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"/>
-                </FrameLayout>
+                    android:layout_height="match_parent" />
+            </FrameLayout>
         </HorizontalScrollView>
 
         <ubicomp.soberdiary.storytelling.ui.ChartYAxisView
@@ -57,8 +57,7 @@
         <RelativeLayout
             android:id="@+id/story_book_layout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" 
-            >
+            android:layout_height="match_parent" >
 
             <ImageView
                 android:id="@+id/story_prev_image"
@@ -69,9 +68,7 @@
             <ImageView
                 android:id="@+id/story_page_arrow"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                />
-
+                android:layout_height="wrap_content" />
         </RelativeLayout>
 
         <ImageView
@@ -80,8 +77,8 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
-            android:layout_marginTop="42dp"
             android:layout_marginRight="15dp"
+            android:layout_marginTop="42dp"
             android:src="@drawable/button_storytelling_test"
             android:visibility="invisible" />
 
@@ -94,15 +91,14 @@
             android:layout_toLeftOf="@+id/story_storytelling_button"
             android:src="@drawable/button_fb"
             android:visibility="invisible" />
-        
+
         <RelativeLayout
             android:id="@+id/story_stage_message_layout"
             android:layout_width="48dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="6.7dp"
-            android:layout_marginTop="40dp" 
-            android:visibility="invisible"
-            >
+            android:layout_marginTop="40dp"
+            android:visibility="invisible" >
 
             <TextView
                 android:id="@+id/story_stage"
@@ -112,8 +108,7 @@
                 android:gravity="center"
                 android:text="@string/storytelling_page_help"
                 android:textColor="@color/page_gray"
-                android:textSize="14sp"
-                />
+                android:textSize="14sp" />
 
             <TextView
                 android:id="@+id/story_stage_message"
@@ -132,8 +127,8 @@
             android:layout_width="48dp"
             android:layout_height="42dp"
             android:layout_alignParentBottom="true"
-            android:layout_marginLeft="6.7dp"
             android:layout_marginBottom="16dp"
+            android:layout_marginLeft="6.7dp"
             android:gravity="center"
             android:textSize="14sp" />
 
@@ -141,11 +136,11 @@
             android:id="@+id/story_quote_scroll_view"
             android:layout_width="wrap_content"
             android:layout_height="42dp"
-            android:layout_toRightOf="@+id/story_stage_rate"
             android:layout_alignParentBottom="true"
             android:layout_marginBottom="16dp"
-            android:visibility="invisible"
-            android:scrollbars="none" >
+            android:layout_toRightOf="@+id/story_stage_rate"
+            android:scrollbars="none"
+            android:visibility="invisible" >
 
             <LinearLayout
                 android:id="@+id/story_quote_layout"
@@ -167,13 +162,16 @@
                     android:id="@+id/story_quote_hidden_layout"
                     android:layout_width="wrap_content"
                     android:layout_height="42dp"
-                    android:layout_weight="1" >
+                    android:layout_weight="1"
+                    android:background="@drawable/hidden_quote_button"
+                    android:visibility="gone" >
 
                     <TextView
                         android:id="@+id/story_quote_hidden_text"
                         android:layout_width="wrap_content"
                         android:layout_height="42dp"
                         android:layout_centerVertical="true"
+                        android:layout_marginLeft="14dp"
                         android:gravity="left|center_vertical"
                         android:text="@string/quote_next_message"
                         android:textColor="@color/page_gray"
@@ -184,8 +182,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
-                        android:layout_toRightOf="@+id/story_quote_hidden_text"
                         android:layout_marginLeft="14dp"
+                        android:paddingRight="14dp"
+                        android:layout_toRightOf="@+id/story_quote_hidden_text"
                         android:src="@drawable/storytelling_quote_button" />
                 </RelativeLayout>
             </LinearLayout>

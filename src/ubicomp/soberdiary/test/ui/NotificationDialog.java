@@ -47,7 +47,7 @@ public class NotificationDialog {
 
 	private DatabaseControl db = new DatabaseControl();
 
-	private RelativeLayout main_layout;
+	private RelativeLayout mainLayout;
 	private EnablePage enablePage;
 
 	private int showType = -1;
@@ -60,7 +60,7 @@ public class NotificationDialog {
 			NotificationInterface notificationInterface) {
 
 		this.context = context;
-		this.main_layout = main_layout;
+		this.mainLayout = main_layout;
 		this.enablePage = enablePage;
 		this.notificationInterface = notificationInterface;
 
@@ -169,7 +169,7 @@ public class NotificationDialog {
 	}
 
 	private void addView() {
-		main_layout.addView(layout);
+		mainLayout.addView(layout);
 		LayoutParams param = layout.getLayoutParams();
 		param.width = param.height = LayoutParams.MATCH_PARENT;
 		enablePage.enablePage(false);

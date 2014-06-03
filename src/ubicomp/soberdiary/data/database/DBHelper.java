@@ -8,7 +8,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
 	/*SQLiteOpenHelper. need to migrate with */
 	private static final String DATABASE_NAME = "soberdiary";
-	private static final int DB_VERSION = 7; 
+	private static final int DB_VERSION = 8; 
 	
 	public DBHelper(Context context) {
 		super(context, DATABASE_NAME, null, DB_VERSION);
@@ -235,6 +235,23 @@ public class DBHelper extends SQLiteOpenHelper {
         		" hasData INTEGER NOT NULL DEFAULT 0"+
         		")"
         		);
+        
+		db.execSQL(
+        		"CREATE TABLE BreathDetail (" +
+        		" id INTEGER PRIMARY KEY AUTOINCREMENT," +
+        		" ts INTEGER NOT NULL," +
+        		" blowStartTimes INTEGER NOT NULL,"+
+        		" blowBreakTimes INTEGER NOT NULL," +
+        		" pressureDiffMax FLOAT NOT NULL,"+
+        		" pressureMin FLOAT NOT NULL," +
+        		" pressureAverage FLOAT NOT NULL,"+
+        		" voltageInit INTEGER NOT NULL," +
+        		" disconnectionMillis INTEGER NOT NULL,"+
+        		" serialDiffMax INTEGER NOT NULL," +
+        		" serialDiffAverage FLOAT NOT NULL," +
+        		" upload INTEGER NOT NULL DEFAULT 0" +
+        		")"
+        		);
 	}
 
 	@Override
@@ -291,6 +308,24 @@ public class DBHelper extends SQLiteOpenHelper {
 		        		" detectionTs INTEGER NOT NULL,"+
 		        		" testSuccess INTEGER NOT NULL DEFAULT 0,"+
 		        		" hasData INTEGER NOT NULL DEFAULT 0,"+
+		        		" upload INTEGER NOT NULL DEFAULT 0" +
+		        		")"
+		        		);
+			}
+			if (old_ver < 8){
+				db.execSQL(
+		        		"CREATE TABLE BreathDetail (" +
+		        		" id INTEGER PRIMARY KEY AUTOINCREMENT," +
+		        		" ts INTEGER NOT NULL," +
+		        		" blowStartTimes INTEGER NOT NULL,"+
+		        		" blowBreakTimes INTEGER NOT NULL," +
+		        		" pressureDiffMax FLOAT NOT NULL,"+
+		        		" pressureMin FLOAT NOT NULL," +
+		        		" pressureAverage FLOAT NOT NULL,"+
+		        		" voltageInit INTEGER NOT NULL," +
+		        		" disconnectionMillis INTEGER NOT NULL,"+
+		        		" serialDiffMax INTEGER NOT NULL," +
+		        		" serialDiffAverage FLOAT NOT NULL," +
 		        		" upload INTEGER NOT NULL DEFAULT 0" +
 		        		")"
 		        		);

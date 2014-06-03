@@ -13,6 +13,7 @@ public class ClickLogId {
 	public final static long ABOUT_CALL										=	200000;		//00200000;
 	public final static long ABOUT_CALL_OK								= 300000;		//00300000;
 	public final static long ABOUT_CALL_CANCEL					= 400000;		//00400000;
+	public final static long ABOUT_WEBSITE								= 500000;		//00500000;	
 	
 	public final static long SETTING_ENTER									= 1000000; //01000000;
 	public final static long SETTING_LEAVE									=	1010000; //01010000;

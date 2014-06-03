@@ -122,6 +122,9 @@ public class DatabaseRestoreVer1 extends AsyncTask<Void, Void, Void> {
 				if (str == null)
 					Log.d(TAG, "No Alcoholic");
 				else {
+					
+					PreferenceControl.setUID(uid);
+					
 					str = reader.readLine();
 					String[] data = str.split(",");
 

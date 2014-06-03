@@ -9,8 +9,8 @@ public class Config {
 	public static final int COUNT_DOWN_SECOND_DEVELOP = 1;
 
 	// StorytellingFragment
-	public static final long READING_PAGE_TIME = 5400;
-	public static final int STORYTELLING_READ_LIMIT = 10;
+	public static final long READING_PAGE_TIME = 2500;
+	public static final int STORYTELLING_READ_LIMIT = 8;
 
 	// Coupon
 	public static final int COUPON_COUNTER = 50;

@@ -175,7 +175,7 @@ public class SimpleBluetooth {
 
 				for (int i = 0; i < bytes; ++i) {
 					char read_char = (char) temp[i];
-					if (read_char == 'a' || read_char == 'c' || read_char == 'm') {
+					if (read_char == 'a' || read_char == 'c' || read_char == 'm' || read_char == 's') {
 						if (read_type == READ_VOLTAGE) {
 							parseMsg(msg);
 						}

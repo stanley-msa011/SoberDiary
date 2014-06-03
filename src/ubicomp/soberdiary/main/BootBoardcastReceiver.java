@@ -84,13 +84,16 @@ public class BootBoardcastReceiver extends BroadcastReceiver{
 				c.set(cur_year, cur_month, cur_date, cur_hour, 0, 0);
 				c.add(Calendar.HOUR_OF_DAY, 1);
 			}
+		}else if (notification_minutes < 0){//cancel
+			//do nothing on c
 		}else{
 			//do not change c
 		}
 		
 		PendingIntent pending = PendingIntent.getBroadcast(context, requestCode, service_intent, PendingIntent.FLAG_UPDATE_CURRENT);
 		alarm.cancel(pending);
-		alarm.setRepeating(AlarmManager.RTC_WAKEUP, c.getTimeInMillis()+10,notification_gap,pending);
+		if (notification_minutes > 0)
+			alarm.setRepeating(AlarmManager.RTC_WAKEUP, c.getTimeInMillis()+10,notification_gap,pending);
 	}
 
 	

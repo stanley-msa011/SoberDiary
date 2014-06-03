@@ -25,7 +25,7 @@ public class BracDataHandler {
 
 	protected long ts;
 	protected Context context;
-	protected double sensor_result = 0;
+	protected double sensorResult = 0;
 	protected DatabaseControl db;
 
 	public BracDataHandler(long timestamp) {
@@ -46,7 +46,7 @@ public class BracDataHandler {
 
 		textFile = new File(mainStorageDir.getPath() + File.separator + ts + File.separator + ts + ".txt");
 		questionFile = new File(mainStorageDir.getPath() + File.separator + ts + File.separator + "question.txt");
-		sensor_result = parseTextFile(textFile);
+		sensorResult = parseTextFile(textFile);
 
 		int q_result = getQuestionResult(questionFile);
 		int emotion = q_result / 100;
@@ -56,7 +56,7 @@ public class BracDataHandler {
 			craving = -1;
 		}
 
-		float brac = (float) sensor_result;
+		float brac = (float) sensorResult;
 		long timestamp = ts;
 
 		Detection detection = new Detection(brac, timestamp, emotion, craving, false, 0, 0);
@@ -67,7 +67,7 @@ public class BracDataHandler {
 		PreferenceControl.setUpdateDetection(false);
 		PreferenceControl.setUpdateDetectionTimestamp(0);
 
-		int addScore = db.insertDetection(detection, update, context);
+		int addScore = db.insertDetection(detection, update);
 		if (addScore == 0 && !detection.isPass()) // TestFail & get no credit
 			CustomToast.generateToast(R.string.after_test_fail, -1);
 		else if (!detection.isPass())
@@ -87,12 +87,12 @@ public class BracDataHandler {
 		Log.d("PAGE_CHANGE", prevShowWeek + " " + prevShowWeekState + " " + curDetection.getTv().getWeek() + " " + curState + " "
 				+ pageChange);
 
-		if (sensor_result < Detection.BRAC_THRESHOLD)
+		if (sensorResult < Detection.BRAC_THRESHOLD)
 			if (emotion <= 2 || craving >= 4)
 				PreferenceControl.setTestResult(1);
 			else
 				PreferenceControl.setTestResult(0);
-		else if (sensor_result < Detection.BRAC_THRESHOLD_HIGH)
+		else if (sensorResult < Detection.BRAC_THRESHOLD_HIGH)
 			PreferenceControl.setTestResult(2);
 		else
 			PreferenceControl.setTestResult(3);
@@ -101,7 +101,7 @@ public class BracDataHandler {
 	}
 
 	public double getResult() {
-		return sensor_result;
+		return sensorResult;
 	}
 
 	protected double parseTextFile(File textFile) {

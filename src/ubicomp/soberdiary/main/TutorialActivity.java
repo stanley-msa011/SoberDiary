@@ -31,9 +31,18 @@ public class TutorialActivity extends Activity {
 
 	private Animation anim1,anim2,anim3;
 
+	private final static String DEVICE_NAME_FORMAL_NEW = "sober456_";
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		String sensorName = PreferenceControl.getSensorID();
+		if (sensorName !=null && sensorName.startsWith(DEVICE_NAME_FORMAL_NEW))
+			PreferenceControl.setUseNewSensor(true);
+		else
+			PreferenceControl.setUseNewSensor(false);
+		
 		if (PreferenceControl.getUseNewSensor())
 			setContentView(R.layout.activity_tutorial_new_sensor);
 		else

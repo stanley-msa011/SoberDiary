@@ -70,8 +70,8 @@ public class AdditionalQuestionMsgBox {
 	private EnablePage enablePage;
 
 	public AdditionalQuestionMsgBox(RelativeLayout mainLayout, EnablePage enablePage) {
-		this.context = App.getContext();
-		this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		context = App.getContext();
+		inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		this.mainLayout = mainLayout;
 		emotionStr = context.getResources().getStringArray(R.array.emotion_state);
 		cravingStr = context.getResources().getStringArray(R.array.craving_state);

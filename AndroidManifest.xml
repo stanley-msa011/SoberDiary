@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ubicomp.soberdiary.main"
-    android:versionCode="60"
-    android:versionName="1.22c" >
+    android:versionCode="83"
+    android:versionName="1.34" >
 
     <uses-sdk
         android:maxSdkVersion="19"
@@ -103,7 +103,6 @@
             android:name="ubicomp.soberdiary.main.PreSettingActivity"
             android:launchMode="singleTop"
             android:noHistory="true"
-            android:screenOrientation="portrait"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
         </activity>
         <activity
@@ -149,7 +148,6 @@
             android:name="ubicomp.soberdiary.main.DeveloperActivity"
             android:launchMode="singleTop"
             android:noHistory="true"
-            android:screenOrientation="portrait"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
         </activity>
         <activity

@@ -64,7 +64,7 @@
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:layout_toRightOf="@+id/voice_record_bar_start"
-                    android:adjustViewBounds="true"
+                    android:adjustViewBounds="false"
                     android:scaleType="fitXY"
                     android:src="@drawable/record_voice_bar_progress" />
 

@@ -16,6 +16,7 @@ import org.apache.http.protocol.HTTP;
 
 import ubicomp.soberdiary.data.file.MainStorage;
 import ubicomp.soberdiary.data.structure.AdditionalQuestionnaire;
+import ubicomp.soberdiary.data.structure.BreathDetail;
 import ubicomp.soberdiary.data.structure.Detection;
 import ubicomp.soberdiary.data.structure.EmotionDIY;
 import ubicomp.soberdiary.data.structure.EmotionManagement;
@@ -48,6 +49,7 @@ public class HttpPostGenerator {
 	private static String SERVER_URL_CLICKLOG = "";
 	private static String SERVER_URL_USER_VOICE_FEEDBACK = "";
 	private static String SERVER_URL_EXCHANGE_HISTORY = "";
+	private static String SERVER_URL_BREATH_DETAIL="";
 
 	public static HttpPost genPost() {
 		SERVER_URL_USER = ServerUrl.SERVER_URL_USER();
@@ -366,6 +368,30 @@ public class HttpPostGenerator {
 
 		nvps.add(new BasicNameValuePair("data[]", String.valueOf(data.getTv().getTimestamp())));
 		nvps.add(new BasicNameValuePair("data[]", String.valueOf(data.getExchangeNum())));
+		try {
+			httpPost.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
+		} catch (UnsupportedEncodingException e) {
+		}
+		return httpPost;
+	}
+	
+	public static HttpPost genPost(BreathDetail data) {
+		SERVER_URL_BREATH_DETAIL= ServerUrl.SERVER_URL_BREATH_DETAIL();
+		HttpPost httpPost = new HttpPost(SERVER_URL_BREATH_DETAIL);
+		String uid = PreferenceControl.getUID();
+		List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+		nvps.add(new BasicNameValuePair("uid", uid));
+
+		nvps.add(new BasicNameValuePair("data[]", String.valueOf(data.getTv().getTimestamp())));
+		nvps.add(new BasicNameValuePair("data[]", String.valueOf(data.getBlowStartTimes())));
+		nvps.add(new BasicNameValuePair("data[]", String.valueOf(data.getBlowBreakTimes())));
+		nvps.add(new BasicNameValuePair("data[]", String.valueOf(data.getPressureDiffMax())));
+		nvps.add(new BasicNameValuePair("data[]", String.valueOf(data.getPressureMin())));
+		nvps.add(new BasicNameValuePair("data[]", String.valueOf(data.getPressureAverage())));
+		nvps.add(new BasicNameValuePair("data[]", String.valueOf(data.getVoltageInit())));
+		nvps.add(new BasicNameValuePair("data[]", String.valueOf(data.getDisconnectionMillis())));
+		nvps.add(new BasicNameValuePair("data[]", String.valueOf(data.getSerialDiffMax())));
+		nvps.add(new BasicNameValuePair("data[]", String.valueOf(data.getSerialDiffAverage())));
 		try {
 			httpPost.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
 		} catch (UnsupportedEncodingException e) {

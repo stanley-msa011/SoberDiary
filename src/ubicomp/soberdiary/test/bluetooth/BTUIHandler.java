@@ -13,9 +13,11 @@ public class BTUIHandler extends Handler {
 
 	public void handleMessage(Message msg) {
 		if (msg.what == 2) {
-			float value = msg.getData().getFloat("value");
 			int time = msg.getData().getInt("TIME");
-			updater.changeBluetoothCondition(value, time);
+			updater.changeBluetoothCircle(time);
+		} else if (msg.what == 3){
+			float value = msg.getData().getFloat("value");
+			updater.changeBluetoothValue(value);
 		}
 	}
 

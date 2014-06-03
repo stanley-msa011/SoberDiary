@@ -133,7 +133,7 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 	private final RecordBoxOnKeyListener recordBoxOnKeyListener = new RecordBoxOnKeyListener();
 	private QuoteScrollListener quoteScrollListener = new QuoteScrollListener();
 	private Animation animation, arrowAnimation;
-	private int text_color = App.getContext().getResources().getColor(R.color.page_gray);
+	private int text_color = App.getContext().getResources().getColor(R.color.black_gray);
 	private int value_color = App.getContext().getResources().getColor(R.color.lite_orange);
 	private static final long READING_PAGE_TIME = Config.READING_PAGE_TIME;
 	private RecordBox recordBox;
@@ -147,7 +147,7 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 			R.drawable.small_arrow_down, R.drawable.small_arrow_right_down };
 	private Point[] page_update_pos = new Point[16];
 
-	// private static final String TAG = "STORYTELLING";
+	//private static final String TAG = "STORYTELLING";
 
 	private int notify_action = 0;
 
@@ -236,6 +236,7 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 		storytellingButton.setOnClickListener(storytellingOnClickListener);
 		fbButton.setOnClickListener(facebookOnClickListener);
 		quoteScrollView.setOnTouchListener(quoteScrollListener);
+
 		scrollView.setSmoothScrollingEnabled(true);
 
 		recordBox = new RecordBox(storytellingFragment, getActivity());
@@ -345,7 +346,7 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 		p_str.setSpan(new CustomTypefaceSpan("c2", wordTypefaceBold, text_color), progress_str.length(),
 				progress_str.length() + doneStr.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
 		stageRateText.setText(p_str);
-		quoteText.setText(QUOTE_STR[page_week]);
+		quoteText.setText(QUOTE_STR[page_week%(MAX_PAGE_WEEK+1)]);
 	}
 
 	private void endAnimation() {
@@ -530,8 +531,8 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 
 			page_states = db.getDetectionScoreByWeek();
 			page_week = page_states.length - 1;
-			if (page_week > MAX_PAGE_WEEK)
-				page_week = MAX_PAGE_WEEK;
+			//if (page_week > MAX_PAGE_WEEK)
+			//	page_week = MAX_PAGE_WEEK;
 			max_week = page_week;
 
 			endAnimation();
@@ -596,6 +597,7 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 		Bundle data = new Bundle();
 		data.putInt("time", next_page);
 		msg.setData(data);
+		quoteScrollHandler.removeMessages(0);
 		quoteScrollHandler.sendMessageDelayed(msg, READING_PAGE_TIME);
 	}
 
@@ -824,8 +826,7 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 		public boolean onTouch(View v, MotionEvent event) {
 			if (enable)
 				return gDetector.onTouchEvent(event);
-			else
-				return true;
+			return true;
 		}
 	}
 
@@ -836,15 +837,21 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 			if (time == page_week) {
 				PreferenceControl.addStorytellingReadTimes();
 				int limit = Config.STORYTELLING_READ_LIMIT;
+				if (PreferenceControl.isDeveloper())
+					limit = 2;
 				if (db.getLatestStorytellingRead().getTv().getTimestamp() == 0)
 					limit /= 2;
-				int cur_time = PreferenceControl.getStorytellingReadTimes();
-				if (cur_time >= limit) {
+				int cur_times = PreferenceControl.getStorytellingReadTimes();
+				if (cur_times >= limit) {
 					infiniteThread = new InfiniteScroll();
 					infiniteThread.start();
 					PreferenceControl.resetStorytellingReadTimes();
 					View.OnClickListener listener = new QuoteOnClickListener(page_week);
+					quoteHiddenLayout.setVisibility(View.VISIBLE);
 					quoteHiddenLayout.setOnClickListener(listener);
+				}else{
+					quoteHiddenLayout.setVisibility(View.GONE);
+					quoteHiddenLayout.setAnimation(null);
 				}
 			}
 		}
@@ -856,18 +863,6 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 			while (true) {
 				scrollHandler.removeMessages(0);
 				scrollHandler.removeMessages(1);
-				scrollHandler.sendEmptyMessage(1);
-				if (isInterrupted())
-					break;
-				try {
-					Thread.sleep(5000);
-				} catch (InterruptedException e) {
-					break;
-				}
-				if (isInterrupted())
-					break;
-				scrollHandler.removeMessages(0);
-				scrollHandler.removeMessages(1);
 				scrollHandler.sendEmptyMessage(0);
 				if (isInterrupted())
 					break;
@@ -875,7 +870,22 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 					Thread.sleep(3000);
 				} catch (InterruptedException e) {
 					break;
+				}				
+				
+				if (isInterrupted())
+					break;
+				
+				scrollHandler.removeMessages(0);
+				scrollHandler.removeMessages(1);
+				scrollHandler.sendEmptyMessage(1);
+				if (isInterrupted())
+					break;
+				try {
+					Thread.sleep(6000);
+				} catch (InterruptedException e) {
+					break;
 				}
+				
 				if (isInterrupted())
 					break;
 			}

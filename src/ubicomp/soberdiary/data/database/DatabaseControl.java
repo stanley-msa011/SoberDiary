@@ -3,6 +3,7 @@ package ubicomp.soberdiary.data.database;
 import java.util.Calendar;
 
 import ubicomp.soberdiary.data.structure.AdditionalQuestionnaire;
+import ubicomp.soberdiary.data.structure.BreathDetail;
 import ubicomp.soberdiary.data.structure.Detection;
 import ubicomp.soberdiary.data.structure.EmotionDIY;
 import ubicomp.soberdiary.data.structure.EmotionManagement;
@@ -24,24 +25,41 @@ import ubicomp.soberdiary.system.config.PreferenceControl;
 
 import android.app.AlarmManager;
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+/**
+ * This class is used for controlling database on the mobile phone side
+ * 
+ * @author Stanley Wang
+ */
 public class DatabaseControl {
 
+	/**
+	 * SQLiteOpenHelper
+	 * 
+	 * @see ubicomp.soberdiary.data.database.DBHelper
+	 */
 	private SQLiteOpenHelper dbHelper = null;
+	/** SQLLiteDatabase */
 	private SQLiteDatabase db = null;
+	/** Lock for preventing congestion */
+	private static final Object sqlLock = new Object();
 
+	/** Constructor of DatabaseControl */
 	public DatabaseControl() {
 		dbHelper = new DBHelper(App.getContext());
 	}
 
-	static final Object sqlLock = new Object();
-
 	// Detection
 
+	/**
+	 * This method is used for getting all prime brac detections
+	 * 
+	 * @return An array of detections
+	 * @see ubicomp.soberdiary.data.structure.Detection
+	 */
 	public Detection[] getAllPrimeDetection() {
 		synchronized (sqlLock) {
 			db = dbHelper.getReadableDatabase();
@@ -73,6 +91,12 @@ public class DatabaseControl {
 		}
 	}
 
+	/**
+	 * This method is used for the latest brac detection
+	 * 
+	 * @return Detection
+	 * @see ubicomp.soberdiary.data.structure.Detection
+	 */
 	public Detection getLatestDetection() {
 		synchronized (sqlLock) {
 			db = dbHelper.getReadableDatabase();
@@ -99,7 +123,18 @@ public class DatabaseControl {
 		}
 	}
 
-	public int insertDetection(Detection data, boolean update, Context context) {
+	/**
+	 * This method is used for inserting a brac detection
+	 * 
+	 * @return # of credits got by the user
+	 * @param data
+	 *            Inserted Detection
+	 * @param update
+	 *            If update = true, the previous prime detection will be
+	 *            replaced by current Detection
+	 * @see ubicomp.soberdiary.data.structure.Detection
+	 */
+	public int insertDetection(Detection data, boolean update) {
 		synchronized (sqlLock) {
 
 			Detection prev_data = getLatestDetection();
@@ -159,6 +194,12 @@ public class DatabaseControl {
 		}
 	}
 
+	/**
+	 * This method is used for getting brac values of today's prime detections
+	 * 
+	 * @return An array of float (length = 3) [0]:morning [1]:afternoon
+	 *         [2]:night
+	 */
 	public Float[] getTodayPrimeBrac() {
 		synchronized (sqlLock) {
 			Float[] brac = new Float[3];
@@ -187,6 +228,13 @@ public class DatabaseControl {
 		}
 	}
 
+	/**
+	 * This method is used for getting brac values of previous n-day prime
+	 * detections
+	 * 
+	 * @return An array of float (length = n_days*3) [idx], idx%3=0:morning,
+	 *         idx%3=1:afternoon, idx%[3]=2:night
+	 */
 	public Float[] getMultiDaysPrimeBrac(int n_days) {
 		synchronized (sqlLock) {
 			Calendar cal = Calendar.getInstance();
@@ -247,6 +295,13 @@ public class DatabaseControl {
 		}
 	}
 
+	/**
+	 * This method is used for labeling which detection is uploaded to the
+	 * server
+	 * 
+	 * @param ts
+	 *            timestamp of the detection
+	 */
 	public void setDetectionUploaded(long ts) {
 		synchronized (sqlLock) {
 			db = dbHelper.getWritableDatabase();
@@ -256,6 +311,12 @@ public class DatabaseControl {
 		}
 	}
 
+	/**
+	 * This method is used for getting weekly scores of current week's
+	 * detections
+	 * 
+	 * @return An array of weekly score. Length=# weeks
+	 */
 	public Integer[] getDetectionScoreByWeek() {
 		synchronized (sqlLock) {
 			db = dbHelper.getReadableDatabase();
@@ -292,6 +353,13 @@ public class DatabaseControl {
 		}
 	}
 
+	/**
+	 * This method is used for getting detections which are not uploaded to the
+	 * server
+	 * 
+	 * @return An array of Detections
+	 * @see ubicomp.soberdiary.data.structure.Detection
+	 */
 	public Detection[] getAllNotUploadedDetection() {
 		synchronized (sqlLock) {
 			db = dbHelper.getReadableDatabase();
@@ -330,6 +398,11 @@ public class DatabaseControl {
 		}
 	}
 
+	/**
+	 * This method is used for checking if the user do the brac detection at
+	 * this time slot @ return true if the user do a brac detection at the
+	 * current time slot
+	 */
 	public boolean detectionIsDone() {
 		synchronized (sqlLock) {
 			db = dbHelper.getReadableDatabase();
@@ -345,6 +418,10 @@ public class DatabaseControl {
 		}
 	}
 
+	/**
+	 * This method is used for counting total passed prime detections @ return #
+	 * of passed prime detections
+	 */
 	public int getPrimeDetectionPassTimes() {
 		synchronized (sqlLock) {
 			db = dbHelper.getReadableDatabase();
@@ -357,6 +434,12 @@ public class DatabaseControl {
 		}
 	}
 
+	/**
+	 * This method is used for checking if the user can replace the current
+	 * detection
+	 * 
+	 * @return true if the user is allowed to replace the detection
+	 */
 	public boolean canTryAgain() {
 		synchronized (sqlLock) {
 			TimeValue curTV = TimeValue.generate(System.currentTimeMillis());
@@ -373,6 +456,13 @@ public class DatabaseControl {
 	}
 
 	// Ranking
+
+	/**
+	 * Get the user's rank
+	 * 
+	 * @return Rank
+	 * @see ubicomp.soberdiary.data.structure.Rank
+	 */
 	public Rank getMyRank() {
 		synchronized (sqlLock) {
 			db = dbHelper.getReadableDatabase();
@@ -399,6 +489,12 @@ public class DatabaseControl {
 		}
 	}
 
+	/**
+	 * Get all user's ranks
+	 * 
+	 * @return An array of Rank
+	 * @see ubicomp.soberdiary.data.structure.Rank
+	 */
 	public Rank[] getAllRanks() {
 		synchronized (sqlLock) {
 			Rank[] ranks = null;
@@ -431,6 +527,12 @@ public class DatabaseControl {
 		}
 	}
 
+	/**
+	 * Get the user's rank in a short period
+	 * 
+	 * @return An array of Rank
+	 * @see ubicomp.soberdiary.data.structure.Rank
+	 */
 	public Rank[] getAllRankShort() {
 		synchronized (sqlLock) {
 			Rank[] ranks = null;
@@ -456,6 +558,11 @@ public class DatabaseControl {
 		}
 	}
 
+	/**
+	 * Truncate the Ranking table
+	 * 
+	 * @see ubicomp.soberdiary.data.structure.Rank
+	 */
 	public void clearRank() {
 		synchronized (sqlLock) {
 			db = dbHelper.getWritableDatabase();
@@ -465,6 +572,13 @@ public class DatabaseControl {
 		}
 	}
 
+	/**
+	 * Update the Rank
+	 * 
+	 * @param data
+	 *            Updated Rank
+	 * @see ubicomp.soberdiary.data.structure.Rank
+	 */
 	public void updateRank(Rank data) {
 		synchronized (sqlLock) {
 			db = dbHelper.getWritableDatabase();
@@ -512,6 +626,11 @@ public class DatabaseControl {
 		}
 	}
 
+	/**
+	 * Truncate the RankingShort table
+	 * 
+	 * @see ubicomp.soberdiary.data.structure.Rank
+	 */
 	public void updateRankShort(Rank data) {
 		synchronized (sqlLock) {
 			db = dbHelper.getWritableDatabase();
@@ -534,6 +653,12 @@ public class DatabaseControl {
 
 	// Questionnaire
 
+	/**
+	 * Get the latest ''! Questionnaire
+	 * 
+	 * @return Questionnaire
+	 * @see ubicomp.soberdiary.data.structure.Questionnaire
+	 */
 	public Questionnaire getLatestQuestionnaire() {
 		synchronized (sqlLock) {
 			db = dbHelper.getReadableDatabase();
@@ -554,6 +679,14 @@ public class DatabaseControl {
 		}
 	}
 
+	/**
+	 * Insert the latest ''! Questionnaire
+	 * 
+	 * @return # credits got by the user
+	 * @param data
+	 *            Inserted Questionnaire
+	 * @see ubicomp.soberdiary.data.structure.Questionnaire
+	 */
 	public int insertQuestionnaire(Questionnaire data) {
 		synchronized (sqlLock) {
 			Questionnaire prev_data = getLatestQuestionnaire();
@@ -579,6 +712,12 @@ public class DatabaseControl {
 		}
 	}
 
+	/**
+	 * Get all ''! Questionnaire which are not uploaded to the server
+	 * 
+	 * @return An array of Questionnaire
+	 * @see ubicomp.soberdiary.data.structure.Questionnaire
+	 */
 	public Questionnaire[] getNotUploadedQuestionnaire() {
 		synchronized (sqlLock) {
 			Questionnaire[] data = null;
@@ -614,6 +753,13 @@ public class DatabaseControl {
 		}
 	}
 
+	/**
+	 * Label the ''! Questionnaire is uploaded
+	 * 
+	 * @param ts
+	 *            Timestamp of the Questionnaire
+	 * @see ubicomp.soberdiary.data.structure.Questionnaire
+	 */
 	public void setQuestionnaireUploaded(long ts) {
 		synchronized (sqlLock) {
 			db = dbHelper.getWritableDatabase();
@@ -625,6 +771,12 @@ public class DatabaseControl {
 
 	// EmotionDIY
 
+	/**
+	 * Get the latest Emotion DIY result
+	 * 
+	 * @return EmotionDIY
+	 * @see ubicomp.soberdiary.data.structure.EmotionDIY
+	 */
 	public EmotionDIY getLatestEmotionDIY() {
 		synchronized (sqlLock) {
 			db = dbHelper.getReadableDatabase();
@@ -645,6 +797,12 @@ public class DatabaseControl {
 		}
 	}
 
+	/**
+	 * Insert an Emotion DIY result
+	 * 
+	 * @return # credits got by the user
+	 * @see ubicomp.soberdiary.data.structure.EmotionDIY
+	 */
 	public int insertEmotionDIY(EmotionDIY data) {
 		synchronized (sqlLock) {
 			EmotionDIY prev_data = getLatestEmotionDIY();
@@ -670,6 +828,9 @@ public class DatabaseControl {
 		}
 	}
 
+	/** Get all Emotion DIY results which are not uploaded to the server
+	 * @return An array of EmotionDIY
+	 * @see ubicomp.soberdiary.data.structure.EmotionDIY*/
 	public EmotionDIY[] getNotUploadedEmotionDIY() {
 		synchronized (sqlLock) {
 			EmotionDIY[] data = null;
@@ -705,6 +866,9 @@ public class DatabaseControl {
 		}
 	}
 
+	/** Label the Emotion DIY result uploaded
+	 * @param ts Timestamp of the Emotion DIY result
+	 * @see ubicomp.soberdiary.data.structure.EmotionDIY*/
 	public void setEmotionDIYUploaded(long ts) {
 		synchronized (sqlLock) {
 			db = dbHelper.getWritableDatabase();
@@ -715,6 +879,10 @@ public class DatabaseControl {
 	}
 
 	// EmotionManagement
+	
+	/**Get the latest Emotion Management result
+	 * @return EmotionManagement
+	 * @see ubicomp.soberdiary.data.structure.EmotionManagement*/
 	public EmotionManagement getLatestEmotionManagement() {
 		synchronized (sqlLock) {
 			db = dbHelper.getReadableDatabase();
@@ -744,6 +912,9 @@ public class DatabaseControl {
 		}
 	}
 
+	/**Insert an Emotion Management result
+	 * @return # of credits got by the user
+	 * @see ubicomp.soberdiary.data.structure.EmotionManagement*/
 	public int insertEmotionManagement(EmotionManagement data) {
 		synchronized (sqlLock) {
 			EmotionManagement prev_data = getLatestEmotionManagement();
@@ -1637,6 +1808,79 @@ public class DatabaseControl {
 		synchronized (sqlLock) {
 			db = dbHelper.getWritableDatabase();
 			String sql = "UPDATE ExchangeHistory SET upload = 1 WHERE ts = " + ts;
+			db.execSQL(sql);
+			db.close();
+		}
+	}
+
+	// BreathDetail
+	public void insertBreathDetail(BreathDetail data) {
+		synchronized (sqlLock) {
+			db = dbHelper.getWritableDatabase();
+
+			String sql = "SELECT * FROM BreathDetail WHERE ts =" + data.getTv().getTimestamp();
+			Cursor cursor = db.rawQuery(sql, null);
+			if (!cursor.moveToFirst()) {
+				ContentValues content = new ContentValues();
+				content.put("ts", data.getTv().getTimestamp());
+				content.put("blowStartTimes", data.getBlowStartTimes());
+				content.put("blowBreakTimes", data.getBlowBreakTimes());
+				content.put("pressureDiffMax", data.getPressureDiffMax());
+				content.put("pressureMin", data.getPressureMin());
+				content.put("pressureAverage", data.getPressureAverage());
+				content.put("voltageInit", data.getVoltageInit());
+				content.put("disconnectionMillis", data.getDisconnectionMillis());
+				content.put("serialDiffMax", data.getSerialDiffMax());
+				content.put("serialDiffAverage", data.getSerialDiffAverage());
+				db.insert("BreathDetail", null, content);
+			}
+			cursor.close();
+			db.close();
+		}
+	}
+
+	public BreathDetail[] getNotUploadedBreathDetail() {
+		synchronized (sqlLock) {
+			BreathDetail[] data = null;
+			db = dbHelper.getReadableDatabase();
+			String sql;
+			Cursor cursor;
+			sql = "SELECT * FROM BreathDetail WHERE upload = 0";
+			cursor = db.rawQuery(sql, null);
+			int count = cursor.getCount();
+			if (count == 0) {
+				cursor.close();
+				db.close();
+				return null;
+			}
+
+			data = new BreathDetail[count];
+
+			for (int i = 0; i < count; ++i) {
+				cursor.moveToPosition(i);
+				long ts = cursor.getLong(1);
+				int blowStartTimes = cursor.getInt(2);
+				int blowBreakTimes = cursor.getInt(3);
+				float pressureDiffMax = cursor.getFloat(4);
+				float pressureMin = cursor.getFloat(5);
+				float pressureAverage = cursor.getFloat(6);
+				int voltageInit = cursor.getInt(7);
+				long disconnectionMillis = cursor.getLong(8);
+				int serialDiffMax = cursor.getInt(9);
+				float serialDiffAverage = cursor.getFloat(10);
+				data[i] = new BreathDetail(ts, blowStartTimes, blowBreakTimes, pressureDiffMax, pressureMin,
+						pressureAverage, voltageInit, disconnectionMillis, serialDiffMax, serialDiffAverage);
+			}
+			cursor.close();
+			db.close();
+			return data;
+		}
+	}
+
+	public void setBreathDetailUploaded(long ts) {
+		synchronized (sqlLock) {
+			db = dbHelper.getWritableDatabase();
+			String sql = "UPDATE BreathDetail SET upload = 1 WHERE ts = " + ts;
 			db.execSQL(sql);
 			db.close();
 		}

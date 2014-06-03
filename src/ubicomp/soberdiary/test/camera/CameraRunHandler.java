@@ -14,18 +14,8 @@ public class CameraRunHandler extends Handler {
 	public void handleMessage(Message msg) {
 		if (msg.what == 0)
 			cameraRecorder.takePicture();
-		else if (msg.what == 1)// on connection
-			cameraRecorder.CloseFail(0);
-		else if (msg.what == 2)// No battery
-			cameraRecorder.CloseFail(1);
-		else if (msg.what == 3)// timeout
-			cameraRecorder.CloseFail(2);
-		else if (msg.what == 4)// blow_twice
-			cameraRecorder.CloseFail(3);
-		else if (msg.what == 5)// zero duration
-			cameraRecorder.CloseFail(4);
-		else if (msg.what == 6){
-			cameraRecorder.CloseFail(5);// pressure error
+		else{
+			cameraRecorder.closeFail(msg.what-1);
 		}
 	}
 

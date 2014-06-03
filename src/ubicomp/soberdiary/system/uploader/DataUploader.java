@@ -23,6 +23,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import ubicomp.soberdiary.data.database.DatabaseControl;
 import ubicomp.soberdiary.data.file.MainStorage;
 import ubicomp.soberdiary.data.structure.AdditionalQuestionnaire;
+import ubicomp.soberdiary.data.structure.BreathDetail;
 import ubicomp.soberdiary.data.structure.Detection;
 import ubicomp.soberdiary.data.structure.EmotionDIY;
 import ubicomp.soberdiary.data.structure.EmotionManagement;
@@ -224,6 +225,16 @@ public class DataUploader {
 				}
 			}
 
+			//BreathDetail
+			BreathDetail[] bds = db.getNotUploadedBreathDetail();
+			if (bds != null){
+				for (int i=0;i<bds.length;++i){
+					if (connectToServer(bds[i])==ERROR)
+						Log.d(TAG,"FAIL TO UPLOAD - breathDetail");
+				}
+			}else
+				Log.d(TAG,"NO BREATH DETAIL");
+			
 			return null;
 		}
 
@@ -498,6 +509,21 @@ public class DataUploader {
 				HttpPost httpPost = HttpPostGenerator.genPost(data);
 				if (upload(httpClient, httpPost))
 					db.setExchangeHistoryUploaded(data.getTv().getTimestamp());
+				else
+					return ERROR;
+			} catch (Exception e) {
+				Log.d(TAG, "EXCEPTION:" + e.toString());
+				return ERROR;
+			}
+			return SUCCESS;
+		}
+		
+		private int connectToServer(BreathDetail data) {// BreathDetail
+			try {
+				DefaultHttpClient httpClient = HttpSecureClientGenerator.getSecureHttpClient();
+				HttpPost httpPost = HttpPostGenerator.genPost(data);
+				if (upload(httpClient, httpPost))
+					db.setBreathDetailUploaded(data.getTv().getTimestamp());
 				else
 					return ERROR;
 			} catch (Exception e) {

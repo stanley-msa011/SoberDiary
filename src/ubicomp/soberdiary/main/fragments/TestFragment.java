@@ -519,6 +519,9 @@ public class TestFragment extends Fragment implements GPSInterface, TestQuestion
 					testCountDownTimer = new TestCountDownTimer(COUNT_DOWN_SECOND_DEVELOP);
 				else
 					testCountDownTimer = new TestCountDownTimer(COUNT_DOWN_SECOND);
+				Random rand = new Random();
+				int idx = rand.nextInt(test_guide_msg.length);
+				messageView.setText(test_guide_msg[idx]);
 				testCountDownTimer.start();
 			}
 		}
@@ -707,21 +710,22 @@ public class TestFragment extends Fragment implements GPSInterface, TestQuestion
 	}
 
 	private int prev_drawable_time = -1;
-
-	public void changeBluetoothCondition(float value, int time) {
+	
+	@Override
+	public void changeBluetoothCircle(int time) {
 		if (time >= BLOW_RESOURCE.length)
 			time = BLOW_RESOURCE.length - 1;
-		if (prev_drawable_time == time)
-			return;
-		prev_drawable_time = time;
-		testCircle.setBackgroundResource(BLOW_RESOURCE[time]);
-
-		if (time == 1) {
-			Random rand = new Random();
-			int idx = rand.nextInt(test_guide_msg.length);
-			messageView.setText(test_guide_msg[idx]);
+		if (prev_drawable_time < time){
+			prev_drawable_time = time;
+			testCircle.setBackgroundResource(BLOW_RESOURCE[time]);
+			testCircle.invalidate();
 		}
-		debugBracValueView.setText(String.valueOf(value));
+	}
+	
+	@Override
+	public void changeBluetoothValue(float value) {
+			debugBracValueView.setText(String.valueOf(value));
+			debugBracValueView.invalidate();
 	}
 
 	public void stopByFail(int fail) {
@@ -743,8 +747,11 @@ public class TestFragment extends Fragment implements GPSInterface, TestQuestion
 		case 4:
 			data.putInt("msg", R.string.test_guide_zero_duration);
 			break;
-		case 6:
+		case 5:
 			data.putInt("msg", R.string.test_guide_pressure_error);
+			break;
+		case 6:
+			data.putInt("msg", R.string.test_guide_high_initial);
 			break;
 		default:
 			data.putInt("msg", R.string.test_guide_test_timeout);
@@ -966,6 +973,7 @@ public class TestFragment extends Fragment implements GPSInterface, TestQuestion
 			if (type == 0) {
 				debugMsg.append("\n" + data.getString("message"));
 				debugScrollView.scrollTo(0, debugMsg.getBottom() + 100);
+				debugMsg.invalidate();
 			} else if (type == 1) {
 				showDebugVoltage(data.getString("message"));
 			}

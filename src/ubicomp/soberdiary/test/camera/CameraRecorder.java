@@ -162,12 +162,12 @@ public class CameraRecorder {
 		}
 	}
 
-	public void CloseSuccess() {
+	public void closeSuccess() {
 		close();
 		cameraCaller.updateDoneState(Tester._CAMERA);
 	}
 
-	public void CloseFail(int type) {
+	public void closeFail(int type) {
 		close();
 		cameraCaller.stopByFail(type);
 	}

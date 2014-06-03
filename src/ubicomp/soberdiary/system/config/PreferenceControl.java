@@ -453,7 +453,7 @@ public class PreferenceControl {
 	}
 
 	public static int getNotificationTime() {
-		int[] time = { 30, 60, 120 };
+		int[] time = { 30, 60, 120, -1 };
 		int idx = sp.getInt("notificationTimeGap", 2);
 		return time[idx];
 	}
@@ -496,6 +496,9 @@ public class PreferenceControl {
 	}
 
 	public static boolean getPageChange() {
+//		TimeValue curTV = TimeValue.generate(System.currentTimeMillis());
+//		if (curTV.getWeek() > 11)
+//			return false;
 		return sp.getBoolean("pageChange", false);
 	}
 

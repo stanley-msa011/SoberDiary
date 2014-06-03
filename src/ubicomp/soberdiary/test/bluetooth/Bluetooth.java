@@ -8,6 +8,8 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.UUID;
 
+import ubicomp.soberdiary.data.database.DatabaseControl;
+import ubicomp.soberdiary.data.structure.BreathDetail;
 import ubicomp.soberdiary.main.App;
 import ubicomp.soberdiary.main.R;
 import ubicomp.soberdiary.system.config.PreferenceControl;
@@ -35,19 +37,24 @@ public class Bluetooth {
 
 	protected BluetoothAdapter btAdapter;
 
-	protected static final UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
-	protected static String DEVICE_NAME_FORMAL = "sober123_";
+	protected final static UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+	protected final static String DEVICE_NAME_FORMAL_OLD = "sober123_";
+	protected final static String DEVICE_NAME_FORMAL_NEW = "sober456_";
 	protected BluetoothDevice sensor;
 	protected BluetoothSocket socket;
 
 	protected InputStream in;
 	protected Context context;
 
-	protected float absolute_min;
-	protected float now_pressure;
+	protected float pressureMin;
+	protected float pressureCurrent;
 	protected boolean isPeak = false;
-	protected final static float PRESSURE_DIFF_MIN_RANGE = 50f;
-	protected final static float PRESSURE_DIFF_MIN = 950.f;
+	protected static float PRESSURE_DIFF_MIN_RANGE;
+	protected static float PRESSURE_DIFF_MIN;
+	protected final static float PRESSURE_DIFF_MIN_RANGE_OLD = 50f;
+	protected final static float PRESSURE_DIFF_MIN_OLD = 950.f;
+	protected final static float PRESSURE_DIFF_MIN_RANGE_NEW = 50f;
+	protected final static float PRESSURE_DIFF_MIN_NEW = 80.f;
 	protected final static float MAX_PRESSURE = Float.MAX_VALUE;
 	protected final static long IMAGE_MILLIS_0 = 500;
 	protected final static long IMAGE_MILLIS_1 = 2500;
@@ -59,16 +66,17 @@ public class Bluetooth {
 	protected final static long MILLIS_3 = 2800;
 	protected final static long MILLIS_4 = 3850;
 	protected final static long MILLIS_5 = 4980;
+
 	protected final static long BIP_MILLIS = 332;
 
 	protected final static long START_MILLIS = 2000;
 	protected final static long MAX_TEST_TIME = 25000;
 
-	protected long start_time;
-	protected long end_time;
-	protected long first_start_time;
-	protected long duration = 0;
-	protected long temp_duration = 0;
+	protected long startTime;
+	protected long endTime;
+	protected long firstStartTime;
+	protected long totalDuration = 0;
+	protected long tempDuration = 0;
 
 	protected boolean start = false;
 
@@ -76,34 +84,36 @@ public class Bluetooth {
 	protected final static int READ_ALCOHOL = 1;
 	protected final static int READ_PRESSURE = 2;
 	protected final static int READ_VOLTAGE = 3;
+	protected final static int READ_SERIAL = 4;
 
 	protected Object lock = new Object();
 	protected BTUIHandler btUIHandler;
 
-	protected int image_count;
+	protected int imageCount;
 
 	protected CameraRunHandler cameraRunHandler;
 	protected BracValueFileHandler bracFileHandler;
 
-	protected float show_value = 0.f;
+	protected float showValue = 0.f;
 
-	protected long zero_start_time;
-	protected long zero_end_time;
-	protected long zero_duration;
-	protected static final int MAX_ZERO_DURATION = 10000;
+	protected long disconnectionMillis;
+	protected static final int MAX_ZERO_DURATION = 7000;
 
-	protected boolean start_recorder = false;
+	protected boolean startToRecord = false;
 
-	private int start_times = 0;
-	private int break_times = 0;
+	private int blowStartTimes = 0;
+	private int blowBreakTimes = 0;
 	private BracPressureHandler bracPressureHandler = null;
-	private ArrayList<Float> pressure_list;
-	private float temp_pressure;
-	private float init_voltage = 9999.f;
+	private ArrayList<Float> pressureList;
+	private float tempPressure;
+	private float pressureDiffMax;
+	private int voltageInit = 9999;
+
+	private static final float MAX_INITIAL_BRAC = 0.05f;
 
 	private static SoundPool soundpool;
 	private static int soundId, soundIdBlow;
-	private long sound_time = 0;
+	private long soundTime = 0;
 
 	protected boolean btEnabledBeforeStart = true;
 	protected BluetoothDebugger debugger;
@@ -113,6 +123,17 @@ public class Bluetooth {
 	protected String EXCEPTION_ZERO_DURATION = "ZERO DURATION";
 	protected String EXCEPTION_TIME_OUT = "TIME OUT";
 	protected String EXCEPTION_PRESSURE_ERROR = "PRESSURE ERROR";
+	protected String EXCEPTION_HIGH_INITIAL_CONDITION = "HIGH_INITIAL_CONDITION";
+
+	protected static final long MIN_SLEEP_TIME = 40;
+	protected static final long MAX_SLEEP_TIME = 640;
+	protected long sleepTime = MIN_SLEEP_TIME;
+
+	protected static final int READ_BUFFER_SIZE = 32;
+
+	protected int updateCircleTimes = 0;
+
+	private ArrayList<Integer> serialList = new ArrayList<Integer>();
 
 	public Bluetooth(BluetoothDebugger debugger, BluetoothMessageUpdater updater, CameraRunHandler cameraRunHandler,
 			BracValueFileHandler bracFileHandler, boolean recordPressure) {
@@ -123,13 +144,13 @@ public class Bluetooth {
 		btAdapter = BluetoothAdapter.getDefaultAdapter();
 		if (btAdapter == null)
 			Log.e(TAG, "THE DEVICE DOES NOT SUPPORT BLUETOOTH");
-		now_pressure = 0.f;
+		pressureCurrent = 0.f;
 		btUIHandler = new BTUIHandler(updater);
 		start = false;
 		if (recordPressure) {
 			bracPressureHandler = new BracPressureHandler(bracFileHandler.getDirectory(),
 					bracFileHandler.getTimestamp());
-			pressure_list = new ArrayList<Float>();
+			pressureList = new ArrayList<Float>();
 		}
 		if (soundpool == null) {
 			soundpool = new SoundPool(1, AudioManager.STREAM_MUSIC, 1);
@@ -161,7 +182,8 @@ public class Bluetooth {
 		while (iter.hasNext()) {
 			BluetoothDevice device = iter.next();
 			if (device.getName() != null) {
-				if (device.getName().startsWith(DEVICE_NAME_FORMAL)) {
+				if (device.getName().startsWith(DEVICE_NAME_FORMAL_OLD)
+						|| device.getName().startsWith(DEVICE_NAME_FORMAL_NEW)) {
 					sensor = device;
 					PreferenceControl.setSensorID(device.getName());
 					return true;
@@ -187,7 +209,7 @@ public class Bluetooth {
 				String name = device.getName();
 				if (name == null)
 					return;
-				if (name.startsWith(DEVICE_NAME_FORMAL)) {
+				if (name.startsWith(DEVICE_NAME_FORMAL_OLD) || name.startsWith(DEVICE_NAME_FORMAL_NEW)) {
 					if (btAdapter.isDiscovering())
 						btAdapter.cancelDiscovery();
 					sensor = device;
@@ -201,6 +223,15 @@ public class Bluetooth {
 	public boolean connect() {
 		if (btAdapter != null && btAdapter.isDiscovering())
 			btAdapter.cancelDiscovery();
+
+		String sensorId = PreferenceControl.getSensorID();
+		if (sensorId.startsWith(DEVICE_NAME_FORMAL_OLD)) {
+			PRESSURE_DIFF_MIN_RANGE = PRESSURE_DIFF_MIN_RANGE_OLD;
+			PRESSURE_DIFF_MIN = PRESSURE_DIFF_MIN_OLD;
+		} else {
+			PRESSURE_DIFF_MIN_RANGE = PRESSURE_DIFF_MIN_RANGE_NEW;
+			PRESSURE_DIFF_MIN = PRESSURE_DIFF_MIN_NEW;
+		}
 
 		if (sensor == null) {
 			close();
@@ -327,37 +358,38 @@ public class Bluetooth {
 	public void read() {
 
 		boolean end = false;
-		byte[] temp = new byte[256];
+		byte[] temp = new byte[READ_BUFFER_SIZE];
 		int bytes = 0;
 		String msg = "";
 		isPeak = false;
-		absolute_min = MAX_PRESSURE;
-		now_pressure = 0;
+		pressureMin = MAX_PRESSURE;
+		pressureCurrent = 0;
 		int read_type = READ_NULL;
-		duration = 0;
-		temp_duration = 0;
-		first_start_time = -1;
-		image_count = 0;
-		show_value = 0.f;
-		zero_start_time = zero_end_time = zero_duration = 0;
-		start_recorder = false;
-		start_times = 0;
-		break_times = 0;
-		sound_time = 0;
-		if (pressure_list != null)
-			pressure_list.clear();
+		totalDuration = 0;
+		tempDuration = 0;
+		firstStartTime = -1;
+		imageCount = 0;
+		showValue = 0.f;
+		startToRecord = false;
+		blowStartTimes = 0;
+		blowBreakTimes = 0;
+		soundTime = 0;
+		pressureDiffMax = 0;
+		updateCircleTimes = 0;
+		if (pressureList != null)
+			pressureList.clear();
+		if (serialList != null)
+			serialList.clear();
 		try {
 			in = socket.getInputStream();
 			if (in.available() > 0)
 				bytes = in.read(temp);
-			else
-				zero_start_time = System.currentTimeMillis();
 
 			while (bytes >= 0) {
 				long time = System.currentTimeMillis();
-				long time_gap = time - first_start_time;
-				if (first_start_time == -1)
-					first_start_time = time;
+				long time_gap = time - firstStartTime;
+				if (firstStartTime == -1)
+					firstStartTime = time;
 				else if (time_gap > MAX_TEST_TIME)
 					throw new Exception(EXCEPTION_TIME_OUT);
 
@@ -378,6 +410,10 @@ public class Bluetooth {
 						throw new Exception(EXCEPTION_NO_BATTERY);
 					} else if ((char) temp[i] == 'p') {
 						throw new Exception(EXCEPTION_PRESSURE_ERROR);
+					} else if ((char) temp[i] == 's') {
+						end = sendMsgToApp(msg);
+						msg = "s";
+						read_type = READ_SERIAL;
 					} else if (read_type != READ_NULL)
 						msg += (char) temp[i];
 				}
@@ -385,18 +421,45 @@ public class Bluetooth {
 					break;
 				if (in.available() > 0) {
 					bytes = in.read(temp);
-					Thread.sleep(20);
-					zero_start_time = System.currentTimeMillis();
+					sleepTime /= 2;
+					sleepTime = Math.max(MIN_SLEEP_TIME, sleepTime);
+					Thread t = new Thread(new Runnable() {
+						@Override
+						public void run() {
+							try {
+								Thread.sleep(sleepTime);
+							} catch (InterruptedException e) {
+							}
+						}
+					});
+					t.start();
+					t.join();
+					Log.d(TAG, "READ_DATA=" + sleepTime);
 				} else {
 					bytes = 0;
-					if (zero_start_time == 0)
-						zero_start_time = System.currentTimeMillis();
-					zero_end_time = System.currentTimeMillis();
-					zero_duration += (zero_end_time - zero_start_time);
-					zero_start_time = zero_end_time;
-					if (zero_duration > MAX_ZERO_DURATION)
+					if (disconnectionMillis > MAX_ZERO_DURATION)
 						throw new Exception(EXCEPTION_ZERO_DURATION);
-					Thread.sleep(40);
+					sleepTime *= 2;
+					sleepTime = Math.min(MAX_SLEEP_TIME, sleepTime);
+
+					int try_time = 0;
+					while (in.available() <= 0 && try_time < sleepTime) {
+						Thread t = new Thread(new Runnable() {
+							@Override
+							public void run() {
+								try {
+									Thread.sleep(5);
+								} catch (InterruptedException e) {
+								}
+							}
+						});
+						t.start();
+						t.join();
+						try_time += 5;
+					}
+					disconnectionMillis += try_time;
+
+					Log.d(TAG, "ZERO_DURATION=" + disconnectionMillis + " " + try_time + " " + sleepTime);
 				}
 			}
 			close();
@@ -416,102 +479,122 @@ public class Bluetooth {
 			cameraRunHandler.sendEmptyMessage(5);
 		} else if (e.getMessage() != null && e.getMessage().equals(EXCEPTION_PRESSURE_ERROR)) {
 			cameraRunHandler.sendEmptyMessage(6);
+		} else if (e.getMessage() != null && e.getMessage().equals(EXCEPTION_HIGH_INITIAL_CONDITION)) {
+			cameraRunHandler.sendEmptyMessage(7);
 		} else
 			cameraRunHandler.sendEmptyMessage(2);
 	}
 
 	protected boolean sendMsgToApp(String msg) throws Exception {
 		synchronized (lock) {
-			if (msg == "")	;// Do nothing
+			if (msg == "")
+				;// Do nothing
 			else if (msg.charAt(0) == 'a') {
-				if (isPeak) {
+				if (!start) {
+					float alcohol = Float.valueOf(msg.substring(1));
+					if (alcohol > MAX_INITIAL_BRAC) {
+						throw new Exception(EXCEPTION_HIGH_INITIAL_CONDITION);
+					}
+				} else if (isPeak) {
 					long timeStamp = System.currentTimeMillis() / 1000L;
 					float alcohol = Float.valueOf(msg.substring(1));
 					String output = timeStamp + "\t" + alcohol + "\n";
-					if (start_recorder) {
-						show_value = alcohol;
-						pressure_list.add(temp_pressure);
+					if (startToRecord) {
+						showValue = alcohol;
+						pressureList.add(tempPressure);
 						write_to_file(output);
 					}
 				}
 			} else if (msg.charAt(0) == 'm') {
 
-				now_pressure = Float.valueOf(msg.substring(1));
-				temp_pressure = now_pressure;
+				pressureCurrent = Float.valueOf(msg.substring(1));
+
+				tempPressure = pressureCurrent;
 
 				long time = System.currentTimeMillis();
-				if (!start && now_pressure < absolute_min) {
-					absolute_min = now_pressure;
-					Log.d(TAG, "absolute min setting: " + absolute_min);
+				if (!start && pressureCurrent < pressureMin) {
+					pressureMin = pressureCurrent;
 				}
 
 				if (!start)
 					return false;
 
-				float diff_limit = PRESSURE_DIFF_MIN_RANGE * (5000.f - temp_duration) / 5000.f + PRESSURE_DIFF_MIN;
-				if (now_pressure > absolute_min + diff_limit && !isPeak) {
+				if (pressureDiffMax < (pressureCurrent - pressureMin))
+					pressureDiffMax = (pressureCurrent - pressureMin);
+
+				float diff_limit = PRESSURE_DIFF_MIN_RANGE * (5000.f - tempDuration) / 5000.f + PRESSURE_DIFF_MIN;
+				if (pressureCurrent > pressureMin + diff_limit && !isPeak) {
 					isPeak = true;
-					start_time = time;
-					++start_times;
-					if (start_times == 1) {
+					startTime = time;
+					++blowStartTimes;
+					if (blowStartTimes == 1) {
 						PreferenceControl.setTestFail();
 						PreferenceControl.setUpdateDetection(false);
 					}
-					if (start_times > 2) {
+					if (blowStartTimes > 2) {
 						throw new Exception(EXCEPTION_BLOW_TWICE);
 					}
-					temp_duration = 0;
+					tempDuration = 0;
 					Log.d(TAG, "Peak Start");
-				} else if (now_pressure > absolute_min + diff_limit && isPeak) {
-					end_time = time;
-					duration += (end_time - start_time);
-					temp_duration += (end_time - start_time);
-					start_time = end_time;
+				} else if (pressureCurrent > pressureMin + diff_limit && isPeak) {
+					endTime = time;
+					totalDuration += (endTime - startTime);
+					tempDuration += (endTime - startTime);
+					startTime = endTime;
 
-					if (duration > MILLIS_5) {
-						show_in_UI(show_value, 5);
-					} else if (duration > MILLIS_4) {
-						show_in_UI(show_value, 4);
-					} else if (duration > MILLIS_3) {
-						show_in_UI(show_value, 3);
-					} else if (duration > MILLIS_2) {
-						show_in_UI(show_value, 2);
-					} else if (duration > MILLIS_1) {
-						show_in_UI(show_value, 1);
+					if (totalDuration > MILLIS_5 && updateCircleTimes < 5) {
+						showBrACCircle(5);
+						updateCircleTimes = 5;
+					} else if (totalDuration > MILLIS_4 && updateCircleTimes < 4) {
+						showBrACCircle(4);
+						updateCircleTimes = 4;
+					} else if (totalDuration > MILLIS_3 && updateCircleTimes < 3) {
+						showBrACCircle(3);
+						updateCircleTimes = 3;
+					} else if (totalDuration > MILLIS_2 && updateCircleTimes < 2) {
+						showBrACCircle(2);
+						updateCircleTimes = 2;
+					} else if (totalDuration > MILLIS_1 && updateCircleTimes < 1) {
+						showBrACCircle(1);
+						updateCircleTimes = 1;
 					}
 
-					if (duration > sound_time) {
+					if (totalDuration > soundTime) {
 						soundpool.play(soundIdBlow, 1.f, 1.f, 0, 0, 1.f);
-						sound_time += 100;
+						soundTime += 100;
 					}
 
-					if (duration >= START_MILLIS)
-						start_recorder = true;
+					if (totalDuration >= START_MILLIS)
+						startToRecord = true;
 
-					if (image_count == 0 && duration > IMAGE_MILLIS_0) {
+					if (imageCount == 0 && totalDuration > IMAGE_MILLIS_0) {
 						cameraRunHandler.sendEmptyMessage(0);
-						++image_count;
-					} else if (image_count == 1 && duration > IMAGE_MILLIS_1) {
+						++imageCount;
+					} else if (imageCount == 1 && totalDuration > IMAGE_MILLIS_1) {
 						cameraRunHandler.sendEmptyMessage(0);
-						++image_count;
-					} else if (image_count == 2 && duration > IMAGE_MILLIS_2) {
+						++imageCount;
+					} else if (imageCount == 2 && totalDuration > IMAGE_MILLIS_2) {
 						cameraRunHandler.sendEmptyMessage(0);
-						++image_count;
-					} else if (image_count == 3 && duration > MAX_DURATION_MILLIS) {
-						show_in_UI(show_value, 6);
+						++imageCount;
+					} else if (imageCount == 3 && totalDuration > MAX_DURATION_MILLIS) {
+						showBrACCircle(6);
 						return true;
 					}
 
 				} else if (isPeak) {
 					isPeak = false;
-					start_time = end_time = 0;
-					++break_times;
+					startTime = endTime = 0;
+					++blowBreakTimes;
 					Log.d(TAG, "Peak End");
 				}
 			} else if (msg.charAt(0) == 'v') {
-				if (!start)
-					init_voltage = Float.valueOf(msg.substring(1));
-			} 
+				if (!start) {
+					voltageInit = Integer.valueOf(msg.substring(1, msg.length() - 1));
+				}
+			} else if (msg.charAt(0) == 's') {
+				int serial = Integer.valueOf(msg.substring(1, msg.length() - 1));
+				serialList.add(serial);
+			}
 		}
 		return false;
 	}
@@ -520,20 +603,44 @@ public class Bluetooth {
 		normalClose();
 
 		try {
-			if (bracPressureHandler != null && pressure_list != null) {
-				double pressure_sum = 0.0;
-				int count = pressure_list.size();
+			if (bracPressureHandler != null && pressureList != null) {
+				float pressureAverage = 0.0f;
+				int count = pressureList.size();
 				if (count > 0) {
-					Iterator<Float> iter = pressure_list.iterator();
+					Iterator<Float> iter = pressureList.iterator();
 					while (iter.hasNext())
-						pressure_sum += iter.next();
-					pressure_sum /= count;
+						pressureAverage += iter.next();
+					pressureAverage /= count;
 				}
 
 				Message msg = new Message();
 				Bundle data = new Bundle();
-				data.putString("pressure", start_times + "\t" + break_times + "\t" + pressure_sum + "\t" + absolute_min
-						+ "\t" + init_voltage);
+
+				int serialDiffMax = 0;
+				float serialDiffAverage = 0;
+				if (serialList.size() > 0) {
+					int prev_serial = serialList.get(0);
+					for (int i = 1; i < serialList.size(); ++i) {
+						int serial = serialList.get(i);
+						int diff = serial - prev_serial;
+						diff = diff >= 0 ? diff : diff + 10000;
+						serialDiffMax = diff > serialDiffMax ? diff : serialDiffMax;
+						serialDiffAverage += diff;
+						prev_serial = serial;
+					}
+					serialDiffAverage /= (serialList.size() - 1);
+				}
+
+				long bdTs = Long.valueOf(bracFileHandler.getTimestamp());
+
+				BreathDetail bd = new BreathDetail(bdTs, blowStartTimes, blowBreakTimes, pressureDiffMax, pressureMin,
+						pressureAverage, voltageInit, disconnectionMillis, serialDiffMax, serialDiffAverage);
+				DatabaseControl db = new DatabaseControl();
+				db.insertBreathDetail(bd);
+
+				data.putString("pressure", blowStartTimes + "\t" + blowBreakTimes + "\t" + pressureAverage + "\t"
+						+ pressureMin + "\t" + voltageInit + "\t" + "(" + disconnectionMillis + ")" + "\t("
+						+ serialDiffMax + "," + serialDiffAverage + ")");
 				msg.setData(data);
 				msg.what = 0;
 				bracPressureHandler.sendMessage(msg);
@@ -572,11 +679,8 @@ public class Bluetooth {
 			bracFileHandler.close();
 
 		try {
-			Log.d(TAG, "check bt cond. before start " + btEnabledBeforeStart);
 			if (!btEnabledBeforeStart) {
-				Log.d(TAG, "auto close");
 				btAdapter.disable();
-				Log.d(TAG, "auto close done");
 			}
 		} catch (Exception e) {
 		}
@@ -596,13 +700,21 @@ public class Bluetooth {
 		bracFileHandler.sendMessage(msg);
 	}
 
-	protected void show_in_UI(float value, int time) {
+	protected void showBrACCircle(int time) {
 		Message msg = new Message();
 		Bundle data = new Bundle();
-		data.putFloat("value", value);
 		data.putInt("TIME", time);
 		msg.setData(data);
 		msg.what = 2;
+		btUIHandler.sendMessage(msg);
+	}
+	
+	protected void showBrACValue(float value){
+		Message msg = new Message();
+		Bundle data = new Bundle();
+		data.putFloat("value", value);
+		msg.setData(data);
+		msg.what = 3;
 		btUIHandler.sendMessage(msg);
 	}
 

@@ -105,6 +105,7 @@
     <string name="test_guide_multi_blow">吹氣不穩以致測試失敗</string>
     <string name="test_guide_zero_duration">連線錯誤，請重啟酒測器及手機藍牙功能</string>
     <string name="test_guide_pressure_error">酒測器有損壞，請聯絡戒酒小幫手團隊予以更換</string>
+    <string name="test_guide_high_initial">酒測器未完全回復，請將酒測器啟動並放在通風處兩分鐘再測試</string>
     
     <string name="test_guide_msg_box">請依對話框指示進行操作</string>
     
@@ -160,7 +161,7 @@
         <item>的心情\n(最長可達一分鐘)</item>
     </string-array>
 
-    <string name="quote_next_message">您將從中學習‧‧‧</string>
+    <string name="quote_next_message">請按此看延伸學習‧‧‧</string>
     <string name="call_to">要聯絡誰？</string>
     <string name="next">下一步</string>
 
@@ -181,6 +182,7 @@
         <item>提醒時間間隔設為30分鐘</item>
         <item>提醒時間間隔設為60分鐘</item>
         <item>提醒時間間隔設為120分鐘</item>
+        <item>關閉提醒功能</item>
     </string-array>
 
     <string-array name="about_message">
@@ -224,6 +226,7 @@
     <string name="email_message">請問要如何寄送信件</string>
     <string name="email_reject">非本實驗受試者煩請不要寄送信件</string>
     <string name="email_fail">手機端未安裝信件寄送程式</string>
+    <string name="website"><u>查看戒酒新知</u></string>
 
     <string name="know">了解</string>
     <string name="bonus">特殊獎勵</string>

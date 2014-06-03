@@ -1,6 +1,7 @@
 package ubicomp.soberdiary.main;
 
 import ubicomp.soberdiary.main.R;
+import ubicomp.soberdiary.data.database.DatabaseDummyData;
 import ubicomp.soberdiary.data.database.DatabaseRestore;
 import ubicomp.soberdiary.data.database.DatabaseRestoreVer1;
 import ubicomp.soberdiary.system.config.PreferenceControl;
@@ -25,7 +26,7 @@ public class PreSettingActivity extends Activity {
 
 	private EditText uid, target_good, target, drink;
 
-	private Button ok_button, clean_button, restoreButton, debugButton, restoreVer1Button;
+	private Button saveButton, exchangeButton, restoreButton, debugButton, restoreVer1Button, dummyDataButton;
 	private boolean debug;
 	private Activity activity;
 	private static final int MIN_NAME_LENGTH = 3;
@@ -46,7 +47,6 @@ public class PreSettingActivity extends Activity {
 	private int target_t, drink_t;
 
 	private CheckBox developer_switch;
-	private CheckBox sensor_switch;
 
 	private static final int DATE_DIALOG_ID = 0;
 	private static final int LOCK_DIALOG_ID = 1;
@@ -62,9 +62,6 @@ public class PreSettingActivity extends Activity {
 
 		developer_switch = (CheckBox) this.findViewById(R.id.developer_switch);
 		developer_switch.setChecked(PreferenceControl.isDeveloper());
-
-		sensor_switch = (CheckBox) this.findViewById(R.id.sensor_switch);
-		sensor_switch.setChecked(PreferenceControl.getUseNewSensor());
 
 		target_good = (EditText) this.findViewById(R.id.target_good_edit);
 		target_good.setText(PreferenceControl.getSavingGoal());
@@ -88,8 +85,8 @@ public class PreSettingActivity extends Activity {
 		lMonth = lockDateData[1];
 		lDay = lockDateData[2];
 
-		ok_button = (Button) this.findViewById(R.id.uid_OK);
-		ok_button.setOnClickListener(new OKOnclickListener());
+		saveButton = (Button) this.findViewById(R.id.uid_OK);
+		saveButton.setOnClickListener(new OKOnclickListener());
 
 		versionText = (TextView) this.findViewById(R.id.version);
 
@@ -103,8 +100,9 @@ public class PreSettingActivity extends Activity {
 		try {
 			pinfo = getPackageManager().getPackageInfo(getPackageName(), 0);
 			String versionName = pinfo.versionName;
-			versionText.setText("Verstion: " + versionName);
+			versionText.setText(versionName);
 		} catch (NameNotFoundException e) {
+			versionText.setText("Unknown");
 		}
 
 		mPickDate.setOnClickListener(new View.OnClickListener() {
@@ -124,16 +122,14 @@ public class PreSettingActivity extends Activity {
 		updateDisplay();
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setTitle("確定清除點數?");
-		builder.setMessage("確定?");
 		builder.setPositiveButton("確定", new CleanListener());
 		builder.setNegativeButton("取消", null);
 		AlertDialog cleanAlertDialog = builder.create();
-		clean_button = (Button) this.findViewById(R.id.clean_OK);
-		clean_button.setOnClickListener(new AlertOnClickListener(cleanAlertDialog));
+		exchangeButton = (Button) this.findViewById(R.id.clean_OK);
+		exchangeButton.setOnClickListener(new AlertOnClickListener(cleanAlertDialog));
 
 		builder = new AlertDialog.Builder(this);
-		builder.setTitle("Restore?");
-		builder.setMessage("確定?");
+		builder.setTitle("回復資料?");
 		builder.setPositiveButton("確定", new RestoreOnClickListener());
 		builder.setNegativeButton("取消", null);
 		AlertDialog resotreAlertDialog = builder.create();
@@ -141,8 +137,7 @@ public class PreSettingActivity extends Activity {
 		restoreButton.setOnClickListener(new AlertOnClickListener(resotreAlertDialog));
 
 		builder = new AlertDialog.Builder(this);
-		builder.setTitle("Restore Ver1?");
-		builder.setMessage("確定?");
+		builder.setTitle("由SoberDiary Ver1回復資料?");
 		builder.setPositiveButton("確定", new RestoreVer1OnClickListener());
 		builder.setNegativeButton("取消", null);
 		AlertDialog resotreAlertDialogVer1 = builder.create();
@@ -152,13 +147,22 @@ public class PreSettingActivity extends Activity {
 		debug = PreferenceControl.isDebugMode();
 		debugButton = (Button) this.findViewById(R.id.debug_normal_switch);
 
-		if (debug) {
+		if (debug)
 			debugButton.setText("Switch to normal mode");
-		} else {
+		else
 			debugButton.setText("Switch to debug mode");
-		}
+
 		debugButton.setOnClickListener(new DebugOnClickListener());
 
+		builder = new AlertDialog.Builder(this);
+		builder.setTitle("使用Dummy Data?");
+		builder.setMessage("使用後將會清除現有資料");
+		builder.setPositiveButton("確定", new DummyDataOnClickListener());
+		builder.setNegativeButton("取消", null);
+		AlertDialog dummyDataDialog = builder.create();
+		dummyDataButton = (Button) findViewById(R.id.debug_dummy_data);
+		dummyDataButton.setOnClickListener(new AlertOnClickListener(dummyDataDialog));
+		
 	}
 
 	private class RestoreOnClickListener implements DialogInterface.OnClickListener {
@@ -174,6 +178,14 @@ public class PreSettingActivity extends Activity {
 		public void onClick(DialogInterface dialog, int which) {
 			DatabaseRestoreVer1 rd = new DatabaseRestoreVer1(uid.getText().toString(), activity);
 			rd.execute();
+		}
+	}
+	
+	private class DummyDataOnClickListener implements DialogInterface.OnClickListener {
+		@Override
+		public void onClick(DialogInterface dialog, int which) {
+			DatabaseDummyData ddd = new DatabaseDummyData(activity);
+			ddd.execute();
 		}
 	}
 
@@ -223,7 +235,6 @@ public class PreSettingActivity extends Activity {
 			if (check) {
 				PreferenceControl.setUID(text);
 				PreferenceControl.setIsDeveloper(developer_switch.isChecked());
-				PreferenceControl.setUseNewSensor(sensor_switch.isChecked());
 				PreferenceControl.setGoal(target_g, target_t, drink_t);
 				PreferenceControl.setStartDate(mYear, mMonth, mDay);
 

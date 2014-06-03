@@ -1,5 +1,7 @@
 package ubicomp.soberdiary.storytelling.ui;
 
+import java.util.Random;
+
 import ubicomp.soberdiary.data.database.DatabaseControl;
 import ubicomp.soberdiary.data.structure.StorytellingRead;
 import ubicomp.soberdiary.main.App;
@@ -33,14 +35,15 @@ public class QuoteMsgBox {
 	private Typeface wordTypefaceBold;
 	private int page;
 	private DatabaseControl db;
-	private String[] learningArray;
+	private String[] learningArray = App.getContext().getResources().getStringArray(R.array.quote_learning);
+	private String[] learningArrayExtend = App.getContext().getResources()
+			.getStringArray(R.array.quote_learning_extend);
 
 	public QuoteMsgBox(EnablePage enablePage, RelativeLayout mainLayout) {
 		this.enablePage = enablePage;
 		this.inflater = (LayoutInflater) App.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		this.mainLayout = mainLayout;
 		db = new DatabaseControl();
-		learningArray = App.getContext().getResources().getStringArray(R.array.quote_learning);
 		setting();
 	}
 
@@ -79,7 +82,15 @@ public class QuoteMsgBox {
 		enablePage.enablePage(false);
 		boxLayout.setVisibility(View.VISIBLE);
 		this.page = page;
-		help.setText(learningArray[page]);
+		
+		Random rand = new Random();
+		int showType = rand.nextInt(3);
+		if (showType < 1){
+			help.setText(learningArray[page%12]);
+		}else{
+			int idx = rand.nextInt(learningArrayExtend.length);
+			help.setText(learningArrayExtend[idx]);
+		}
 		return;
 	}
 

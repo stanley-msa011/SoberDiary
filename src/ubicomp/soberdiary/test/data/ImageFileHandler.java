@@ -48,7 +48,7 @@ public class ImageFileHandler extends Handler {
 			writer = null;
 		}
 		if (count == 3) {
-			recorder.CloseSuccess();
+			recorder.closeSuccess();
 		}
 	}
 }

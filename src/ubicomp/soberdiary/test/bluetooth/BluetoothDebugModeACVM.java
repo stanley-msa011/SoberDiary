@@ -11,10 +11,13 @@ public class BluetoothDebugModeACVM extends Bluetooth {
 
 	protected BracValueDebugHandler bracDebugHandler;
 
-	protected static float PRESSURE_DIFF_MIN_RANGE = 50f;
-	protected static float PRESSURE_DIFF_MIN = 100.f;
+	protected static float PRESSURE_DIFF_MIN_RANGE_OLD = 50f;
+	protected static float PRESSURE_DIFF_MIN_OLD = 100.f;
+	protected static float PRESSURE_DIFF_MIN_RANGE_NEW = 30.f;
+	protected static float PRESSURE_DIFF_MIN_NEW = 20.f;
 	protected final static long MAX_TEST_TIME = 50000;
-
+	private long showBrACTime = 0;
+	
 	public BluetoothDebugModeACVM(BluetoothDebugger debugger, BluetoothMessageUpdater updater,
 			CameraRunHandler cameraRunHandler, BracValueFileHandler bracFileHandler,
 			BracValueDebugHandler bracDebugHandler) {
@@ -35,33 +38,31 @@ public class BluetoothDebugModeACVM extends Bluetooth {
 	public void read() {
 
 		boolean end = false;
-		byte[] temp = new byte[256];
+		byte[] temp = new byte[READ_BUFFER_SIZE];
 		int bytes = 0;
 		String msg = "";
 		isPeak = false;
-		absolute_min = MAX_PRESSURE;
-		now_pressure = 0;
+		pressureMin = MAX_PRESSURE;
+		pressureCurrent = 0;
 		int read_type = READ_NULL;
-		duration = 0;
-		temp_duration = 0;
-		first_start_time = -1;
-		image_count = 0;
-		show_value = temp_A0 = temp_A1 = 0.f;
-		zero_start_time = zero_end_time = zero_duration = 0;
-		start_recorder = false;
+		totalDuration = 0;
+		tempDuration = 0;
+		firstStartTime = -1;
+		imageCount = 0;
+		showValue = temp_A0 = temp_A1 = 0.f;
+		startToRecord = false;
+		showBrACTime = 0;
 		try {
 			in = socket.getInputStream();
 			debugger.showDebug("bluetooth start to read");
 			if (in.available() > 0)
 				bytes = in.read(temp);
-			else
-				zero_start_time = System.currentTimeMillis();
 
 			while (bytes >= 0) {
 				long time = System.currentTimeMillis();
-				long time_gap = time - first_start_time;
-				if (first_start_time == -1)
-					first_start_time = time;
+				long time_gap = time - firstStartTime;
+				if (firstStartTime == -1)
+					firstStartTime = time;
 				else if (time_gap > MAX_TEST_TIME)
 					throw new Exception(EXCEPTION_TIME_OUT);
 
@@ -86,6 +87,9 @@ public class BluetoothDebugModeACVM extends Bluetooth {
 						sendDebugMsg(msg);
 						msg = "v";
 						read_type = READ_VOLTAGE;
+					} else if ((char) temp[i] == 's'){
+						end = sendMsgToApp(msg);
+						read_type = READ_NULL;
 					} else if ((char) temp[i] == 'b') {
 						throw new Exception(EXCEPTION_NO_BATTERY);
 					} else if ((char) temp[i] == 'p') {
@@ -99,18 +103,41 @@ public class BluetoothDebugModeACVM extends Bluetooth {
 
 				if (in.available() > 0) {
 					bytes = in.read(temp);
-					Thread.sleep(20);
-					zero_start_time = System.currentTimeMillis();
+					sleepTime /= 2;
+					sleepTime = Math.max(MIN_SLEEP_TIME, sleepTime);
+					Thread t = new Thread(new Runnable() {
+						@Override
+						public void run() {
+							try {
+								Thread.sleep(sleepTime);
+							} catch (InterruptedException e) {
+							}
+						}
+					});
+					t.start();
+					t.join();
 				} else {
 					bytes = 0;
-					if (zero_start_time == 0)
-						zero_start_time = System.currentTimeMillis();
-					zero_end_time = System.currentTimeMillis();
-					zero_duration += (zero_end_time - zero_start_time);
-					zero_start_time = zero_end_time;
-					if (zero_duration > MAX_ZERO_DURATION)
+					if (disconnectionMillis > MAX_ZERO_DURATION)
 						throw new Exception(EXCEPTION_ZERO_DURATION);
-					Thread.sleep(40);
+					sleepTime *= 2;
+					sleepTime = Math.min(MAX_SLEEP_TIME, sleepTime);
+
+					int try_time = 0;
+					while (in.available() <= 0 && try_time < sleepTime) {
+						Thread t = new Thread(new Runnable() {
+							@Override
+							public void run() {
+								try {
+									Thread.sleep(5);
+								} catch (InterruptedException e) {}
+							}
+						});
+						t.start();
+						t.join();
+						try_time += 5;
+					}
+					disconnectionMillis += try_time;
 				}
 
 			}
@@ -200,9 +227,9 @@ public class BluetoothDebugModeACVM extends Bluetooth {
 					long timeStamp = System.currentTimeMillis() / 1000L;
 					float alcohol = Float.valueOf(msg.substring(1));
 					String output = timeStamp + "\t" + temp_pressure + "\t" + alcohol;
-					debugger.showDebug("time: " + timeStamp);
-					debugger.showDebug("a0: " + alcohol);
-					if (start_recorder) {
+					//debugger.showDebug("time: " + timeStamp);
+					//debugger.showDebug("a0: " + alcohol);
+					if (startToRecord) {
 						temp_A0 = alcohol;
 						// write to the file
 						write_to_file(output);
@@ -212,87 +239,100 @@ public class BluetoothDebugModeACVM extends Bluetooth {
 				if (isPeak) {
 					float alcohol = Float.valueOf(msg.substring(1));
 					String output = "\t" + alcohol;
-					debugger.showDebug("a1: " + alcohol);
-					if (start_recorder) {
+					//debugger.showDebug("a1: " + alcohol);
+					if (startToRecord) {
 						temp_A1 = alcohol;
 						write_to_file(output);
 					}
 				}
 			} else if (msg.charAt(0) == 'm') {
 				temp_pressure = msg.substring(1, msg.length() - 1);
-				now_pressure = Float.valueOf(temp_pressure);
+				pressureCurrent = Float.valueOf(temp_pressure);
 
 				long time = System.currentTimeMillis();
 
-				if (!start && now_pressure < absolute_min) {
-					absolute_min = now_pressure;
-					debugger.showDebug("absolute min setting: " + absolute_min);
+				if (!start && pressureCurrent < pressureMin) {
+					pressureMin = pressureCurrent;
+					debugger.showDebug("absolute min setting: " + pressureMin);
 				}
 
 				if (!start) {
-					debugger.showDebug("read before start testing");
+					//debugger.showDebug("read before start testing");
 					return false;
 				}
 
-				float diff_limit = PRESSURE_DIFF_MIN_RANGE * (5000.f - temp_duration) / 5000.f + PRESSURE_DIFF_MIN;
+				float diff_limit = PRESSURE_DIFF_MIN_RANGE * (5000.f - tempDuration) / 5000.f + PRESSURE_DIFF_MIN;
 
-				debugger.showDebug("p: " + now_pressure + " min: " + absolute_min + " l:" + diff_limit);
+				//debugger.showDebug("p: " + pressureCurrent + " min: " + pressureMin + " l:" + diff_limit);
 
-				if (now_pressure > absolute_min + diff_limit && !isPeak) {
+				if (pressureCurrent > pressureMin + diff_limit && !isPeak) {
 					debugger.showDebug("Peak start");
 					isPeak = true;
-					start_time = time;
-					temp_duration = 0;
-				} else if (now_pressure > absolute_min + diff_limit && isPeak) {
-					debugger.showDebug("is Peak");
-					end_time = time;
-					duration += (end_time - start_time);
-					temp_duration += (end_time - start_time);
-					start_time = end_time;
+					startTime = time;
+					tempDuration = 0;
+				} else if (pressureCurrent > pressureMin + diff_limit && isPeak) {
+					//debugger.showDebug("is Peak");
+					endTime = time;
+					totalDuration += (endTime - startTime);
+					tempDuration += (endTime - startTime);
+					startTime = endTime;
 
-					float value = temp_A1 - temp_A0;
+					showValue = temp_A1 - temp_A0;
+				
+					if (totalDuration > MILLIS_5 && updateCircleTimes < 5) {
+						showBrACCircle(5);
+						updateCircleTimes = 5;
+					} else if (totalDuration > MILLIS_4 && updateCircleTimes < 4) {
+						showBrACCircle(4);
+						updateCircleTimes = 4;
+					} else if (totalDuration > MILLIS_3 && updateCircleTimes < 3) {
+						showBrACCircle(3);
+						updateCircleTimes = 3;
+					} else if (totalDuration > MILLIS_2 && updateCircleTimes < 2) {
+						showBrACCircle(2);
+						updateCircleTimes = 2;
+					} else if (totalDuration > MILLIS_1 && updateCircleTimes < 1) {
+						showBrACCircle(1);
+						updateCircleTimes = 1;
+					}
+					
+					if (totalDuration > showBrACTime){
+						showBrACValue(showValue);
+						showBrACTime += 200;
+					}
 
-					if (duration > MILLIS_5)
-						show_in_UI(value, 5);
-					else if (duration > MILLIS_4)
-						show_in_UI(value, 4);
-					else if (duration > MILLIS_3)
-						show_in_UI(value, 3);
-					else if (duration > MILLIS_2)
-						show_in_UI(value, 2);
-					else if (duration > MILLIS_1)
-						show_in_UI(value, 1);
+					if (totalDuration >= START_MILLIS)
+						startToRecord = true;
 
-					if (duration >= START_MILLIS)
-						start_recorder = true;
-
-					if (image_count == 0 && duration > IMAGE_MILLIS_0) {
+					if (imageCount == 0 && totalDuration > IMAGE_MILLIS_0) {
 						cameraRunHandler.sendEmptyMessage(0);
-						++image_count;
-					} else if (image_count == 1 && duration > IMAGE_MILLIS_1) {
+						++imageCount;
+					} else if (imageCount == 1 && totalDuration > IMAGE_MILLIS_1) {
 						cameraRunHandler.sendEmptyMessage(0);
-						++image_count;
-					} else if (image_count == 2 && duration > IMAGE_MILLIS_2) {
+						++imageCount;
+					} else if (imageCount == 2 && totalDuration > IMAGE_MILLIS_2) {
 						cameraRunHandler.sendEmptyMessage(0);
-						++image_count;
-					} else if (image_count == 3 && duration > MAX_DURATION_MILLIS) {
-						debugger.showDebug("End of Blowing");
-						show_in_UI(value, 6);
+						++imageCount;
+					} else if (imageCount == 3 && totalDuration > MAX_DURATION_MILLIS) {
+						debugger.showDebug("test end");
+						showBrACCircle(6);
 						return true;
 					}
 				} else if (isPeak) {
 					debugger.showDebug("Peak end");
 					isPeak = false;
-					start_time = end_time = 0;
+					startTime = endTime = 0;
 				}
 			} else if (msg.charAt(0) == 'v') {
 				if (isPeak) {
 					float voltage = Float.valueOf(msg.substring(1));
 					String output = "\t" + voltage + "\n";
-					debugger.showDebug("v: " + voltage);
-					if (start_recorder)
+					//debugger.showDebug("v: " + voltage);
+					if (startToRecord)
 						write_to_file(output);
 				}
+			} else if (msg.charAt(0)=='s'){
+				//Do nothing
 			}
 		}
 		return false;

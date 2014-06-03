@@ -77,6 +77,8 @@ public class StorytellingGraphics {
 	};
 
 	public static int getArrowPos(int idx, int week) {
+		if (week > MAX_PAGE)
+			week = week%(MAX_PAGE+1);
 		return UPDATE_POS[week][idx];
 	}
 
@@ -84,7 +86,7 @@ public class StorytellingGraphics {
 		if (week < 0)
 			week = 0;
 		else if (week > MAX_PAGE)
-			week = MAX_PAGE;
+			week = week%(MAX_PAGE+1);
 		if (score < 0)
 			score = 0;
 		else if (score > MAX_SCORE)
@@ -97,7 +99,7 @@ public class StorytellingGraphics {
 		if (week < 0)
 			week = 0;
 		else if (week > MAX_PAGE)
-			week = MAX_PAGE;
+			week = week%(MAX_PAGE+1);
 		if (idx < 0)
 			idx = 0;
 		else if (idx > 14)
@@ -109,7 +111,7 @@ public class StorytellingGraphics {
 		if (week < 0)
 			week = 0;
 		else if (week > MAX_PAGE)
-			week = MAX_PAGE;
+			week = week%(MAX_PAGE+1);
 		if (score < 0)
 			score = 0;
 		else if (score > MAX_SCORE)
