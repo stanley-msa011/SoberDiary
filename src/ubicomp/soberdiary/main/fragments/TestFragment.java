@@ -50,7 +50,6 @@ import ubicomp.soberdiary.test.ui.NotificationDialog;
 import ubicomp.soberdiary.test.ui.NotificationInterface;
 import ubicomp.soberdiary.test.ui.TestQuestionCaller;
 import ubicomp.soberdiary.test.ui.TestQuestionMsgBox;
-import ubicomp.soberdiary.test.ui.TestQuestionMsgBoxInterface;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -99,7 +98,7 @@ public class TestFragment extends Fragment implements GPSInterface, TestQuestion
 	private static final long TEST_GAP_DURATION_LONG = Config.TEST_GAP_DURATION_LONG;
 	private static final long TEST_GAP_DURATION_SHORT = Config.TEST_GAP_DURATION_SHORT;
 	private static final int COUNT_DOWN_SECOND = Config.COUNT_DOWN_SECOND;
-	private static final int COUNT_DOWN_SECOND_DEVELOP = Config.COUNT_DOWN_SECOND_DEVELOP;
+	private static final int COUNT_DOWN_SECOND_DEVELOP = Config.COUNT_DOWN_SECOND_DEBUG;
 
 	// GPS
 	private LocationManager locationManager;
@@ -126,7 +125,7 @@ public class TestFragment extends Fragment implements GPSInterface, TestQuestion
 	private BracDataHandler BDH;
 
 	private RelativeLayout main_layout;
-	private TestQuestionMsgBoxInterface msgBox;
+	private TestQuestionMsgBox msgBox;
 	private FeedbackMsgBox feedbackBox;
 
 	private FailMessageHandler failBgHandler;
@@ -329,6 +328,8 @@ public class TestFragment extends Fragment implements GPSInterface, TestQuestion
 		Boolean debug = PreferenceControl.isDebugMode();
 		Boolean debug_type = PreferenceControl.debugType();
 
+		prev_drawable_time = -1;
+		
 		if (debug) {
 			if (debug_type)
 				bt = new BluetoothDebugModeAVM(testFragment, testFragment, cameraRunHandler, bracFileHandler,
@@ -369,7 +370,7 @@ public class TestFragment extends Fragment implements GPSInterface, TestQuestion
 
 	@Override
 	public void startGPS(boolean enable) {
-		msgBox.generateWaitingBox();
+		msgBox.showWaitingBox();
 		if (enable) {
 			gps_state = true;
 			Object[] gps_enable = { gps_state };
@@ -632,8 +633,8 @@ public class TestFragment extends Fragment implements GPSInterface, TestQuestion
 				feedbackBox.gen();
 				feedbackBox.generateMsgBox(true);
 			} else {
-				msgBox.gen();
-				msgBox.generateMsgBox();
+				msgBox.initialize();
+				msgBox.showMsgBox();
 			}
 			messageView.setText(R.string.test_guide_msg_box);
 		}
@@ -641,8 +642,8 @@ public class TestFragment extends Fragment implements GPSInterface, TestQuestion
 
 	public void feedbackToMsgBox() {
 		feedbackBox.closeBox();
-		msgBox.gen();
-		msgBox.generateMsgBox();
+		msgBox.initialize();
+		msgBox.showMsgBox();
 	}
 
 	public void feedbackToFail() {
@@ -665,7 +666,8 @@ public class TestFragment extends Fragment implements GPSInterface, TestQuestion
 
 			messageView.setText("");
 			countDownText.setText("");
-			testCircle.setBackgroundResource(BLOW_RESOURCE[0]);
+			//testCircle.setBackgroundResource(BLOW_RESOURCE[0]);
+			testCircle.setImageResource(BLOW_RESOURCE[0]);
 
 			int msg_str_id = msg.getData().getInt("msg");
 
@@ -717,7 +719,8 @@ public class TestFragment extends Fragment implements GPSInterface, TestQuestion
 			time = BLOW_RESOURCE.length - 1;
 		if (prev_drawable_time < time){
 			prev_drawable_time = time;
-			testCircle.setBackgroundResource(BLOW_RESOURCE[time]);
+			//testCircle.setBackgroundResource(BLOW_RESOURCE[time]);
+			testCircle.setImageResource(BLOW_RESOURCE[time]);
 			testCircle.invalidate();
 		}
 	}
@@ -947,8 +950,6 @@ public class TestFragment extends Fragment implements GPSInterface, TestQuestion
 	}
 
 	public void showDebug(String message, int type) {
-		if (this == null)
-			return;
 		Boolean debug = PreferenceControl.isDebugMode();
 		if (debug && msgHandler != null) {
 			Message msg = new Message();

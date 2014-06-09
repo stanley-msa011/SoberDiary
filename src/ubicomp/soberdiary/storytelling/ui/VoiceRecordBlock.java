@@ -147,7 +147,7 @@ public class VoiceRecordBlock implements RecorderCallee {
 			topIcon.setImageDrawable(recDrawable);
 			topButton.setOnClickListener(recListener);
 			topButton.setBackgroundResource(R.drawable.record_box_top_button);
-			if (db.hasAudio(curTV)) {
+			if (db.hasUserVoiceRecord(curTV)) {
 				bottomIcon.setImageDrawable(playDrawable);
 				bottomButton.setBackgroundResource(R.drawable.record_box_bottom_button);
 				bottomButton.setOnClickListener(playListener);
@@ -290,7 +290,7 @@ public class VoiceRecordBlock implements RecorderCallee {
 			setStorage();
 			File file = new File(mainDirectory, curTV.toFileString() + ".3gp");
 			mediaPlayer = new MediaPlayer();
-			if (file.exists() && db.hasAudio(curTV)) {
+			if (file.exists() && db.hasUserVoiceRecord(curTV)) {
 				ClickLog.Log(ClickLogId.STORYTELLING_RECORD_PLAY);
 				try {
 					mediaPlayer.setDataSource(file.getAbsolutePath());

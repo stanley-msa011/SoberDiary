@@ -37,7 +37,6 @@ import ubicomp.soberdiary.system.clicklog.ClickLogId;
 import ubicomp.soberdiary.system.clicklog.ClickLog;
 import ubicomp.soberdiary.system.config.Config;
 import ubicomp.soberdiary.system.config.PreferenceControl;
-
 import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.content.Intent;
@@ -147,7 +146,7 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 			R.drawable.small_arrow_down, R.drawable.small_arrow_right_down };
 	private Point[] page_update_pos = new Point[16];
 
-	//private static final String TAG = "STORYTELLING";
+	// private static final String TAG = "STORYTELLING";
 
 	private int notify_action = 0;
 
@@ -242,7 +241,9 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 		recordBox = new RecordBox(storytellingFragment, getActivity());
 		quoteMsgBox = new QuoteMsgBox(storytellingFragment, (RelativeLayout) view);
 
-		loadHandler.sendEmptyMessage(0);
+		BarInitTask task = new BarInitTask();
+		task.execute();
+
 		return view;
 	}
 
@@ -252,17 +253,62 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 		ClickLog.Log(ClickLogId.STORYTELLING_ENTER);
 		getView().setFocusableInTouchMode(true);
 		getView().requestFocus();
-		settingBars();
-		checkHasRecorder();
-		reopenRecordBox();
 
-		Bundle data = getArguments();
-		if (data != null) {
-			int action = data.getInt("action");
-			data.putInt("action", 0);
-			if (action == MainActivity.ACTION_RECORD) {
-				notify_action = action;
+		RecordCheckTask task = new RecordCheckTask();
+		task.execute();
+	}
+
+	public class BarInitTask extends AsyncTask<Void, Void, Void> {
+
+		@Override
+		protected Void doInBackground(Void... params) {
+			settingBars();
+			checkHasRecorder();
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void result) {
+
+			if (chartView != null)
+				chartView.invalidate();
+			
+			reopenRecordBox();
+
+			Bundle data = getArguments();
+			if (data != null) {
+				int action = data.getInt("action");
+				data.putInt("action", 0);
+				if (action == MainActivity.ACTION_RECORD) {
+					notify_action = action;
+				}
 			}
+			loadHandler.sendEmptyMessage(0);
+		}
+	}
+
+	public class RecordCheckTask extends AsyncTask<Void, Void, Void> {
+
+		@Override
+		protected void onPreExecute() {
+		}
+
+		@Override
+		protected Void doInBackground(Void... params) {
+			for (int i = 0; i < bars.size(); ++i) {
+				TimeValue tv = bars.get(i).getTv();
+				if (tv.isSameDay(temp_tv))
+					if (db.hasUserVoiceRecord(tv) || db.hasEmotionManagement(tv))
+						hasAudio.set(i, true);
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void result) {
+			if (chartView != null)
+				chartView.invalidate();
+			reopenRecordBox();
 		}
 	}
 
@@ -308,8 +354,11 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 		if (quoteMsgBox != null)
 			quoteMsgBox.closeBox();
 
-		quoteScrollView.scrollTo(0, 0);
-		pageLayout.removeView(pageWidget);
+		if (quoteScrollView != null)
+			quoteScrollView.scrollTo(0, 0);
+
+		if (pageLayout != null)
+			pageLayout.removeView(pageWidget);
 
 		if (pageWidget != null)
 			pageWidget.setBitmaps(null, null);
@@ -346,7 +395,7 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 		p_str.setSpan(new CustomTypefaceSpan("c2", wordTypefaceBold, text_color), progress_str.length(),
 				progress_str.length() + doneStr.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
 		stageRateText.setText(p_str);
-		quoteText.setText(QUOTE_STR[page_week%(MAX_PAGE_WEEK+1)]);
+		quoteText.setText(QUOTE_STR[page_week % (MAX_PAGE_WEEK + 1)]);
 	}
 
 	private void endAnimation() {
@@ -531,8 +580,8 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 
 			page_states = db.getDetectionScoreByWeek();
 			page_week = page_states.length - 1;
-			//if (page_week > MAX_PAGE_WEEK)
-			//	page_week = MAX_PAGE_WEEK;
+			// if (page_week > MAX_PAGE_WEEK)
+			// page_week = MAX_PAGE_WEEK;
 			max_week = page_week;
 
 			endAnimation();
@@ -788,19 +837,20 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 	private void checkHasRecorder() {
 		hasAudio.clear();
 		for (int i = 0; i < bars.size(); ++i) {
-			if (db.hasAudio(bars.get(i).getTv()) || db.hasEmotionManagement(bars.get(i).getTv()))
+			if (db.hasUserVoiceRecord(bars.get(i).getTv()) || db.hasEmotionManagement(bars.get(i).getTv()))
 				hasAudio.add(true);
 			else
 				hasAudio.add(false);
 		}
-		if (chartView != null)
-			chartView.invalidate();
+		// if (chartView != null)
+		// chartView.invalidate();
 	}
 
 	@Override
 	public void updateHasRecorder(int idx) {
 		if (idx >= 0 && idx < bars.size())
-			hasAudio.set(idx, db.hasAudio(bars.get(idx).getTv()) || db.hasEmotionManagement(bars.get(idx).getTv()));
+			hasAudio.set(idx,
+					db.hasUserVoiceRecord(bars.get(idx).getTv()) || db.hasEmotionManagement(bars.get(idx).getTv()));
 		chartView.invalidate();
 	}
 
@@ -849,7 +899,7 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 					View.OnClickListener listener = new QuoteOnClickListener(page_week);
 					quoteHiddenLayout.setVisibility(View.VISIBLE);
 					quoteHiddenLayout.setOnClickListener(listener);
-				}else{
+				} else {
 					quoteHiddenLayout.setVisibility(View.GONE);
 					quoteHiddenLayout.setAnimation(null);
 				}
@@ -870,11 +920,11 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 					Thread.sleep(3000);
 				} catch (InterruptedException e) {
 					break;
-				}				
-				
+				}
+
 				if (isInterrupted())
 					break;
-				
+
 				scrollHandler.removeMessages(0);
 				scrollHandler.removeMessages(1);
 				scrollHandler.sendEmptyMessage(1);
@@ -885,7 +935,7 @@ public class StorytellingFragment extends Fragment implements EnablePage, PageAn
 				} catch (InterruptedException e) {
 					break;
 				}
-				
+
 				if (isInterrupted())
 					break;
 			}

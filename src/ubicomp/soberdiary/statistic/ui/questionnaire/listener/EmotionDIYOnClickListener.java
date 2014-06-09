@@ -3,13 +3,13 @@ package ubicomp.soberdiary.statistic.ui.questionnaire.listener;
 import android.content.Intent;
 import android.view.View;
 import ubicomp.soberdiary.main.EmotionActivity;
-import ubicomp.soberdiary.statistic.ui.QuestionnaireBox;
+import ubicomp.soberdiary.statistic.ui.QuestionnaireDialog;
 import ubicomp.soberdiary.system.clicklog.ClickLog;
 import ubicomp.soberdiary.system.clicklog.ClickLogId;
 
 public class EmotionDIYOnClickListener extends QuestionnaireOnClickListener {
 
-	public EmotionDIYOnClickListener(QuestionnaireBox msgBox) {
+	public EmotionDIYOnClickListener(QuestionnaireDialog msgBox) {
 		super(msgBox);
 	}
 

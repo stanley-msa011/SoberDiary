@@ -30,6 +30,13 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Log;
 
+/**
+ * This class is an AsyncTask for handling Database restore procedure from
+ * previous SoberDiary
+ * 
+ * @author Stanley Wang
+ * @see ubicomp.soberdiary.data.database.DatabaseRestoreControlVer1
+ */
 public class DatabaseRestoreVer1 extends AsyncTask<Void, Void, Void> {
 
 	private String uid;
@@ -42,6 +49,16 @@ public class DatabaseRestoreVer1 extends AsyncTask<Void, Void, Void> {
 
 	private static final String TAG = "RESTORE_VER1";
 
+	private ProgressDialog dialog = null;
+
+	/**
+	 * Constructor
+	 * 
+	 * @param uid
+	 *            UserId
+	 * @param context
+	 *            Context of the Activity
+	 */
 	public DatabaseRestoreVer1(String uid, Context context) {
 		this.uid = uid;
 		this.context = context;
@@ -50,8 +67,6 @@ public class DatabaseRestoreVer1 extends AsyncTask<Void, Void, Void> {
 		zipFile = new File(dir, uid + "_ver1.zip");
 		hasFile = zipFile.exists();
 	}
-
-	private ProgressDialog dialog = null;
 
 	@Override
 	protected void onPreExecute() {
@@ -122,9 +137,9 @@ public class DatabaseRestoreVer1 extends AsyncTask<Void, Void, Void> {
 				if (str == null)
 					Log.d(TAG, "No Alcoholic");
 				else {
-					
+
 					PreferenceControl.setUID(uid);
-					
+
 					str = reader.readLine();
 					String[] data = str.split(",");
 
@@ -157,7 +172,7 @@ public class DatabaseRestoreVer1 extends AsyncTask<Void, Void, Void> {
 				else {
 					while ((str = reader.readLine()) != null) {
 						String[] data = str.split(",");
-						long timestamp = Long.valueOf(data[0])*1000L;
+						long timestamp = Long.valueOf(data[0]) * 1000L;
 						float brac = Float.valueOf(data[1]);
 						int emotion = Integer.valueOf(data[2]);
 						int craving = Integer.valueOf(data[3]);
@@ -166,8 +181,8 @@ public class DatabaseRestoreVer1 extends AsyncTask<Void, Void, Void> {
 						int score = Integer.valueOf(data[5]);
 
 						Detection detection = new Detection(brac, timestamp, emotion, craving, isPrime, weeklyScore,
-								score,true);
-						Log.d(TAG,"Detection "+detection.toString());
+								score, true);
+						Log.d(TAG, "Detection " + detection.toString());
 						db.restoreDetection(detection);
 					}
 				}
@@ -193,7 +208,7 @@ public class DatabaseRestoreVer1 extends AsyncTask<Void, Void, Void> {
 				else {
 					while ((str = reader.readLine()) != null) {
 						String[] data = str.split(",");
-						long timestamp = Long.valueOf(data[0])*1000L;
+						long timestamp = Long.valueOf(data[0]) * 1000L;
 						int score = Integer.valueOf(data[1]);
 						EmotionDIY emotionDIY = new EmotionDIY(timestamp, -1, "", score);
 						db.restoreEmotionDIY(emotionDIY);
@@ -221,7 +236,7 @@ public class DatabaseRestoreVer1 extends AsyncTask<Void, Void, Void> {
 				else {
 					while ((str = reader.readLine()) != null) {
 						String[] data = str.split(",");
-						long timestamp = Long.valueOf(data[0])*1000L;
+						long timestamp = Long.valueOf(data[0]) * 1000L;
 						int score = Integer.valueOf(data[1]);
 						Questionnaire questionnaire = new Questionnaire(timestamp, 0, "", score);
 						db.restoreQuestionnaire(questionnaire);
@@ -249,7 +264,7 @@ public class DatabaseRestoreVer1 extends AsyncTask<Void, Void, Void> {
 				else {
 					while ((str = reader.readLine()) != null) {
 						String[] data = str.split(",");
-						long timestamp = Long.valueOf(data[0])*1000L;
+						long timestamp = Long.valueOf(data[0]) * 1000L;
 
 						TimeValue tv = TimeValue.generate(timestamp);
 						int year = tv.getYear();
@@ -262,9 +277,9 @@ public class DatabaseRestoreVer1 extends AsyncTask<Void, Void, Void> {
 
 						StringBuilder sb = new StringBuilder();
 
-						if (data.length<5)
+						if (data.length < 5)
 							sb.append("");
-						else{
+						else {
 							sb.append(data[4]);
 							for (int i = 5; i < data.length; ++i) {
 								sb.append(",");
@@ -274,8 +289,8 @@ public class DatabaseRestoreVer1 extends AsyncTask<Void, Void, Void> {
 						String reason = sb.toString();
 
 						EmotionManagement emotionManagement = new EmotionManagement(timestamp, year, month, day,
-								emotion, reasonType, reason, score,true);
-						Log.d(TAG,"EM "+emotionManagement.toString());
+								emotion, reasonType, reason, score, true);
+						Log.d(TAG, "EM " + emotionManagement.toString());
 						db.restoreEmotionManagement(emotionManagement);
 					}
 				}
@@ -301,7 +316,7 @@ public class DatabaseRestoreVer1 extends AsyncTask<Void, Void, Void> {
 				else {
 					while ((str = reader.readLine()) != null) {
 						String[] data = str.split(",");
-						long timestamp = Long.valueOf(data[0])*1000L;
+						long timestamp = Long.valueOf(data[0]) * 1000L;
 
 						String[] dateInfo = data[1].split("-");
 						int year = Integer.valueOf(dateInfo[0]);
@@ -313,7 +328,8 @@ public class DatabaseRestoreVer1 extends AsyncTask<Void, Void, Void> {
 						UserVoiceRecord uvr = new UserVoiceRecord(timestamp, year, month, day, score);
 						db.restoreUserVoiceRecord(uvr);
 
-						File src = new File(dir + "/" + uid + "/audio_records/" + uvr.getRecordTv().toFileString() + ".3gp");
+						File src = new File(dir + "/" + uid + "/audio_records/" + uvr.getRecordTv().toFileString()
+								+ ".3gp");
 						File audio_dir = new File(dir + "/audio_records");
 						if (!audio_dir.exists())
 							audio_dir.mkdirs();
@@ -360,7 +376,7 @@ public class DatabaseRestoreVer1 extends AsyncTask<Void, Void, Void> {
 				else {
 					while ((str = reader.readLine()) != null) {
 						String[] data = str.split(",");
-						long timestamp = Long.valueOf(data[0])*1000L;
+						long timestamp = Long.valueOf(data[0]) * 1000L;
 
 						int score = Integer.valueOf(data[1]);
 

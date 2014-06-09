@@ -52,6 +52,11 @@ public class BreathDetail {
 	private long disconnectionMillis;
 	private int serialDiffMax;
 	private float serialDiffAverage;
+	private String sensorId;
+
+	public String getSensorId() {
+		return sensorId;
+	}
 
 	public BreathDetail(long timestamp,
 			int blow_start_times,
@@ -62,7 +67,8 @@ public class BreathDetail {
 			int voltage_init,
 			long disconnection_millis,
 			int serial_diff_max,
-			float serial_diff_average) {
+			float serial_diff_average,
+			String sensorId) {
 
 		this.tv = TimeValue.generate(timestamp);
 		this.blowStartTimes = blow_start_times;
@@ -74,6 +80,7 @@ public class BreathDetail {
 		this.disconnectionMillis = disconnection_millis;
 		this.serialDiffAverage = serial_diff_average;
 		this.serialDiffMax = serial_diff_max;
+		this.sensorId = sensorId;
 	}
 	
 	public String toString(){
@@ -103,6 +110,9 @@ public class BreathDetail {
 		sb.append(' ');
 		sb.append("sdm=");
 		sb.append(serialDiffMax);
+		sb.append(' ');
+		sb.append("sensorId=");
+		sb.append(sensorId);
 		return sb.toString();
 	}
 

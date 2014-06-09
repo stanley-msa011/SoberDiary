@@ -3,16 +3,25 @@ package ubicomp.soberdiary.test.gps;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 
+/** AsyncTask for initializing GPS function */
 public class GPSInitTask extends AsyncTask<Object, Void, Boolean> {
 
 	private LocationManager locationManager;
-	private GPSToastHandler tHandler;
+	private GPSToastHandler toastHandler;
 	private GPSInterface gpsInterface;
 
-	public GPSInitTask(GPSInterface gps, LocationManager lm) {
-		gpsInterface = gps;
-		locationManager = lm;
-		tHandler = new GPSToastHandler();
+	/**
+	 * Constructor
+	 * 
+	 * @param gpsInterface
+	 *            GPSInterface
+	 * @param locationManager
+	 *            LocationManager
+	 */
+	public GPSInitTask(GPSInterface gpsInterface, LocationManager locationManager) {
+		this.gpsInterface = gpsInterface;
+		this.locationManager = locationManager;
+		toastHandler = new GPSToastHandler();
 	}
 
 	@Override
@@ -25,7 +34,7 @@ public class GPSInitTask extends AsyncTask<Object, Void, Boolean> {
 			if (!network_enabled || !gps_enabled) {
 				newIntent = true;
 				gpsInterface.callGPSActivity();
-				tHandler.sendEmptyMessage(0);
+				toastHandler.sendEmptyMessage(0);
 			}
 		}
 		return newIntent;

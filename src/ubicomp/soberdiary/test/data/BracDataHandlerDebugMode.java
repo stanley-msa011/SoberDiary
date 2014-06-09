@@ -9,7 +9,6 @@ import java.util.Scanner;
 import ubicomp.soberdiary.main.R;
 import ubicomp.soberdiary.main.ui.toast.CustomToast;
 import ubicomp.soberdiary.system.config.PreferenceControl;
-
 import android.content.Context;
 
 public class BracDataHandlerDebugMode extends BracDataHandler {
@@ -33,6 +32,7 @@ public class BracDataHandlerDebugMode extends BracDataHandler {
 	protected double parseTextFile(File textFile) {
 		double avg = 0;
 		try {
+			@SuppressWarnings("resource")
 			Scanner s = new Scanner(textFile);
 			int index = 0;
 			List<String> valueArray_A0 = new ArrayList<String>();

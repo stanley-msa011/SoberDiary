@@ -54,7 +54,7 @@ public class Bluetooth {
 	protected final static float PRESSURE_DIFF_MIN_RANGE_OLD = 50f;
 	protected final static float PRESSURE_DIFF_MIN_OLD = 950.f;
 	protected final static float PRESSURE_DIFF_MIN_RANGE_NEW = 50f;
-	protected final static float PRESSURE_DIFF_MIN_NEW = 80.f;
+	protected final static float PRESSURE_DIFF_MIN_NEW = 70.f;
 	protected final static float MAX_PRESSURE = Float.MAX_VALUE;
 	protected final static long IMAGE_MILLIS_0 = 500;
 	protected final static long IMAGE_MILLIS_1 = 2500;
@@ -224,15 +224,9 @@ public class Bluetooth {
 		if (btAdapter != null && btAdapter.isDiscovering())
 			btAdapter.cancelDiscovery();
 
-		String sensorId = PreferenceControl.getSensorID();
-		if (sensorId.startsWith(DEVICE_NAME_FORMAL_OLD)) {
-			PRESSURE_DIFF_MIN_RANGE = PRESSURE_DIFF_MIN_RANGE_OLD;
-			PRESSURE_DIFF_MIN = PRESSURE_DIFF_MIN_OLD;
-		} else {
-			PRESSURE_DIFF_MIN_RANGE = PRESSURE_DIFF_MIN_RANGE_NEW;
-			PRESSURE_DIFF_MIN = PRESSURE_DIFF_MIN_NEW;
-		}
-
+		setSensorPressureLimit();
+		Log.d(TAG,"PRESSURE_DIFF_MIN="+PRESSURE_DIFF_MIN );
+		Log.d(TAG,"PRESSURE_DIFF_MIN_RANGE="+PRESSURE_DIFF_MIN_RANGE);
 		if (sensor == null) {
 			close();
 			return false;
@@ -260,6 +254,17 @@ public class Bluetooth {
 		return true;
 	}
 
+	protected void setSensorPressureLimit(){
+		String sensorId = PreferenceControl.getSensorID();
+		if (sensorId.startsWith(DEVICE_NAME_FORMAL_OLD)) {
+			PRESSURE_DIFF_MIN_RANGE = PRESSURE_DIFF_MIN_RANGE_OLD;
+			PRESSURE_DIFF_MIN = PRESSURE_DIFF_MIN_OLD;
+		} else {
+			PRESSURE_DIFF_MIN_RANGE = PRESSURE_DIFF_MIN_RANGE_NEW;
+			PRESSURE_DIFF_MIN = PRESSURE_DIFF_MIN_NEW;
+		}
+	}
+	
 	public void start() {
 		start = true;
 		soundpool.play(soundId, 1.f, 1.f, 0, 0, 1.f);
@@ -634,7 +639,7 @@ public class Bluetooth {
 				long bdTs = Long.valueOf(bracFileHandler.getTimestamp());
 
 				BreathDetail bd = new BreathDetail(bdTs, blowStartTimes, blowBreakTimes, pressureDiffMax, pressureMin,
-						pressureAverage, voltageInit, disconnectionMillis, serialDiffMax, serialDiffAverage);
+						pressureAverage, voltageInit, disconnectionMillis, serialDiffMax, serialDiffAverage, PreferenceControl.getSensorID());
 				DatabaseControl db = new DatabaseControl();
 				db.insertBreathDetail(bd);
 
@@ -706,6 +711,7 @@ public class Bluetooth {
 		data.putInt("TIME", time);
 		msg.setData(data);
 		msg.what = 2;
+		btUIHandler.removeMessages(2);
 		btUIHandler.sendMessage(msg);
 	}
 	

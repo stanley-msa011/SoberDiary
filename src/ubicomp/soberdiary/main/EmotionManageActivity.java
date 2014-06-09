@@ -27,34 +27,30 @@ import android.widget.RelativeLayout;
 public class EmotionManageActivity extends Activity {
 
 	private LayoutInflater inflater;
-
 	private Typeface wordTypefaceBold;
-
-	private LinearLayout titleLayout;
-	private LinearLayout mainLayout;
-
+	private LinearLayout titleLayout, mainLayout;
+	private EditText r_texts;
+	private ImageView updown;
 	private Activity activity;
 
 	private int emotion, r_type;
 	private String reason;
-	private EditText r_texts;
+	
+	private Drawable upDrawable, downDrawable;
 
 	private static final int[] EMOTION_DRAWABLE_ID = { R.drawable.emotion_type_0, R.drawable.emotion_type_1,
 			R.drawable.emotion_type_2, R.drawable.emotion_type_3, R.drawable.emotion_type_4, R.drawable.emotion_type_5,
 			R.drawable.emotion_type_6, R.drawable.emotion_type_7, R.drawable.emotion_type_8, R.drawable.emotion_type_9, };
 
-	private static String[] emotion_texts;
+	private static String[] emotionTexts;
 
 	private static final int[] RELATED_DRAWABLE_ID = { R.drawable.reason_type_0, R.drawable.reason_type_1,
 			R.drawable.reason_type_2, R.drawable.reason_type_3 };
 
-	private static String[] related_texts;
+	private static String[] relatedTexts;
 
 	private DatabaseControl db;
 	private int state = 0;
-
-	private ImageView updown;
-	private Drawable upDrawable, downDrawable;
 
 	private long timeInMillis;
 	private TimeValue curTV;
@@ -75,8 +71,8 @@ public class EmotionManageActivity extends Activity {
 		reason = "";
 		r_texts = null;
 
-		emotion_texts = getResources().getStringArray(R.array.emotion_manage_emotion);
-		related_texts = getResources().getStringArray(R.array.emotion_manage_related);
+		emotionTexts = getResources().getStringArray(R.array.emotion_manage_emotion);
+		relatedTexts = getResources().getStringArray(R.array.emotion_manage_related);
 
 		this.activity = this;
 		db = new DatabaseControl();
@@ -117,8 +113,8 @@ public class EmotionManageActivity extends Activity {
 		View tv = BarGen.createTextView(R.string.emotion_manage_help1);
 		titleLayout.addView(tv);
 
-		for (int i = 0; i < emotion_texts.length; ++i) {
-			View v = BarGen.createIconViewInverse(emotion_texts[i], EMOTION_DRAWABLE_ID[i], new EmotionOnClickListener(
+		for (int i = 0; i < emotionTexts.length; ++i) {
+			View v = BarGen.createIconViewInverse(emotionTexts[i], EMOTION_DRAWABLE_ID[i], new EmotionOnClickListener(
 					i));
 			mainLayout.addView(v);
 		}
@@ -133,8 +129,8 @@ public class EmotionManageActivity extends Activity {
 		View tv = BarGen.createTextView(R.string.emotion_manage_help2);
 		titleLayout.addView(tv);
 
-		for (int i = 0; i < related_texts.length; ++i) {
-			View vv = BarGen.createIconView(related_texts[i], RELATED_DRAWABLE_ID[i], new RelatedOnClickListener(i));
+		for (int i = 0; i < relatedTexts.length; ++i) {
+			View vv = BarGen.createIconView(relatedTexts[i], RELATED_DRAWABLE_ID[i], new RelatedOnClickListener(i));
 			mainLayout.addView(vv);
 		}
 		int from = mainLayout.getChildCount();
@@ -155,7 +151,7 @@ public class EmotionManageActivity extends Activity {
 
 		select_item = db.getEmotionManagementString(r_type);
 
-		String str = getResources().getString(R.string.emotion_manage_help3) + related_texts[r_type];
+		String str = getResources().getString(R.string.emotion_manage_help3) + relatedTexts[r_type];
 
 		View tv = BarGen.createTextView(str);
 		mainLayout.addView(tv);

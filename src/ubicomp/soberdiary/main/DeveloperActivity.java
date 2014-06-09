@@ -9,14 +9,18 @@ import android.widget.EditText;
 import android.app.Activity;
 import android.content.Intent;
 
+/**Activity for checking if the user belongs to developers*/
 public class DeveloperActivity extends Activity {
 
+	/**EditText for entering the password*/
 	private EditText password;
+	/**Button for entering and checking if the password is correct*/
 	private Button enter;
 	
 	private static final String PASSWORD = Config.PASSWORD;
 	
 	@Override
+	/**Create the activity*/
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_developer);
@@ -26,6 +30,7 @@ public class DeveloperActivity extends Activity {
 		enter.setOnClickListener(new EnterOnClickListener());
 	}
 	
+	/**OnClickListener for the Enter Button*/
 	private class EnterOnClickListener implements View.OnClickListener{
 
 		@Override

@@ -1,6 +1,6 @@
 package ubicomp.soberdiary.statistic.ui.questionnaire.listener;
 
-import ubicomp.soberdiary.statistic.ui.QuestionnaireBox;
+import ubicomp.soberdiary.statistic.ui.QuestionnaireDialog;
 import ubicomp.soberdiary.statistic.ui.questionnaire.content.CallCheckContent;
 import ubicomp.soberdiary.system.clicklog.ClickLog;
 import ubicomp.soberdiary.system.clicklog.ClickLogId;
@@ -9,7 +9,7 @@ import android.view.View;
 public class CallCheckOnClickListener extends QuestionnaireOnClickListener {
 
 	private String name,phone;
-	public CallCheckOnClickListener(QuestionnaireBox msgBox,String name,String phone) {
+	public CallCheckOnClickListener(QuestionnaireDialog msgBox,String name,String phone) {
 		super(msgBox);
 		this.name = name;
 		this.phone = phone;

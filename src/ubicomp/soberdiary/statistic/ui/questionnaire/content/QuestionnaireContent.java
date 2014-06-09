@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import ubicomp.soberdiary.main.App;
 import ubicomp.soberdiary.main.R;
-import ubicomp.soberdiary.statistic.ui.QuestionnaireBox;
+import ubicomp.soberdiary.statistic.ui.QuestionnaireDialog;
 
 import android.content.Context;
 import android.graphics.Typeface;
@@ -23,13 +23,13 @@ abstract public class QuestionnaireContent {
 	private Drawable choiceDrawable;
 	protected ArrayList<Integer>seq;
 	protected ArrayList <QuestionnaireContent> contentSeq;
-	protected QuestionnaireBox msgBox;
+	protected QuestionnaireDialog msgBox;
 	private Context context;
 	private Typeface wordTypefaceBold;
 	
 	private static LayoutInflater inflater = null;
 	
-	public QuestionnaireContent( QuestionnaireBox msgBox ){
+	public QuestionnaireContent( QuestionnaireDialog msgBox ){
 		this.questionnaireLayout = msgBox.getQuestionnaireLayout();
 		this.seq = msgBox.getClickSequence();
 		this.contentSeq = msgBox.getQuestionSequence();

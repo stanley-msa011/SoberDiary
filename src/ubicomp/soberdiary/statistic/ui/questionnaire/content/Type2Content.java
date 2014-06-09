@@ -2,7 +2,7 @@ package ubicomp.soberdiary.statistic.ui.questionnaire.content;
 
 import ubicomp.soberdiary.data.database.DatabaseControl;
 import ubicomp.soberdiary.main.R;
-import ubicomp.soberdiary.statistic.ui.QuestionnaireBox;
+import ubicomp.soberdiary.statistic.ui.QuestionnaireDialog;
 import ubicomp.soberdiary.statistic.ui.questionnaire.listener.EmotionDIYOnClickListener;
 import ubicomp.soberdiary.statistic.ui.questionnaire.listener.FamilyCallOnClickListener;
 import ubicomp.soberdiary.statistic.ui.questionnaire.listener.SelectedListener;
@@ -12,7 +12,7 @@ import ubicomp.soberdiary.system.config.PreferenceControl;
 
 public class Type2Content extends QuestionnaireContent {
 
-	public Type2Content(QuestionnaireBox msgBox) {
+	public Type2Content(QuestionnaireDialog msgBox) {
 		super(msgBox);
 	}
 
@@ -20,7 +20,7 @@ public class Type2Content extends QuestionnaireContent {
 	protected void setContent() {
 		msgBox.setNextButton("", null);
 		seq.clear();
-		msgBox.openBox();
+		msgBox.showDialog();
 		setHelp(R.string.question_type2_help);
 		DatabaseControl db = new DatabaseControl();
 		if (db.canTryAgain() && PreferenceControl.questionnaireShowUpdateDetection())

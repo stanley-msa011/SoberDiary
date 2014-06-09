@@ -32,6 +32,12 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Log;
 
+/**
+ * This class is an AsyncTask for handling Database restore procedure
+ * 
+ * @author Stanley Wang
+ * @see ubicomp.soberdiary.data.database.DatabaseRestoreControl
+ */
 public class DatabaseRestore extends AsyncTask<Void, Void, Void> {
 
 	private String uid;
@@ -43,7 +49,16 @@ public class DatabaseRestore extends AsyncTask<Void, Void, Void> {
 	private DatabaseRestoreControl db = new DatabaseRestoreControl();
 
 	private static final String TAG = "RESTORE";
+	private ProgressDialog dialog = null;
 
+	/**
+	 * Constructor
+	 * 
+	 * @param uid
+	 *            UserId
+	 * @param context
+	 *            Context of the Activity
+	 */
 	public DatabaseRestore(String uid, Context context) {
 		this.uid = uid;
 		this.context = context;
@@ -52,8 +67,6 @@ public class DatabaseRestore extends AsyncTask<Void, Void, Void> {
 		zipFile = new File(dir, uid + ".zip");
 		hasFile = zipFile.exists();
 	}
-
-	private ProgressDialog dialog = null;
 
 	@Override
 	protected void onPreExecute() {
@@ -129,9 +142,9 @@ public class DatabaseRestore extends AsyncTask<Void, Void, Void> {
 				if (str == null)
 					Log.d(TAG, "No Alcoholic");
 				else {
-					
+
 					PreferenceControl.setUID(uid);
-					
+
 					str = reader.readLine();
 					String[] data = str.split(",");
 
@@ -317,7 +330,8 @@ public class DatabaseRestore extends AsyncTask<Void, Void, Void> {
 						UserVoiceRecord uvr = new UserVoiceRecord(timestamp, year, month, day, score);
 						db.restoreUserVoiceRecord(uvr);
 
-						File src = new File(dir + "/" + uid + "/audio_records/" + uvr.getRecordTv().toFileString() + ".3gp");
+						File src = new File(dir + "/" + uid + "/audio_records/" + uvr.getRecordTv().toFileString()
+								+ ".3gp");
 						File audio_dir = new File(dir + "/audio_records");
 						if (!audio_dir.exists())
 							audio_dir.mkdirs();

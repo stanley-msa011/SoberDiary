@@ -33,6 +33,11 @@ import ubicomp.soberdiary.system.config.PreferenceControl;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 
+/**
+ * Used for generating Http POST
+ * 
+ * @author Stanley Wang
+ */
 public class HttpPostGenerator {
 
 	private static String SERVER_URL_USER = "";
@@ -49,8 +54,13 @@ public class HttpPostGenerator {
 	private static String SERVER_URL_CLICKLOG = "";
 	private static String SERVER_URL_USER_VOICE_FEEDBACK = "";
 	private static String SERVER_URL_EXCHANGE_HISTORY = "";
-	private static String SERVER_URL_BREATH_DETAIL="";
+	private static String SERVER_URL_BREATH_DETAIL = "";
 
+	/**
+	 * Generate POST of User Information
+	 * 
+	 * @return HttpPost contains User Information
+	 */
 	public static HttpPost genPost() {
 		SERVER_URL_USER = ServerUrl.SERVER_URL_USER();
 		HttpPost httpPost = new HttpPost(SERVER_URL_USER);
@@ -81,22 +91,30 @@ public class HttpPostGenerator {
 		return httpPost;
 	}
 
-	public static HttpPost genPost(Detection detection) {
+	/**
+	 * Generate POST of Detections
+	 * 
+	 * @param data
+	 *            Detection
+	 * @return HttpPost contains Detections
+	 * @see ubicomp.soberdiary.data.structure.Detection
+	 */
+	public static HttpPost genPost(Detection data) {
 		SERVER_URL_DETECTION = ServerUrl.SERVER_URL_DETECTION();
 		File mainStorageDir = MainStorage.getMainStorageDirectory();
 		String uid = PreferenceControl.getUID();
 		HttpPost httpPost = new HttpPost(SERVER_URL_DETECTION);
 		MultipartEntityBuilder builder = MultipartEntityBuilder.create();
 		builder.addTextBody("uid", uid);
-		builder.addTextBody("data[]", String.valueOf(detection.getTv().getTimestamp()));
-		builder.addTextBody("data[]", String.valueOf(detection.getTv().getWeek()));
-		builder.addTextBody("data[]", String.valueOf(detection.getEmotion()));
-		builder.addTextBody("data[]", String.valueOf(detection.getCraving()));
-		builder.addTextBody("data[]", String.valueOf(detection.isPrime() ? 1 : 0));
-		builder.addTextBody("data[]", String.valueOf(detection.getWeeklyScore()));
-		builder.addTextBody("data[]", String.valueOf(detection.getScore()));
+		builder.addTextBody("data[]", String.valueOf(data.getTv().getTimestamp()));
+		builder.addTextBody("data[]", String.valueOf(data.getTv().getWeek()));
+		builder.addTextBody("data[]", String.valueOf(data.getEmotion()));
+		builder.addTextBody("data[]", String.valueOf(data.getCraving()));
+		builder.addTextBody("data[]", String.valueOf(data.isPrime() ? 1 : 0));
+		builder.addTextBody("data[]", String.valueOf(data.getWeeklyScore()));
+		builder.addTextBody("data[]", String.valueOf(data.getScore()));
 
-		String _ts = String.valueOf(detection.getTv().getTimestamp());
+		String _ts = String.valueOf(data.getTv().getTimestamp());
 		File[] imageFiles;
 		File testFile, geoFile, detectionFile, geoAccuracyFile;
 		imageFiles = new File[3];
@@ -127,6 +145,14 @@ public class HttpPostGenerator {
 		return httpPost;
 	}
 
+	/**
+	 * Generate POST of Emotion DIY Results
+	 * 
+	 * @param data
+	 *            EmotionDIY
+	 * @return HttpPost contains Emotion DIY
+	 * @see ubicomp.soberdiary.data.structure.EmotionDIY
+	 */
 	public static HttpPost genPost(EmotionDIY data) {
 		SERVER_URL_EMOTION_DIY = ServerUrl.SERVER_URL_EMOTION_DIY();
 		HttpPost httpPost = new HttpPost(SERVER_URL_EMOTION_DIY);
@@ -146,6 +172,14 @@ public class HttpPostGenerator {
 		return httpPost;
 	}
 
+	/**
+	 * Generate POST of Emotion Management results
+	 * 
+	 * @param data
+	 *            EmotionManagement
+	 * @return HttpPost contains EmotionManagement
+	 * @see ubicomp.soberdiary.data.structure.EmotionManagement
+	 */
 	public static HttpPost genPost(EmotionManagement data) {
 		SERVER_URL_EMOTION_MANAGEMENT = ServerUrl.SERVER_URL_EMOTION_MANAGEMENT();
 		HttpPost httpPost = new HttpPost(SERVER_URL_EMOTION_MANAGEMENT);
@@ -169,6 +203,14 @@ public class HttpPostGenerator {
 		return httpPost;
 	}
 
+	/**
+	 * Generate POST of '!' Questionnaires
+	 * 
+	 * @param data
+	 *            Questionnaire
+	 * @return HttpPost contains '!' Questionnaires
+	 * @see ubicomp.soberdiary.data.structure.Questionnaire
+	 */
 	public static HttpPost genPost(Questionnaire data) {
 		SERVER_URL_QUESTIONNAIRE = ServerUrl.SERVER_URL_QUESTIONNAIRE();
 		HttpPost httpPost = new HttpPost(SERVER_URL_QUESTIONNAIRE);
@@ -188,6 +230,14 @@ public class HttpPostGenerator {
 		return httpPost;
 	}
 
+	/**
+	 * Generate POST of test results of Storytelling
+	 * 
+	 * @param data
+	 *            StorytellingTest
+	 * @return HttpPost contains StorytellingTest
+	 * @see ubicomp.soberdiary.data.structure.StorytellingTest
+	 */
 	public static HttpPost genPost(StorytellingTest data) {
 		SERVER_URL_STORYTELLING_TEST = ServerUrl.SERVER_URL_STORYTELLING_TEST();
 		HttpPost httpPost = new HttpPost(SERVER_URL_STORYTELLING_TEST);
@@ -209,6 +259,14 @@ public class HttpPostGenerator {
 		return httpPost;
 	}
 
+	/**
+	 * Generate POST of Extend Reading of Storytelling
+	 * 
+	 * @param data
+	 *            StorytellingRead
+	 * @return HttpPost contains StorytellingRead
+	 * @see ubicomp.soberdiary.data.structure.StorytellingRead
+	 */
 	public static HttpPost genPost(StorytellingRead data) {
 		SERVER_URL_STORYTELLING_READ = ServerUrl.SERVER_URL_STORYTELLING_READ();
 		HttpPost httpPost = new HttpPost(SERVER_URL_STORYTELLING_READ);
@@ -228,6 +286,14 @@ public class HttpPostGenerator {
 		return httpPost;
 	}
 
+	/**
+	 * Generate POST of readings the message sent from GCM
+	 * 
+	 * @param data
+	 *            GCMRead
+	 * @return HttpPost contains GCMRead
+	 * @see ubicomp.soberdiary.data.structure.GCMRead
+	 */
 	public static HttpPost genPost(GCMRead data) {
 		SERVER_URL_GCM_READ = ServerUrl.SERVER_URL_GCM_READ();
 		HttpPost httpPost = new HttpPost(SERVER_URL_GCM_READ);
@@ -245,6 +311,14 @@ public class HttpPostGenerator {
 		return httpPost;
 	}
 
+	/**
+	 * Generate POST of Information uploaded to Facebook
+	 * 
+	 * @param data
+	 *            FacebookInfo
+	 * @return HttpPost contains FacebookInfo
+	 * @see ubicomp.soberdiary.data.structure.FacebookInfo
+	 */
 	public static HttpPost genPost(FacebookInfo data) {
 		SERVER_URL_FACEBOOK_INFO = ServerUrl.SERVER_URL_FACEBOOK();
 		HttpPost httpPost = new HttpPost(SERVER_URL_FACEBOOK_INFO);
@@ -268,6 +342,14 @@ public class HttpPostGenerator {
 		return httpPost;
 	}
 
+	/**
+	 * Generate POST of voice record from users
+	 * 
+	 * @param data
+	 *            UserVoiceRecord
+	 * @return HttpPost contains UserVoiceRecord
+	 * @see ubicomp.soberdiary.data.structure.UserVoiceRecord
+	 */
 	public static HttpPost genPost(UserVoiceRecord data) {
 		SERVER_URL_USER_VOICE_RECORD = ServerUrl.SERVER_URL_USER_VOICE();
 		HttpPost httpPost = new HttpPost(SERVER_URL_USER_VOICE_RECORD);
@@ -298,6 +380,14 @@ public class HttpPostGenerator {
 		return httpPost;
 	}
 
+	/**
+	 * Generate POST of daily additional questionnaire appears at night
+	 * 
+	 * @param data
+	 *            AdditionalQuestionnaire
+	 * @return HttpPost contains AdditionalQuestionnaire
+	 * @see ubicomp.soberdiary.data.structure.AdditionalQuestionnaire
+	 */
 	public static HttpPost genPost(AdditionalQuestionnaire data) {
 		SERVER_URL_ADDITIONAL_QUESTIONNAIRE = ServerUrl.SERVER_URL_ADDITIONAL_QUESTIONNAIRE();
 		HttpPost httpPost = new HttpPost(SERVER_URL_ADDITIONAL_QUESTIONNAIRE);
@@ -318,7 +408,14 @@ public class HttpPostGenerator {
 		return httpPost;
 	}
 
-	public static HttpPost genPost(File logFile) {// Clicklog
+	/**
+	 * Generate POST of ClickLog
+	 * 
+	 * @param logFile
+	 *            file of the click log
+	 * @return HttpPost contains click log file
+	 */
+	public static HttpPost genPost(File logFile) {
 		SERVER_URL_CLICKLOG = ServerUrl.SERVER_URL_CLICKLOG();
 		HttpPost httpPost = new HttpPost(SERVER_URL_CLICKLOG);
 		String uid = PreferenceControl.getUID();
@@ -333,6 +430,14 @@ public class HttpPostGenerator {
 		return httpPost;
 	}
 
+	/**
+	 * Generate POST of voice feedback after they retry the BrAC test
+	 * 
+	 * @param data
+	 *            UserVoiceFeedback
+	 * @return HttpPost contains UserVoiceFeedback
+	 * @see ubicomp.soberdiary.data.structure.UserVoiceFeedback
+	 */
 	public static HttpPost genPost(UserVoiceFeedback data) {
 		SERVER_URL_USER_VOICE_FEEDBACK = ServerUrl.SERVER_URL_USER_FEEDBACK();
 		HttpPost httpPost = new HttpPost(SERVER_URL_USER_VOICE_FEEDBACK);
@@ -359,6 +464,14 @@ public class HttpPostGenerator {
 		return httpPost;
 	}
 
+	/**
+	 * Generate POST of credits exchange history
+	 * 
+	 * @param data
+	 *            ExchangeHistory
+	 * @return HttpPost contains ExchangeHistory
+	 * @see ubicomp.soberdiary.data.structure.ExchangeHistory
+	 */
 	public static HttpPost genPost(ExchangeHistory data) {
 		SERVER_URL_EXCHANGE_HISTORY = ServerUrl.SERVER_URL_EXCHANGE_HISTORY();
 		HttpPost httpPost = new HttpPost(SERVER_URL_EXCHANGE_HISTORY);
@@ -374,9 +487,17 @@ public class HttpPostGenerator {
 		}
 		return httpPost;
 	}
-	
+
+	/**
+	 * Generate POST of detail data of BrAC test
+	 * 
+	 * @param data
+	 *            BreathDetail
+	 * @return HttpPost contains BreathDetail
+	 * @see ubicomp.soberdiary.data.structure.BreathDetail
+	 */
 	public static HttpPost genPost(BreathDetail data) {
-		SERVER_URL_BREATH_DETAIL= ServerUrl.SERVER_URL_BREATH_DETAIL();
+		SERVER_URL_BREATH_DETAIL = ServerUrl.SERVER_URL_BREATH_DETAIL();
 		HttpPost httpPost = new HttpPost(SERVER_URL_BREATH_DETAIL);
 		String uid = PreferenceControl.getUID();
 		List<NameValuePair> nvps = new ArrayList<NameValuePair>();
@@ -392,6 +513,7 @@ public class HttpPostGenerator {
 		nvps.add(new BasicNameValuePair("data[]", String.valueOf(data.getDisconnectionMillis())));
 		nvps.add(new BasicNameValuePair("data[]", String.valueOf(data.getSerialDiffMax())));
 		nvps.add(new BasicNameValuePair("data[]", String.valueOf(data.getSerialDiffAverage())));
+		nvps.add(new BasicNameValuePair("data[]", String.valueOf(data.getSensorId())));
 		try {
 			httpPost.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
 		} catch (UnsupportedEncodingException e) {

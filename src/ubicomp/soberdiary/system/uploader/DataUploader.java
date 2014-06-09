@@ -42,6 +42,11 @@ import android.annotation.SuppressLint;
 import android.os.AsyncTask;
 import android.util.Log;
 
+/**
+ * Used for upload data to the server
+ * 
+ * @author Stanley Wang
+ */
 public class DataUploader {
 
 	private static DataUploadTask uploader = null;
@@ -50,6 +55,7 @@ public class DataUploader {
 
 	private static final String TAG = "UPLOAD";
 
+	/**Upload the data & remove uploaded data*/
 	public static void upload() {
 
 		if (cleanThread != null && !cleanThread.isInterrupted()) {
@@ -82,13 +88,18 @@ public class DataUploader {
 		}
 	}
 
+	/**AsyncTask handles the data uploading task*/
 	public static class DataUploadTask extends AsyncTask<Void, Void, Void> {
 
 		private DatabaseControl db;
+		
+		/**ENUM UPLOAD ERROR*/
 		public static final int ERROR = -1;
+		/**ENUM UPLOAD SUCCESS*/
 		public static final int SUCCESS = 1;
 		private File logDir;
 
+		/**Constructor*/
 		public DataUploadTask() {
 			db = new DatabaseControl();
 			logDir = new File(MainStorage.getMainStorageDirectory(), "sequence_log");
@@ -225,16 +236,16 @@ public class DataUploader {
 				}
 			}
 
-			//BreathDetail
+			// BreathDetail
 			BreathDetail[] bds = db.getNotUploadedBreathDetail();
-			if (bds != null){
-				for (int i=0;i<bds.length;++i){
-					if (connectToServer(bds[i])==ERROR)
-						Log.d(TAG,"FAIL TO UPLOAD - breathDetail");
+			if (bds != null) {
+				for (int i = 0; i < bds.length; ++i) {
+					if (connectToServer(bds[i]) == ERROR)
+						Log.d(TAG, "FAIL TO UPLOAD - breathDetail");
 				}
-			}else
-				Log.d(TAG,"NO BREATH DETAIL");
-			
+			} else
+				Log.d(TAG, "NO BREATH DETAIL");
+
 			return null;
 		}
 
@@ -249,6 +260,7 @@ public class DataUploader {
 			File latestUploadFile = new File(logDir, "latest_uploaded");
 			if (latestUploadFile.exists()) {
 				try {
+					@SuppressWarnings("resource")
 					BufferedReader br = new BufferedReader(new FileReader(latestUploadFile));
 					latestUpload = br.readLine();
 				} catch (IOException e) {
@@ -517,7 +529,7 @@ public class DataUploader {
 			}
 			return SUCCESS;
 		}
-		
+
 		private int connectToServer(BreathDetail data) {// BreathDetail
 			try {
 				DefaultHttpClient httpClient = HttpSecureClientGenerator.getSecureHttpClient();

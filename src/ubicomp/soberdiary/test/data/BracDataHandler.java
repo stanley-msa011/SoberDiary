@@ -15,7 +15,6 @@ import ubicomp.soberdiary.main.R;
 import ubicomp.soberdiary.main.ui.toast.CustomToast;
 import ubicomp.soberdiary.storytelling.ui.StorytellingGraphics;
 import ubicomp.soberdiary.system.config.PreferenceControl;
-
 import android.content.Context;
 import android.util.Log;
 
@@ -107,6 +106,7 @@ public class BracDataHandler {
 	protected double parseTextFile(File textFile) {
 		double median = 0;
 		try {
+			@SuppressWarnings("resource")
 			Scanner s = new Scanner(textFile);
 			int index = 0;
 			List<Double> valueArray2 = new ArrayList<Double>();
@@ -134,6 +134,7 @@ public class BracDataHandler {
 	protected int getQuestionResult(File textFile) {
 		int result = -1;
 		try {
+			@SuppressWarnings("resource")
 			Scanner s = new Scanner(textFile);
 
 			int emotion = 0;

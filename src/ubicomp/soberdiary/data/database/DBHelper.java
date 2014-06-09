@@ -8,7 +8,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
 	/*SQLiteOpenHelper. need to migrate with */
 	private static final String DATABASE_NAME = "soberdiary";
-	private static final int DB_VERSION = 8; 
+	private static final int DB_VERSION = 9; 
 	
 	public DBHelper(Context context) {
 		super(context, DATABASE_NAME, null, DB_VERSION);
@@ -249,7 +249,8 @@ public class DBHelper extends SQLiteOpenHelper {
         		" disconnectionMillis INTEGER NOT NULL,"+
         		" serialDiffMax INTEGER NOT NULL," +
         		" serialDiffAverage FLOAT NOT NULL," +
-        		" upload INTEGER NOT NULL DEFAULT 0" +
+        		" upload INTEGER NOT NULL DEFAULT 0," +
+        		" sensorId CHAR[255] NOT NULL DEFAULT '' "+
         		")"
         		);
 	}
@@ -329,6 +330,9 @@ public class DBHelper extends SQLiteOpenHelper {
 		        		" upload INTEGER NOT NULL DEFAULT 0" +
 		        		")"
 		        		);
+			}
+			if (old_ver < 9){
+				db.execSQL("ALTER TABLE BreathDetail ADD sensorId CHAR[255] NOT NULL DEFAULT '' ");
 			}
 	}
 	

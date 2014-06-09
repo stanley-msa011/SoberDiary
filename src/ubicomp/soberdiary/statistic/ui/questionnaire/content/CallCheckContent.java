@@ -2,7 +2,7 @@ package ubicomp.soberdiary.statistic.ui.questionnaire.content;
 
 import android.content.Context;
 import ubicomp.soberdiary.main.R;
-import ubicomp.soberdiary.statistic.ui.QuestionnaireBox;
+import ubicomp.soberdiary.statistic.ui.QuestionnaireDialog;
 import ubicomp.soberdiary.statistic.ui.questionnaire.listener.CallDialOnClickListener;
 
 public class CallCheckContent extends QuestionnaireContent {
@@ -10,13 +10,13 @@ public class CallCheckContent extends QuestionnaireContent {
 	private String name,phone;
 	private boolean isEmotion = false;
 	
-	public CallCheckContent(QuestionnaireBox msgBox,String name, String phone) {
+	public CallCheckContent(QuestionnaireDialog msgBox,String name, String phone) {
 		super(msgBox);
 		this.name = name;
 		this.phone = phone;
 	}
 	
-	public CallCheckContent(QuestionnaireBox msgBox,String name, String phone,boolean isEmotion) {
+	public CallCheckContent(QuestionnaireDialog msgBox,String name, String phone,boolean isEmotion) {
 		super(msgBox);
 		this.name = name;
 		this.phone = phone;

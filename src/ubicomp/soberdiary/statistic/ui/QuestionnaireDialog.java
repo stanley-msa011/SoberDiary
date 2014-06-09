@@ -29,33 +29,38 @@ import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
 
-public class QuestionnaireBox {
+/**
+ * Dialog of the '!'Questionnaire
+ * 
+ * @author Stanley Wang
+ */
+public class QuestionnaireDialog {
 
 	private ArrayList<Integer> clickSequence;
 	private ArrayList<QuestionnaireContent> contentSequence;
-	
-	private QuestionnaireBoxUpdater quesBoxUpdater;
+
+	private QuestionnaireDialogCaller quesDialogCaller;
 	private Context context;
 	private LayoutInflater inflater;
 	private RelativeLayout boxLayout = null;
-	
+
 	private RelativeLayout mainLayout;
 	private LinearLayout questionLayout;
 	private ImageView closeButton;
-	private TextView help,next;
+	private TextView help, next;
 	private Drawable choiceDrawable, choiceSelectedDrawable;
 	private Resources r;
 	private DatabaseControl db;
 	private Typeface wordTypefaceBold;
 	private int type;
-	
+
 	private MediaPlayer mediaPlayer;
-	
+
 	private LinearLayout.LayoutParams questionParam;
-	
-	public QuestionnaireBox(QuestionnaireBoxUpdater quesBoxUpdater,RelativeLayout mainLayout){
-		this.context = quesBoxUpdater.getContext();
-		this.quesBoxUpdater = quesBoxUpdater;
+
+	public QuestionnaireDialog(QuestionnaireDialogCaller quesDialogCaller, RelativeLayout mainLayout) {
+		this.context = quesDialogCaller.getContext();
+		this.quesDialogCaller = quesDialogCaller;
 		this.r = context.getResources();
 		this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		this.mainLayout = mainLayout;
@@ -63,29 +68,25 @@ public class QuestionnaireBox {
 		clickSequence = new ArrayList<Integer>();
 		contentSequence = new ArrayList<QuestionnaireContent>();
 		type = -1;
-		
-		setting();
-	}
-	
-	private void setting(){
-		
+
 		wordTypefaceBold = Typefaces.getWordTypefaceBold();
-		
-		boxLayout = (RelativeLayout) inflater.inflate(R.layout.dialog_statistic_questionnaire,null);
+
+		boxLayout = (RelativeLayout) inflater.inflate(R.layout.dialog_statistic_questionnaire, null);
 		boxLayout.setVisibility(View.INVISIBLE);
-		
+
 		questionLayout = (LinearLayout) boxLayout.findViewById(R.id.question_layout);
 		questionParam = (LinearLayout.LayoutParams) questionLayout.getLayoutParams();
-		
+
 		help = (TextView) boxLayout.findViewById(R.id.question_text);
 		next = (TextView) boxLayout.findViewById(R.id.question_next);
-		
+
 		closeButton = (ImageView) boxLayout.findViewById(R.id.question_exit);
 	}
-	
+
 	@SuppressLint("InlinedApi")
-	public void load(){
-		
+	/**initialize the QuestionnaireDialog*/
+	public void initialize() {
+
 		mainLayout.addView(boxLayout);
 		RelativeLayout.LayoutParams mainParam = (LayoutParams) boxLayout.getLayoutParams();
 		mainParam.width = mainParam.height = LayoutParams.MATCH_PARENT;
@@ -95,216 +96,258 @@ public class QuestionnaireBox {
 		choiceSelectedDrawable = r.getDrawable(R.drawable.radio_button_checked);
 		closeButton.setOnClickListener(new ExitListener());
 	}
-	
-	public void clear(){
+
+	/** Remove the dialog and release the resources */
+	public void clear() {
 		closeMediaPlayer();
-		if (boxLayout !=null)
+		if (boxLayout != null)
 			mainLayout.removeView(boxLayout);
 	}
-	
-	public void generateType0Box(){
+
+	/** Generate the dialog if the user passes the BrAC test and feels well */
+	public void generateType0Dialog() {
 		type = 0;
 		showCloseButton(true);
-		setNextButton("",null);
+		setNextButton("", null);
 		contentSequence.clear();
 		contentSequence.add(new Type0Content(this));
-		contentSequence.get(contentSequence.size()-1).onPush();
+		contentSequence.get(contentSequence.size() - 1).onPush();
 	}
-	
-	public void generateType1Box(){
+
+	/** Generate the dialog if the user passes the BrAC test but feels bad */
+	public void generateType1Dialog() {
 		type = 1;
 		showCloseButton(true);
 		setNextButton("", null);
 		contentSequence.clear();
 		contentSequence.add(new Type1Content(this));
-		contentSequence.get(contentSequence.size()-1).onPush();
+		contentSequence.get(contentSequence.size() - 1).onPush();
 	}
-	
-	public void generateType2Box(){
+
+	/** Generate the dialog if the user lapses */
+	public void generateType2Dialog() {
 		type = 2;
 		showCloseButton(true);
 		setNextButton("", null);
 		contentSequence.clear();
 		contentSequence.add(new Type2Content(this));
-		contentSequence.get(contentSequence.size()-1).onPush();
+		contentSequence.get(contentSequence.size() - 1).onPush();
 	}
-	
-	public void generateType3Box(){
+
+	/** Generate the dialog if the user relapses */
+	public void generateType3Dialog() {
 		type = 3;
 		showCloseButton(true);
 		setNextButton("", null);
 		contentSequence.clear();
 		contentSequence.add(new Type3Content(this));
-		contentSequence.get(contentSequence.size()-1).onPush();
+		contentSequence.get(contentSequence.size() - 1).onPush();
 	}
-	
-	public void generateNormalBox(){
+
+	/** Generate the dialog when the user does not do BrAC tests */
+	public void generateNormalBox() {
 		type = -1;
 		showCloseButton(true);
 		setNextButton("", null);
 		contentSequence.clear();
 		contentSequence.add(new Type0Content(this));
-		contentSequence.get(contentSequence.size()-1).onPush();
+		contentSequence.get(contentSequence.size() - 1).onPush();
 	}
-	
-	public void openBox(){
-		quesBoxUpdater.enablePage(false);
+
+	/** show the dialog */
+	public void showDialog() {
+		quesDialogCaller.enablePage(false);
 		boxLayout.setVisibility(View.VISIBLE);
 		return;
-}
-	
-	public void closeBox(){
-		closeBox(R.string.after_questionnaire);
 	}
-	
-	public void closeMediaPlayer(){
-		if (mediaPlayer != null){
+
+	/** show the dialog */
+	public void closeDialog() {
+		closeDialog(R.string.after_questionnaire);
+	}
+
+	/** stop the media player and release the resources */
+	private void closeMediaPlayer() {
+		if (mediaPlayer != null) {
 			mediaPlayer.stop();
 			mediaPlayer.release();
 			mediaPlayer = null;
 		}
 	}
-	
-	public MediaPlayer setMediaPlayer(int id){
+
+	/**
+	 * create a media player
+	 * 
+	 * @param id
+	 *            music id
+	 * @return generated media player
+	 */
+	public MediaPlayer createMediaPlayer(int id) {
 		closeMediaPlayer();
-		mediaPlayer =MediaPlayer.create(getContext(), id);
+		mediaPlayer = MediaPlayer.create(getContext(), id);
 		return mediaPlayer;
 	}
-	
-	public void closeBox(int toast_str_id){
+
+	/**
+	 * close the Dialog and show a toast
+	 * 
+	 * @param toastId
+	 *            string id of the toast
+	 */
+	public void closeDialog(int toastId) {
 		closeMediaPlayer();
-		
+
 		PreferenceControl.setTestResult(-1);
-    	
-    	int addScore = insertSeq();
-    	CustomToast.generateToast(toast_str_id, addScore);
-    	quesBoxUpdater.updateSelfHelpCounter();
-    	
-    	quesBoxUpdater.enablePage(true);
+
+		int addScore = insertSequence();
+		CustomToast.generateToast(toastId, addScore);
+		quesDialogCaller.updateSelfHelpCounter();
+
+		quesDialogCaller.enablePage(true);
 		boxLayout.setVisibility(View.INVISIBLE);
-		quesBoxUpdater.setQuestionAnimation();
+		quesDialogCaller.setQuestionAnimation();
 	}
-	
-	public void closeBoxCall(){
-		
+
+	/** close the dialog and call out */
+	public void closeDialogAndCall() {
+
 		closeMediaPlayer();
 		PreferenceControl.setTestResult(-1);
-    	
-    	 insertSeq();
-    	
-    	quesBoxUpdater.enablePage(true);
+
+		insertSequence();
+
+		quesDialogCaller.enablePage(true);
 		boxLayout.setVisibility(View.INVISIBLE);
-		quesBoxUpdater.setQuestionAnimation();
+		quesDialogCaller.setQuestionAnimation();
 		return;
 	}
-	
-	public void closeBoxNull(){
-		
+
+	/** close the dialog but do not insert any things into the database */
+	public void closeBoxNull() {
+
 		closeMediaPlayer();
-		quesBoxUpdater.enablePage(true);
+		quesDialogCaller.enablePage(true);
 		boxLayout.setVisibility(View.INVISIBLE);
 		return;
 	}
-	
-	public Context getContext(){
+
+	/**
+	 * get the context
+	 * 
+	 * @return context Context of the activity of the dialog
+	 */
+	public Context getContext() {
 		return context;
 	}
-	
-	public Drawable getChoiceDrawable(){
+
+	/**
+	 * get the Drawable of the choice image
+	 * 
+	 * @return Drawable of the choice image
+	 */
+	public Drawable getChoiceDrawable() {
 		return choiceDrawable;
 	}
-	
-	public Drawable getChoiceSelectedDrawable(){
+
+	/**
+	 * get the Drawable of the selected choice image
+	 * 
+	 * @return Drawable of the selected choice image
+	 */
+	public Drawable getChoiceSelectedDrawable() {
 		return choiceSelectedDrawable;
 	}
-	
-	public LinearLayout getQuestionnaireLayout(){
-		return questionLayout; 
+
+	/**
+	 * get the LinearLayout for the questions of the questionnaire
+	 * 
+	 * @return linearLayout contains the questions
+	 */
+	public LinearLayout getQuestionnaireLayout() {
+		return questionLayout;
 	}
-	
-	public ArrayList<Integer> getClickSequence(){
+
+	public ArrayList<Integer> getClickSequence() {
 		return clickSequence;
 	}
-	
-	public ArrayList<QuestionnaireContent> getQuestionSequence(){
+
+	public ArrayList<QuestionnaireContent> getQuestionSequence() {
 		return contentSequence;
 	}
-	
-	private int insertSeq(){
-		int addScore = db.insertQuestionnaire(new Questionnaire(System.currentTimeMillis(),type,seq_toString(),0));
+
+	private int insertSequence() {
+		int addScore = db.insertQuestionnaire(new Questionnaire(System.currentTimeMillis(), type, seqToString(), 0));
 		return addScore;
 	}
-	
 
-	private String seq_toString(){
+	private String seqToString() {
 		int size = clickSequence.size();
 		StringBuilder sb = new StringBuilder();
-		for (int i=0;i<size;++i){
+		for (int i = 0; i < size; ++i) {
 			sb.append(clickSequence.get(i));
-			if (i<size-1)
+			if (i < size - 1)
 				sb.append(",");
 		}
 		return sb.toString();
 	}
-	
-	public void setHelpMessage(String str){
+
+	public void setHelpMessage(String str) {
 		help.setText(str);
 	}
-	
-	public void setHelpMessage(int str_id){
+
+	public void setHelpMessage(int str_id) {
 		help.setText(str_id);
 	}
-	
-	public void setNextButton(String str, View.OnClickListener listener){
+
+	public void setNextButton(String str, View.OnClickListener listener) {
 		next.setText(str);
 		next.setOnClickListener(listener);
 	}
-	
-	public void setNextButton(int str_id, View.OnClickListener listener){
+
+	public void setNextButton(int str_id, View.OnClickListener listener) {
 		next.setText(str_id);
 		next.setOnClickListener(listener);
 	}
-	
-	public Typeface getTypeface(){
+
+	public Typeface getTypeface() {
 		return wordTypefaceBold;
 	}
-	
-	public void cleanSelection(){
-		int idx = contentSequence.size()-1;
-		if (idx >=0)
+
+	public void cleanSelection() {
+		int idx = contentSequence.size() - 1;
+		if (idx >= 0)
 			contentSequence.get(idx).cleanSelection();
 	}
-	
-	public void showQuestionnaireLayout(boolean visible){
+
+	public void showQuestionnaireLayout(boolean visible) {
 		if (visible)
 			questionParam.height = LinearLayout.LayoutParams.WRAP_CONTENT;
 		else
 			questionParam.height = 0;
 	}
-	
-	
-	private class ExitListener implements View.OnClickListener{
+
+	private class ExitListener implements View.OnClickListener {
 
 		@Override
 		public void onClick(View v) {
 			clickSequence.clear();
 			contentSequence.clear();
-			quesBoxUpdater.enablePage(true);
+			quesDialogCaller.enablePage(true);
 			boxLayout.setVisibility(View.INVISIBLE);
 			ClickLog.Log(ClickLogId.STATISTIC_QUESTION_EXIT);
 		}
-		
+
 	}
-	
-	public int getType(){
+
+	public int getType() {
 		return type;
 	}
-	
-	public void showCloseButton(boolean show){
+
+	public void showCloseButton(boolean show) {
 		if (show)
 			closeButton.setVisibility(View.VISIBLE);
 		else
 			closeButton.setVisibility(View.INVISIBLE);
-		
+
 	}
 }

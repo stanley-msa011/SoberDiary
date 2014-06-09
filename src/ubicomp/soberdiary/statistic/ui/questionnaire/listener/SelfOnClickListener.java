@@ -1,6 +1,6 @@
 package ubicomp.soberdiary.statistic.ui.questionnaire.listener;
 
-import ubicomp.soberdiary.statistic.ui.QuestionnaireBox;
+import ubicomp.soberdiary.statistic.ui.QuestionnaireDialog;
 import ubicomp.soberdiary.statistic.ui.questionnaire.content.SelfHelpContent;
 import ubicomp.soberdiary.system.clicklog.ClickLog;
 import ubicomp.soberdiary.system.clicklog.ClickLogId;
@@ -8,7 +8,7 @@ import android.view.View;
 
 public class SelfOnClickListener extends QuestionnaireOnClickListener {
 
-	public SelfOnClickListener(QuestionnaireBox msgBox) {
+	public SelfOnClickListener(QuestionnaireDialog msgBox) {
 		super(msgBox);
 	}
 

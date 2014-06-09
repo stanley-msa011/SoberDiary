@@ -1,7 +1,7 @@
 package ubicomp.soberdiary.statistic.ui.questionnaire.content;
 
 import ubicomp.soberdiary.main.R;
-import ubicomp.soberdiary.statistic.ui.QuestionnaireBox;
+import ubicomp.soberdiary.statistic.ui.QuestionnaireDialog;
 import ubicomp.soberdiary.statistic.ui.questionnaire.listener.EmotionDIYOnClickListener;
 import ubicomp.soberdiary.statistic.ui.questionnaire.listener.HotLineOnClickListener;
 import ubicomp.soberdiary.statistic.ui.questionnaire.listener.FamilyCallOnClickListener;
@@ -11,7 +11,7 @@ import ubicomp.soberdiary.statistic.ui.questionnaire.listener.SocialCallOnClickL
 
 public class Type1Content extends QuestionnaireContent {
 
-	public Type1Content(QuestionnaireBox msgBox) {
+	public Type1Content(QuestionnaireDialog msgBox) {
 		super(msgBox);
 	}
 
@@ -19,7 +19,7 @@ public class Type1Content extends QuestionnaireContent {
 	protected void setContent() {
 		msgBox.setNextButton("", null);
 		seq.clear();
-		msgBox.openBox();
+		msgBox.showDialog();
 		setHelp(R.string.question_type1_help);
 		setSelectItem(R.string.read_sentence, new SelectedListener(msgBox, new ReadingOnClickListener(msgBox),
 				R.string.next));

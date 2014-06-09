@@ -16,6 +16,7 @@ import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+/**Handling Database restore functions*/
 public class DatabaseRestoreControl {
 	
     private SQLiteOpenHelper dbHelper = null;

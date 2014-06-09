@@ -1,7 +1,7 @@
 package ubicomp.soberdiary.statistic.ui.questionnaire.content;
 
 import ubicomp.soberdiary.main.R;
-import ubicomp.soberdiary.statistic.ui.QuestionnaireBox;
+import ubicomp.soberdiary.statistic.ui.QuestionnaireDialog;
 import ubicomp.soberdiary.statistic.ui.questionnaire.listener.CallCheckOnClickListener;
 import ubicomp.soberdiary.statistic.ui.questionnaire.listener.CloseClickListener;
 import ubicomp.soberdiary.statistic.ui.questionnaire.listener.SelectedListener;
@@ -12,7 +12,7 @@ public class ConnectContent extends QuestionnaireContent {
 	private int type;
 	public static final int TYPE_FAMILY = 2, TYPE_SOCIAL = 3;
 	
-	public ConnectContent(QuestionnaireBox msgBox,int type) {
+	public ConnectContent(QuestionnaireDialog msgBox,int type) {
 		super(msgBox);
 		this.type = type;
 	}

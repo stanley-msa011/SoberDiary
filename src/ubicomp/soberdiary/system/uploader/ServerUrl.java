@@ -160,7 +160,7 @@ public class ServerUrl {
 	}
 	
 	public static String SERVER_URL_BREATH_DETAIL() {
-		final String URL = "upload/breathDetail.php";
+		final String URL = "upload/breathDetail2.php";
 		boolean develop = PreferenceControl.isDeveloper();
 		if (develop)
 			return SERVER_URL_DEVELOP + URL;

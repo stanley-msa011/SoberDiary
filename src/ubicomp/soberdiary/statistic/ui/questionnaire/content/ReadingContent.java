@@ -3,14 +3,14 @@ package ubicomp.soberdiary.statistic.ui.questionnaire.content;
 import java.util.Random;
 
 import ubicomp.soberdiary.main.R;
-import ubicomp.soberdiary.statistic.ui.QuestionnaireBox;
+import ubicomp.soberdiary.statistic.ui.QuestionnaireDialog;
 import ubicomp.soberdiary.statistic.ui.questionnaire.listener.EndOnClickListener;
 
 public class ReadingContent extends QuestionnaireContent {
 
 	private static String[] help;
 	
-	public ReadingContent(QuestionnaireBox msgBox) {
+	public ReadingContent(QuestionnaireDialog msgBox) {
 		super(msgBox);
 		if (help==null)
 			help = msgBox.getContext().getResources().getStringArray(R.array.question_reading_question);

@@ -41,7 +41,7 @@ public class StorytellingTestActivity extends Activity {
 	private TextView titleText;
 	private Typeface wordTypefaceBold;
 
-	private int image_week;
+	private int imageWeek;
 
 	private String question = "";
 	private String answer = "";
@@ -65,7 +65,7 @@ public class StorytellingTestActivity extends Activity {
 		setContentView(R.layout.activity_storytelling_test);
 
 		Bundle data = this.getIntent().getExtras();
-		image_week = data.getInt("image_week", 0);
+		imageWeek = data.getInt("image_week", 0);
 
 		inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		wordTypefaceBold = Typefaces.getWordTypefaceBold();
@@ -105,7 +105,8 @@ public class StorytellingTestActivity extends Activity {
 		String[] questions = null;
 		String[] answers = null;
 		Resources r = App.getContext().getResources();
-		switch (image_week) {
+		int questionWeek = imageWeek%12;
+		switch (questionWeek) {
 		case 0:
 			questions = r.getStringArray(R.array.quote_question_0);
 			answers = r.getStringArray(R.array.quote_answer_0);
@@ -276,7 +277,7 @@ public class StorytellingTestActivity extends Activity {
 				if (selectedAnswer.equals(answer))
 					isCorrect = true;
 				DatabaseControl db = new DatabaseControl();
-				int addScore = db.insertStorytellingTest(new StorytellingTest(System.currentTimeMillis(), image_week,
+				int addScore = db.insertStorytellingTest(new StorytellingTest(System.currentTimeMillis(), imageWeek,
 						isCorrect, selectedAnswer, agreement, 0));
 				if (!isCorrect)
 					CustomToast.generateToast(R.string.storytelling_test_incorrect, -1);

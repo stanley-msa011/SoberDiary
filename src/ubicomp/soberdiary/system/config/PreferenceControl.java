@@ -12,6 +12,11 @@ import ubicomp.soberdiary.main.App;
 import ubicomp.soberdiary.main.MainActivity;
 import ubicomp.soberdiary.main.R;
 
+/**
+ * Class for controlling Android Preference
+ * 
+ * @author Stanley Wang
+ */
 public class PreferenceControl {
 
 	private static final SharedPreferences sp = App.getSp();
@@ -379,8 +384,8 @@ public class PreferenceControl {
 	public static void exchangeCoupon() {
 		int currentCounter = getTotalCounter();
 		int usedCounter = sp.getInt("usedCounter", 0);
-		int coupon = currentCounter / Config.COUPON_COUNTER;
-		int exchangeCounter = coupon * Config.COUPON_COUNTER;
+		int coupon = currentCounter / Config.COUPON_CREDITS;
+		int exchangeCounter = coupon * Config.COUPON_CREDITS;
 		SharedPreferences.Editor edit = sp.edit();
 		edit.putInt("usedCounter", usedCounter + exchangeCounter);
 		edit.commit();
@@ -496,15 +501,15 @@ public class PreferenceControl {
 	}
 
 	public static boolean getPageChange() {
-//		TimeValue curTV = TimeValue.generate(System.currentTimeMillis());
-//		if (curTV.getWeek() > 11)
-//			return false;
+		// TimeValue curTV = TimeValue.generate(System.currentTimeMillis());
+		// if (curTV.getWeek() > 11)
+		// return false;
 		return sp.getBoolean("pageChange", false);
 	}
 
 	public static boolean checkCouponChange() {
 		int prevCoupon = PreferenceControl.lastShowedCoupon();
-		int curCoupon = PreferenceControl.getTotalCounter() / Config.COUPON_COUNTER;
+		int curCoupon = PreferenceControl.getTotalCounter() / Config.COUPON_CREDITS;
 		return curCoupon != prevCoupon;
 	}
 

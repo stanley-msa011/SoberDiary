@@ -25,21 +25,43 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.RelativeLayout.LayoutParams;
 
+/**
+ * About Activity
+ * 
+ * @author Stanley Wang
+ */
 public class AboutActivity extends Activity {
 
+	// TextView of About Activity
 	private TextView titleText, aboutText, copyrightText, about, phone, phone_number, email, website;
-
+	// ImageView of About Activity
 	private ImageView logo, logo0, logo1, logo2;
+
+	/** @see Typefaces */
 	private Typeface wordTypeface, wordTypefaceBold, digitTypeface, digitTypefaceBold;
 
+	// Link & COPYRIGHT
 	private static final String EMAIL = "ubicomplab.ntu@gmail.com";
 	private static final String WEBSITE = "http://mll.csie.ntu.edu.tw/soberdiary/mobile/knowledge.php";
 	private static final String COPYRIGHT = "\u00a9 2014 National Taiwan University,Intel-NTU Connected Context Computing Center, and Taipei City Hospital";
 
-	private int hidden_state;
+	/** Hidden state machine for entering developer page */
+	private int hiddenState;
+
+	// Activity
 	private Activity activity;
 
+	// LayoutInflater
+	private LayoutInflater inflater;
+
+	// RelativeLayout
+	private RelativeLayout callLayout, bgLayout;
+
+	// TextView in callLayout
+	private TextView callOK, callCancel, callHelp;
+
 	@Override
+	/**OnCreate of the activity*/
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_about);
@@ -74,49 +96,53 @@ public class AboutActivity extends Activity {
 
 		logo.setOnTouchListener(new View.OnTouchListener() {
 			@Override
+			/** Change hiddenState and verify if the user can access DeveloperActivity*/
 			public boolean onTouch(View v, MotionEvent event) {
-				if (hidden_state == 0)
-					++hidden_state;
-				else if (hidden_state == 4) {
+				if (hiddenState == 0)
+					++hiddenState;
+				else if (hiddenState == 4) {
 					Intent newIntent = new Intent(activity, DeveloperActivity.class);
 					activity.startActivity(newIntent);
 				} else
-					hidden_state = 0;
+					hiddenState = 0;
 				return false;
 			}
 		});
 		logo0.setOnTouchListener(new View.OnTouchListener() {
 			@Override
+			/**Change hiddenState*/
 			public boolean onTouch(View v, MotionEvent event) {
 				if (event.getAction() == MotionEvent.ACTION_DOWN) {
-					if (hidden_state == 1)
-						++hidden_state;
+					if (hiddenState == 1)
+						++hiddenState;
 					else
-						hidden_state = 0;
+						hiddenState = 0;
 				}
 				return false;
 			}
 		});
 		logo1.setOnTouchListener(new View.OnTouchListener() {
 			@Override
+			/**Change hiddenState*/
 			public boolean onTouch(View v, MotionEvent event) {
 				if (event.getAction() == MotionEvent.ACTION_DOWN) {
-					if (hidden_state == 2)
-						++hidden_state;
+					if (hiddenState == 2)
+						++hiddenState;
 					else
-						hidden_state = 0;
+						hiddenState = 0;
 				}
 				return false;
 			}
 		});
 		logo2.setOnTouchListener(new View.OnTouchListener() {
 			@Override
+			/**Change hiddenState*/
 			public boolean onTouch(View v, MotionEvent event) {
 				if (event.getAction() == MotionEvent.ACTION_DOWN) {
-					if (hidden_state == 3)
-						++hidden_state;
+					if (hiddenState == 3)
+						++hiddenState;
 					else
-						hidden_state = 0;
+						hiddenState = 0;
 				}
 				return false;
 			}
@@ -189,19 +215,15 @@ public class AboutActivity extends Activity {
 
 		inflater = LayoutInflater.from(this);
 		callLayout = (RelativeLayout) inflater.inflate(R.layout.dialog_callout_check, null);
-		setCallCheckBox();
+		initializeCallCheckDialog();
 
 		phone_number.setOnClickListener(new CallCheckOnClickListener());
 		email.setOnClickListener(new EmailOnClickListener());
 		website.setOnClickListener(new WebsiteOnClickListener());
 	}
 
-	private LayoutInflater inflater;
-	private RelativeLayout callLayout;
-	private RelativeLayout bgLayout;
-	private TextView callOK, callCancel, callHelp;
-
-	private void setCallCheckBox() {
+	/** Initialize the dialog to check if the user call out to the developer */
+	private void initializeCallCheckDialog() {
 
 		callOK = (TextView) callLayout.findViewById(R.id.call_ok_button);
 		callCancel = (TextView) callLayout.findViewById(R.id.call_cancel_button);
@@ -212,9 +234,11 @@ public class AboutActivity extends Activity {
 		callCancel.setTypeface(wordTypefaceBold);
 	}
 
+	/** OnClickListener for clicking and showing call check dialog */
 	private class CallCheckOnClickListener implements View.OnClickListener {
 
 		@Override
+		/**Click and show the dialog*/
 		public void onClick(View v) {
 			bgLayout.addView(callLayout);
 
@@ -223,7 +247,7 @@ public class AboutActivity extends Activity {
 			boxParam.height = LayoutParams.MATCH_PARENT;
 
 			callHelp.setText(R.string.phone_check);
-			callOK.setOnClickListener(new CallOnClickListener());
+			callOK.setOnClickListener(new CallOutOnClickListener());
 			callCancel.setOnClickListener(new CallCancelOnClickListener());
 			phone_number.setOnClickListener(null);
 			email.setOnClickListener(null);
@@ -232,8 +256,11 @@ public class AboutActivity extends Activity {
 		}
 	}
 
+	/** OnClickListener for canceling and dismiss the call check dialog */
 	private class CallCancelOnClickListener implements View.OnClickListener {
+
 		@Override
+		/**Cancel and dismiss the call check dialog*/
 		public void onClick(View v) {
 			bgLayout.removeView(callLayout);
 			phone_number.setOnClickListener(new CallCheckOnClickListener());
@@ -244,8 +271,10 @@ public class AboutActivity extends Activity {
 
 	}
 
-	private class CallOnClickListener implements View.OnClickListener {
+	/** OnClickListener for calling out */
+	private class CallOutOnClickListener implements View.OnClickListener {
 		@Override
+		/**Calling out*/
 		public void onClick(View v) {
 			ClickLog.Log(ClickLogId.ABOUT_CALL_OK);
 			Intent intentDial = new Intent("android.intent.action.CALL", Uri.parse("tel:0233664926"));
@@ -254,9 +283,11 @@ public class AboutActivity extends Activity {
 		}
 	}
 
+	/** OnClickListener for sending email */
 	private class EmailOnClickListener implements View.OnClickListener {
 
 		@Override
+		/**Call outside app for sending email*/
 		public void onClick(View v) {
 			Intent i = new Intent(Intent.ACTION_SEND);
 			i.setType("message/rfc822");
@@ -276,19 +307,21 @@ public class AboutActivity extends Activity {
 			ClickLog.Log(ClickLogId.ABOUT_EMAIL);
 		}
 	}
-	
+
+	/** OnClickListener for going to our mobile website */
 	private class WebsiteOnClickListener implements View.OnClickListener {
 
 		@Override
+		/**Call app to browse the website*/
 		public void onClick(View v) {
 			Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(WEBSITE));
 			startActivity(browserIntent);
 			ClickLog.Log(ClickLogId.ABOUT_WEBSITE);
 		}
 	}
-	
 
 	@Override
+	/**Override for hijacking BACK key*/
 	public boolean onKeyUp(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
 			if (callLayout.getParent() != null && callLayout.getParent().equals(bgLayout)) {
@@ -303,12 +336,14 @@ public class AboutActivity extends Activity {
 	}
 
 	@Override
+	/**onResume of AboutActivity. Override for ClickLog*/
 	public void onResume() {
 		super.onResume();
 		ClickLog.Log(ClickLogId.ABOUT_ENTER);
 	}
 
 	@Override
+	/**onPause of AboutActivity. Override for ClickLog*/
 	public void onPause() {
 		ClickLog.Log(ClickLogId.ABOUT_LEAVE);
 		super.onPause();

@@ -1,7 +1,7 @@
 package ubicomp.soberdiary.statistic.ui.questionnaire.listener;
 
 import ubicomp.soberdiary.main.R;
-import ubicomp.soberdiary.statistic.ui.QuestionnaireBox;
+import ubicomp.soberdiary.statistic.ui.QuestionnaireDialog;
 import ubicomp.soberdiary.statistic.ui.questionnaire.content.CallCheckContent;
 import ubicomp.soberdiary.system.clicklog.ClickLog;
 import ubicomp.soberdiary.system.clicklog.ClickLogId;
@@ -9,7 +9,7 @@ import android.view.View;
 
 public class HotLineOnClickListener extends QuestionnaireOnClickListener {
 
-	public HotLineOnClickListener(QuestionnaireBox msgBox) {
+	public HotLineOnClickListener(QuestionnaireDialog msgBox) {
 		super(msgBox);
 	}
 

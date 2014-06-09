@@ -25,7 +25,7 @@ import android.widget.SeekBar;
 import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
 
-public class TestQuestionMsgBox implements TestQuestionMsgBoxInterface {
+public class TestQuestionMsgBox{
 
 	private TestQuestionCaller testQuestionCaller;
 	private GPSInterface gpsInterface;
@@ -169,7 +169,7 @@ public class TestQuestionMsgBox implements TestQuestionMsgBoxInterface {
 		notSend.setTypeface(wordTypefaceBold);
 	}
 
-	public void gen() {
+	public void initialize() {
 
 		RelativeLayout.LayoutParams boxParam = (LayoutParams) boxLayout.getLayoutParams();
 		boxParam.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
@@ -223,7 +223,7 @@ public class TestQuestionMsgBox implements TestQuestionMsgBoxInterface {
 		doneByDoubleClick = click;
 	}
 
-	public void generateMsgBox() {
+	public void showMsgBox() {
 		enableSend(false);
 		PreferenceControl.setTestSuccess();
 		help.setText("");
@@ -283,7 +283,7 @@ public class TestQuestionMsgBox implements TestQuestionMsgBoxInterface {
 		}
 	}
 
-	public void generateWaitingBox() {
+	public void showWaitingBox() {
 		send.setOnClickListener(null);
 		notSend.setOnClickListener(null);
 		help.setText(R.string.wait);

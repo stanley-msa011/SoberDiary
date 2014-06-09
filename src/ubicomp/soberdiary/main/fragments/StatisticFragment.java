@@ -8,8 +8,8 @@ import ubicomp.soberdiary.main.MainActivity;
 import ubicomp.soberdiary.main.ui.LoadingDialogControl;
 import ubicomp.soberdiary.main.ui.ScaleOnTouchListener;
 import ubicomp.soberdiary.statistic.ui.DetailChart;
-import ubicomp.soberdiary.statistic.ui.QuestionnaireBox;
-import ubicomp.soberdiary.statistic.ui.QuestionnaireBoxUpdater;
+import ubicomp.soberdiary.statistic.ui.QuestionnaireDialog;
+import ubicomp.soberdiary.statistic.ui.QuestionnaireDialogCaller;
 import ubicomp.soberdiary.statistic.ui.RadarChart;
 import ubicomp.soberdiary.statistic.ui.ShowRadarChart;
 import ubicomp.soberdiary.statistic.ui.block.AnalysisCounterView;
@@ -45,7 +45,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 
-public class StatisticFragment extends Fragment implements ShowRadarChart, QuestionnaireBoxUpdater {
+public class StatisticFragment extends Fragment implements ShowRadarChart, QuestionnaireDialogCaller {
 
 	private View view;
 	private Activity activity;
@@ -64,7 +64,7 @@ public class StatisticFragment extends Fragment implements ShowRadarChart, Quest
 
 	private AlphaAnimation questionAnimation;
 
-	private QuestionnaireBox msgBox;
+	private QuestionnaireDialog msgBox;
 
 	private RadarChart radarChart;
 	private DetailChart detailChart;
@@ -121,7 +121,7 @@ public class StatisticFragment extends Fragment implements ShowRadarChart, Quest
 		analysisViews[1] = new AnalysisSavingView();
 		analysisViews[2] = new AnalysisRankView(statisticFragment);
 		statisticViewAdapter = new StatisticPagerAdapter();
-		msgBox = new QuestionnaireBox(this, (RelativeLayout) view);
+		msgBox = new QuestionnaireDialog(this, (RelativeLayout) view);
 
 		Bundle data = getArguments();
 		if (data != null) {
@@ -213,7 +213,7 @@ public class StatisticFragment extends Fragment implements ShowRadarChart, Quest
 			dots[0].setImageDrawable(dot_on);
 
 			if (msgBox != null)
-				msgBox.load();
+				msgBox.initialize();
 
 			questionAnimation = new AlphaAnimation(1.0F, 0.0F);
 			questionAnimation.setDuration(200);
@@ -237,13 +237,13 @@ public class StatisticFragment extends Fragment implements ShowRadarChart, Quest
 		if (msgBox == null)
 			return;
 		if (result == 0)
-			msgBox.generateType0Box();
+			msgBox.generateType0Dialog();
 		else if (result == 1)
-			msgBox.generateType1Box();
+			msgBox.generateType1Dialog();
 		else if (result == 2)
-			msgBox.generateType2Box();
+			msgBox.generateType2Dialog();
 		else if (result == 3)
-			msgBox.generateType3Box();
+			msgBox.generateType3Dialog();
 		else
 			msgBox.generateNormalBox();
 	}

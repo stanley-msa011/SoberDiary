@@ -1,13 +1,13 @@
 package ubicomp.soberdiary.statistic.ui.questionnaire.listener;
 
 import android.view.View;
-import ubicomp.soberdiary.statistic.ui.QuestionnaireBox;
+import ubicomp.soberdiary.statistic.ui.QuestionnaireDialog;
 import ubicomp.soberdiary.system.clicklog.ClickLog;
 import ubicomp.soberdiary.system.clicklog.ClickLogId;
 
 public class CloseClickListener extends QuestionnaireOnClickListener {
 
-	public CloseClickListener(QuestionnaireBox msgBox) {
+	public CloseClickListener(QuestionnaireDialog msgBox) {
 		super(msgBox);
 	}
 

@@ -1,7 +1,7 @@
 package ubicomp.soberdiary.statistic.ui.questionnaire.content;
 
 import ubicomp.soberdiary.main.R;
-import ubicomp.soberdiary.statistic.ui.QuestionnaireBox;
+import ubicomp.soberdiary.statistic.ui.QuestionnaireDialog;
 import ubicomp.soberdiary.statistic.ui.questionnaire.listener.EndOnClickListener;
 
 public class SolutionContent extends QuestionnaireContent {
@@ -10,7 +10,7 @@ public class SolutionContent extends QuestionnaireContent {
 	private static final int AID_START_IDX = 10;
 	private int aid;
 
-	public SolutionContent(QuestionnaireBox msgBox, int aid) {
+	public SolutionContent(QuestionnaireDialog msgBox, int aid) {
 		super(msgBox);
 		this.aid = aid;
 		TEXT = msgBox.getContext().getResources().getStringArray(R.array.question_solutions);

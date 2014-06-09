@@ -1,6 +1,6 @@
 package ubicomp.soberdiary.statistic.ui.questionnaire.listener;
 
-import ubicomp.soberdiary.statistic.ui.QuestionnaireBox;
+import ubicomp.soberdiary.statistic.ui.QuestionnaireDialog;
 import ubicomp.soberdiary.system.clicklog.ClickLog;
 import ubicomp.soberdiary.system.clicklog.ClickLogId;
 import android.content.Intent;
@@ -10,7 +10,7 @@ import android.view.View;
 public class CallDialOnClickListener extends QuestionnaireOnClickListener {
 
 	private String phone;
-	public CallDialOnClickListener(QuestionnaireBox msgBox,String phone) {
+	public CallDialOnClickListener(QuestionnaireDialog msgBox,String phone) {
 		super(msgBox);
 		this.phone = phone;
 	}
@@ -18,7 +18,7 @@ public class CallDialOnClickListener extends QuestionnaireOnClickListener {
 	@Override
 	public void onClick(View v) {
 		ClickLog.Log(ClickLogId.STATISTIC_QUESTION_CALL_OK);
-		msgBox.closeBoxCall();
+		msgBox.closeDialogAndCall();
 		Intent intentDial = new Intent("android.intent.action.CALL",Uri.parse("tel:"+phone));
 		msgBox.getContext().startActivity(intentDial);
 	}

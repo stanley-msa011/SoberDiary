@@ -261,7 +261,7 @@ public class SettingActivity extends Activity {
 
 		ClickLog.Log(ClickLogId.SETTING_LEAVE);
 
-		BootBoardcastReceiver.testNotificationSetting(getBaseContext(), getIntent());
+		BootBoardcastReceiver.setRegularNotification(getBaseContext(), getIntent());
 
 		super.onPause();
 	}

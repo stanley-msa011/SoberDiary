@@ -1,12 +1,12 @@
 package ubicomp.soberdiary.statistic.ui.questionnaire.content;
 
 import ubicomp.soberdiary.main.R;
-import ubicomp.soberdiary.statistic.ui.QuestionnaireBox;
+import ubicomp.soberdiary.statistic.ui.QuestionnaireDialog;
 import ubicomp.soberdiary.statistic.ui.questionnaire.listener.EndOnClickListener;
 
 public class BreathContent extends QuestionnaireContent {
 
-	public BreathContent(QuestionnaireBox msgBox) {
+	public BreathContent(QuestionnaireDialog msgBox) {
 		super(msgBox);
 	}
 

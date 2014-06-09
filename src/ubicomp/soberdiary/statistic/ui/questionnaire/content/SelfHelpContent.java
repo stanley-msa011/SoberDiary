@@ -1,14 +1,14 @@
 package ubicomp.soberdiary.statistic.ui.questionnaire.content;
 
 import ubicomp.soberdiary.main.R;
-import ubicomp.soberdiary.statistic.ui.QuestionnaireBox;
+import ubicomp.soberdiary.statistic.ui.QuestionnaireDialog;
 import ubicomp.soberdiary.statistic.ui.questionnaire.listener.MusicOnClickListener;
 import ubicomp.soberdiary.statistic.ui.questionnaire.listener.SelectedListener;
 import ubicomp.soberdiary.statistic.ui.questionnaire.listener.SituationOnClickListener;
 
 public class SelfHelpContent extends QuestionnaireContent {
 
-	public SelfHelpContent(QuestionnaireBox msgBox) {
+	public SelfHelpContent(QuestionnaireDialog msgBox) {
 		super(msgBox);
 	}
 

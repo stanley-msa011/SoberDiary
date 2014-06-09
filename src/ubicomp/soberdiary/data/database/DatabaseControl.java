@@ -55,9 +55,9 @@ public class DatabaseControl {
 	// Detection
 
 	/**
-	 * This method is used for getting all prime brac detections
+	 * This method is used for getting all prime brac Detection
 	 * 
-	 * @return An array of detections
+	 * @return An array of Detection. If there are no detections, return null
 	 * @see ubicomp.soberdiary.data.structure.Detection
 	 */
 	public Detection[] getAllPrimeDetection() {
@@ -94,7 +94,7 @@ public class DatabaseControl {
 	/**
 	 * This method is used for the latest brac detection
 	 * 
-	 * @return Detection
+	 * @return Detection. If there are no Detection, return a dummy data.
 	 * @see ubicomp.soberdiary.data.structure.Detection
 	 */
 	public Detection getLatestDetection() {
@@ -357,7 +357,7 @@ public class DatabaseControl {
 	 * This method is used for getting detections which are not uploaded to the
 	 * server
 	 * 
-	 * @return An array of Detections
+	 * @return An array of Detection. If there are no detections, return null.
 	 * @see ubicomp.soberdiary.data.structure.Detection
 	 */
 	public Detection[] getAllNotUploadedDetection() {
@@ -400,8 +400,9 @@ public class DatabaseControl {
 
 	/**
 	 * This method is used for checking if the user do the brac detection at
-	 * this time slot @ return true if the user do a brac detection at the
-	 * current time slot
+	 * this time slot
+	 * 
+	 * @return true if the user do a brac detection at the current time slot
 	 */
 	public boolean detectionIsDone() {
 		synchronized (sqlLock) {
@@ -419,8 +420,9 @@ public class DatabaseControl {
 	}
 
 	/**
-	 * This method is used for counting total passed prime detections @ return #
-	 * of passed prime detections
+	 * This method is used for counting total passed prime detections
+	 * 
+	 * @return # of passed prime detections
 	 */
 	public int getPrimeDetectionPassTimes() {
 		synchronized (sqlLock) {
@@ -460,7 +462,7 @@ public class DatabaseControl {
 	/**
 	 * Get the user's rank
 	 * 
-	 * @return Rank
+	 * @return Rank. If there are no data, return dummy data with UID=""
 	 * @see ubicomp.soberdiary.data.structure.Rank
 	 */
 	public Rank getMyRank() {
@@ -492,7 +494,7 @@ public class DatabaseControl {
 	/**
 	 * Get all user's ranks
 	 * 
-	 * @return An array of Rank
+	 * @return An array of Rank. If there are no Rank, return null.
 	 * @see ubicomp.soberdiary.data.structure.Rank
 	 */
 	public Rank[] getAllRanks() {
@@ -530,7 +532,7 @@ public class DatabaseControl {
 	/**
 	 * Get the user's rank in a short period
 	 * 
-	 * @return An array of Rank
+	 * @return An array of Rank. If there are no Rank, return null.
 	 * @see ubicomp.soberdiary.data.structure.Rank
 	 */
 	public Rank[] getAllRankShort() {
@@ -617,6 +619,11 @@ public class DatabaseControl {
 		}
 	}
 
+	/**
+	 * Truncate the RankingShort table
+	 * 
+	 * @see ubicomp.soberdiary.data.structure.Rank
+	 */
 	public void clearRankShort() {
 		synchronized (sqlLock) {
 			db = dbHelper.getWritableDatabase();
@@ -627,8 +634,10 @@ public class DatabaseControl {
 	}
 
 	/**
-	 * Truncate the RankingShort table
+	 * Update the Rank in a short period
 	 * 
+	 * @param data
+	 *            Updated Rank in a short period
 	 * @see ubicomp.soberdiary.data.structure.Rank
 	 */
 	public void updateRankShort(Rank data) {
@@ -656,7 +665,8 @@ public class DatabaseControl {
 	/**
 	 * Get the latest ''! Questionnaire
 	 * 
-	 * @return Questionnaire
+	 * @return Questionnaire. If there are no Questionnaire, return a dummy
+	 *         data.
 	 * @see ubicomp.soberdiary.data.structure.Questionnaire
 	 */
 	public Questionnaire getLatestQuestionnaire() {
@@ -715,7 +725,8 @@ public class DatabaseControl {
 	/**
 	 * Get all ''! Questionnaire which are not uploaded to the server
 	 * 
-	 * @return An array of Questionnaire
+	 * @return An array of Questionnaire. If there are no Questionnaire, return
+	 *         null.
 	 * @see ubicomp.soberdiary.data.structure.Questionnaire
 	 */
 	public Questionnaire[] getNotUploadedQuestionnaire() {
@@ -754,7 +765,7 @@ public class DatabaseControl {
 	}
 
 	/**
-	 * Label the ''! Questionnaire is uploaded
+	 * Label the ''! Questionnaire uploaded
 	 * 
 	 * @param ts
 	 *            Timestamp of the Questionnaire
@@ -774,7 +785,7 @@ public class DatabaseControl {
 	/**
 	 * Get the latest Emotion DIY result
 	 * 
-	 * @return EmotionDIY
+	 * @return EmotionDIY. If there are no EmotionDIY, return a dummy data.
 	 * @see ubicomp.soberdiary.data.structure.EmotionDIY
 	 */
 	public EmotionDIY getLatestEmotionDIY() {
@@ -828,9 +839,12 @@ public class DatabaseControl {
 		}
 	}
 
-	/** Get all Emotion DIY results which are not uploaded to the server
-	 * @return An array of EmotionDIY
-	 * @see ubicomp.soberdiary.data.structure.EmotionDIY*/
+	/**
+	 * Get all Emotion DIY results which are not uploaded to the server
+	 * 
+	 * @return An array of EmotionDIY. If there are no EmotionDIY, return null.
+	 * @see ubicomp.soberdiary.data.structure.EmotionDIY
+	 */
 	public EmotionDIY[] getNotUploadedEmotionDIY() {
 		synchronized (sqlLock) {
 			EmotionDIY[] data = null;
@@ -866,9 +880,13 @@ public class DatabaseControl {
 		}
 	}
 
-	/** Label the Emotion DIY result uploaded
-	 * @param ts Timestamp of the Emotion DIY result
-	 * @see ubicomp.soberdiary.data.structure.EmotionDIY*/
+	/**
+	 * Label the Emotion DIY result uploaded
+	 * 
+	 * @param ts
+	 *            Timestamp of the Emotion DIY result
+	 * @see ubicomp.soberdiary.data.structure.EmotionDIY
+	 */
 	public void setEmotionDIYUploaded(long ts) {
 		synchronized (sqlLock) {
 			db = dbHelper.getWritableDatabase();
@@ -879,10 +897,14 @@ public class DatabaseControl {
 	}
 
 	// EmotionManagement
-	
-	/**Get the latest Emotion Management result
-	 * @return EmotionManagement
-	 * @see ubicomp.soberdiary.data.structure.EmotionManagement*/
+
+	/**
+	 * Get the latest Emotion Management result
+	 * 
+	 * @return EmotionManagement. If there are no EmotionManagement, return a
+	 *         dummy data.
+	 * @see ubicomp.soberdiary.data.structure.EmotionManagement
+	 */
 	public EmotionManagement getLatestEmotionManagement() {
 		synchronized (sqlLock) {
 			db = dbHelper.getReadableDatabase();
@@ -912,9 +934,12 @@ public class DatabaseControl {
 		}
 	}
 
-	/**Insert an Emotion Management result
+	/**
+	 * Insert an Emotion Management result
+	 * 
 	 * @return # of credits got by the user
-	 * @see ubicomp.soberdiary.data.structure.EmotionManagement*/
+	 * @see ubicomp.soberdiary.data.structure.EmotionManagement
+	 */
 	public int insertEmotionManagement(EmotionManagement data) {
 		synchronized (sqlLock) {
 			EmotionManagement prev_data = getLatestEmotionManagement();
@@ -945,6 +970,13 @@ public class DatabaseControl {
 		}
 	}
 
+	/**
+	 * Get all EmotionManagement results which are not uploaded to the server
+	 * 
+	 * @return An array of EmotionManagement results If there are no
+	 *         EmotionManagement, return null.
+	 * @see ubicomp.soberdiary.data.structure.EmotionManagement
+	 */
 	public EmotionManagement[] getNotUploadedEmotionManagement() {
 		synchronized (sqlLock) {
 			EmotionManagement[] data = null;
@@ -984,6 +1016,19 @@ public class DatabaseControl {
 		}
 	}
 
+	/**
+	 * Get EmotionManagement results by date
+	 * 
+	 * @param rYear
+	 *            record Year
+	 * @param rMonth
+	 *            record Month (0~11)
+	 * @param rDay
+	 *            record Day of Month
+	 * @return An array of EmotionManagement results @ rYear/rMonth/rDay. If
+	 *         there are no EmotionManagement, return null.
+	 * @see ubicomp.soberdiary.data.structure.EmotionManagement
+	 */
 	public EmotionManagement[] getDayEmotionManagement(int rYear, int rMonth, int rDay) {
 		synchronized (sqlLock) {
 			EmotionManagement[] data = null;
@@ -1024,6 +1069,13 @@ public class DatabaseControl {
 		}
 	}
 
+	/**
+	 * Label the EmotionManagement result uploaded
+	 * 
+	 * @param ts
+	 *            Timestamp of the uploaded EmotionManagement
+	 * @see ubicomp.soberdiary.data.structure.EmotionManagement
+	 */
 	public void setEmotionManagementUploaded(long ts) {
 		synchronized (sqlLock) {
 			db = dbHelper.getWritableDatabase();
@@ -1033,6 +1085,13 @@ public class DatabaseControl {
 		}
 	}
 
+	/**
+	 * Get the latest 4 reasons of EmotionManagement by reason type
+	 * 
+	 * @param type
+	 *            reason type of EmotionManagement.
+	 * @return An array of reasons. There are no reasons, return null
+	 */
 	public String[] getEmotionManagementString(int type) {
 		synchronized (sqlLock) {
 			db = dbHelper.getReadableDatabase();
@@ -1058,6 +1117,14 @@ public class DatabaseControl {
 		}
 	}
 
+	/**
+	 * Get if there are EmotionManagement results at the date
+	 * 
+	 * @param tv
+	 *            TimeValue of the date
+	 * @return true if exists EmotionManagement
+	 * @see ubicomp.soberdiary.data.structure.TimeValue
+	 */
 	public boolean hasEmotionManagement(TimeValue tv) {
 		synchronized (sqlLock) {
 			db = dbHelper.getReadableDatabase();
@@ -1075,6 +1142,14 @@ public class DatabaseControl {
 	}
 
 	// StorytellingTest
+
+	/**
+	 * Get the latest StorytellingTest result
+	 * 
+	 * @return StorytellingTest. If there are no StorytellingTest, return a
+	 *         dummy data.
+	 * @see ubicomp.soberdiary.data.structure.StorytellingTest
+	 */
 	public StorytellingTest getLatestStorytellingTest() {
 		synchronized (sqlLock) {
 			db = dbHelper.getReadableDatabase();
@@ -1097,6 +1172,14 @@ public class DatabaseControl {
 		}
 	}
 
+	/**
+	 * Insert a StorytellingTest result
+	 * 
+	 * @return # of credits got by the user
+	 * @param data
+	 *            inserted StorytellingTest
+	 * @see ubicomp.soberdiary.data.structure.StorytellingTest
+	 */
 	public int insertStorytellingTest(StorytellingTest data) {
 		synchronized (sqlLock) {
 			StorytellingTest prev_data = getLatestStorytellingTest();
@@ -1125,6 +1208,13 @@ public class DatabaseControl {
 		}
 	}
 
+	/**
+	 * Get all StorytellingTest results which are not uploaded to the server
+	 * 
+	 * @return An array of StorytellingTest. If there are no StorytellingTest,
+	 *         return null.
+	 * @see ubicomp.soberdiary.data.structure.StorytellingTest
+	 */
 	public StorytellingTest[] getNotUploadedStorytellingTest() {
 		synchronized (sqlLock) {
 			StorytellingTest[] data = null;
@@ -1162,6 +1252,13 @@ public class DatabaseControl {
 		}
 	}
 
+	/**
+	 * Label the StorytellingTest result uploaded
+	 * 
+	 * @param ts
+	 *            Timestamp of the uploaded StorytellingTest
+	 * @see ubicomp.soberdiary.data.structure.StorytellingTest
+	 */
 	public void setStorytellingTestUploaded(long ts) {
 		synchronized (sqlLock) {
 			db = dbHelper.getWritableDatabase();
@@ -1172,6 +1269,14 @@ public class DatabaseControl {
 	}
 
 	// UserVoiceRecord
+
+	/**
+	 * Get the latest UserVoiceRecord (Voice recorded by user)
+	 * 
+	 * @return UserVoiceRecord. If there are no UserVoiceRecord, return a dummy
+	 *         data.
+	 * @see ubicomp.soberdiary.data.structure.UserVoiceRecord
+	 */
 	public UserVoiceRecord getLatestUserVoiceRecord() {
 		synchronized (sqlLock) {
 			db = dbHelper.getReadableDatabase();
@@ -1196,6 +1301,14 @@ public class DatabaseControl {
 		}
 	}
 
+	/**
+	 * Insert an UserVoiceRecord
+	 * 
+	 * @return # of credits got by the user
+	 * @param data
+	 *            inserted UserVoiceRecord
+	 * @see ubicomp.soberdiary.data.structure.UserVoiceRecord
+	 */
 	public int insertUserVoiceRecord(UserVoiceRecord data) {
 		synchronized (sqlLock) {
 			UserVoiceRecord prev_data = getLatestUserVoiceRecord();
@@ -1223,6 +1336,13 @@ public class DatabaseControl {
 		}
 	}
 
+	/**
+	 * Get all UserVoiceRecord which are not uploaded to the server
+	 * 
+	 * @return An array of UserVoiceRecord. If there are no UserVoiceRecord,
+	 *         return null.
+	 * @see ubicomp.soberdiary.data.structure.UserVoiceRecord
+	 */
 	public UserVoiceRecord[] getNotUploadedUserVoiceRecord() {
 		synchronized (sqlLock) {
 			UserVoiceRecord[] data = null;
@@ -1259,6 +1379,13 @@ public class DatabaseControl {
 		}
 	}
 
+	/**
+	 * Label the UserVoiceRecord result uploaded
+	 * 
+	 * @param ts
+	 *            Timestamp of the uploaded UserVoiceRecord
+	 * @see ubicomp.soberdiary.data.structure.UserVoiceRecord
+	 */
 	public void setUserVoiceRecordUploaded(long ts) {
 		synchronized (sqlLock) {
 			db = dbHelper.getWritableDatabase();
@@ -1268,7 +1395,15 @@ public class DatabaseControl {
 		}
 	}
 
-	public boolean hasAudio(TimeValue tv) {
+	/**
+	 * Check if there are UserVoiceRecord at the date
+	 * 
+	 * @param tv
+	 *            TimeValue of the date
+	 * @return true if there are UserVoiceRecord exist
+	 * @see ubicomp.soberdiary.data.structure.TimeValue
+	 */
+	public boolean hasUserVoiceRecord(TimeValue tv) {
 		synchronized (sqlLock) {
 			db = dbHelper.getReadableDatabase();
 			String sql;
@@ -1285,6 +1420,14 @@ public class DatabaseControl {
 	}
 
 	// StorytellingRead
+
+	/**
+	 * Get the latest StorytellingRead
+	 * 
+	 * @return StorytellingRead. If there are no StorytellingRead, return a
+	 *         dummy data.
+	 * @see ubicomp.soberdiary.data.structure.StorytellingRead
+	 */
 	public StorytellingRead getLatestStorytellingRead() {
 		synchronized (sqlLock) {
 			db = dbHelper.getReadableDatabase();
@@ -1305,6 +1448,14 @@ public class DatabaseControl {
 		}
 	}
 
+	/**
+	 * Insert a StorytellingRead result
+	 * 
+	 * @return # of credits got by the user
+	 * @param data
+	 *            inserted StorytellingRead
+	 * @see ubicomp.soberdiary.data.structure.StorytellingRead
+	 */
 	public int insertStorytellingRead(StorytellingRead data) {
 		synchronized (sqlLock) {
 			StorytellingRead prev_data = getLatestStorytellingRead();
@@ -1336,6 +1487,13 @@ public class DatabaseControl {
 		}
 	}
 
+	/**
+	 * Get all StorytellingRead results which are not uploaded to the server
+	 * 
+	 * @return An array of StorytellingRead. If there are no StorytellingRead,
+	 *         return null.
+	 * @see ubicomp.soberdiary.data.structure.StorytellingRead
+	 */
 	public StorytellingRead[] getNotUploadedStorytellingRead() {
 		synchronized (sqlLock) {
 			StorytellingRead[] data = null;
@@ -1371,6 +1529,13 @@ public class DatabaseControl {
 		}
 	}
 
+	/**
+	 * Label the StorytellingRead result uploaded
+	 * 
+	 * @param ts
+	 *            Timestamp of the uploaded StorytellingRead
+	 * @see ubicomp.soberdiary.data.structure.StorytellingRead
+	 */
 	public void setStorytellingReadUploaded(long ts) {
 		synchronized (sqlLock) {
 			db = dbHelper.getWritableDatabase();
@@ -1381,6 +1546,13 @@ public class DatabaseControl {
 	}
 
 	// GCMRead
+
+	/**
+	 * Get the GCMRead message by timestamp
+	 * 
+	 * @return GCMRead. If there are no GCMRead, return null.
+	 * @see ubicomp.soberdiary.data.structure.GCMRead
+	 */
 	public GCMRead getGCMRead(long timestamp) {
 		synchronized (sqlLock) {
 			db = dbHelper.getReadableDatabase();
@@ -1399,6 +1571,13 @@ public class DatabaseControl {
 		}
 	}
 
+	/**
+	 * Insert a GCMRead received from the server
+	 * 
+	 * @param data
+	 *            received GCMRead
+	 * @see ubicomp.soberdiary.data.structure.GCMRead
+	 */
 	public void insertGCMRead(GCMRead data) {
 		synchronized (sqlLock) {
 			db = dbHelper.getWritableDatabase();
@@ -1412,6 +1591,13 @@ public class DatabaseControl {
 		}
 	}
 
+	/**
+	 * Set a GCMRead is read by the user
+	 * 
+	 * @param data
+	 *            GCMRead read by the user
+	 * @see ubicomp.soberdiary.data.structure.GCMRead
+	 */
 	public void readGCMRead(GCMRead data) {
 		synchronized (sqlLock) {
 			String sql;
@@ -1423,6 +1609,12 @@ public class DatabaseControl {
 		}
 	}
 
+	/**
+	 * Get all GCMRead results which are not read by the user
+	 * 
+	 * @return An array of GCMRead. If there are no GCMRead, return null.
+	 * @see ubicomp.soberdiary.data.structure.GCMRead
+	 */
 	public GCMRead[] getNotReadGCMRead() {
 		synchronized (sqlLock) {
 			GCMRead[] data = null;
@@ -1458,6 +1650,13 @@ public class DatabaseControl {
 		}
 	}
 
+	/**
+	 * Get all GCMRead results which are read by the user but not uploaded to
+	 * the server
+	 * 
+	 * @return An array of GCMRead. If there are no GCMRead, return null.
+	 * @see ubicomp.soberdiary.data.structure.GCMRead
+	 */
 	public GCMRead[] getNotUploadedGCMRead() {
 		synchronized (sqlLock) {
 			GCMRead[] data = null;
@@ -1492,6 +1691,13 @@ public class DatabaseControl {
 		}
 	}
 
+	/**
+	 * Label the GCMRead uploaded
+	 * 
+	 * @param ts
+	 *            Timestamp of the uploaded GCMRead
+	 * @see ubicomp.soberdiary.data.structure.GCMRead
+	 */
 	public void setGCMReadUploaded(long ts) {
 		synchronized (sqlLock) {
 			db = dbHelper.getWritableDatabase();
@@ -1502,6 +1708,13 @@ public class DatabaseControl {
 	}
 
 	// FacebookInfo
+
+	/**
+	 * Get the latest FacebookInfo result
+	 * 
+	 * @return FacebookInfo. If there are no FacebookInfo, return a dummy data.
+	 * @see ubicomp.soberdiary.data.structure.FacebookInfo
+	 */
 	public FacebookInfo getLatestFacebookInfo() {
 		synchronized (sqlLock) {
 			db = dbHelper.getReadableDatabase();
@@ -1526,6 +1739,14 @@ public class DatabaseControl {
 		}
 	}
 
+	/**
+	 * Insert a FacebookInfo result
+	 * 
+	 * @return # of credits got by the user
+	 * @param data
+	 *            inserted FacebookInfo
+	 * @see ubicomp.soberdiary.data.structure.FacebookInfo
+	 */
 	public int insertFacebookInfo(FacebookInfo data) {
 		synchronized (sqlLock) {
 			FacebookInfo prev_data = getLatestFacebookInfo();
@@ -1556,6 +1777,13 @@ public class DatabaseControl {
 		}
 	}
 
+	/**
+	 * Get all FacebookInfo results which are not uploaded to the server
+	 * 
+	 * @return An array of FacebookInfo. If there are no FacebookInfo, return
+	 *         null.
+	 * @see ubicomp.soberdiary.data.structure.FacebookInfo
+	 */
 	public FacebookInfo[] getNotUploadedFacebookInfo() {
 		synchronized (sqlLock) {
 			FacebookInfo[] data = null;
@@ -1595,6 +1823,13 @@ public class DatabaseControl {
 		}
 	}
 
+	/**
+	 * Label the FacebookInfo result uploaded
+	 * 
+	 * @param ts
+	 *            Timestamp of the uploaded FacebookInfo
+	 * @see ubicomp.soberdiary.data.structure.FacebookInfo
+	 */
 	public void setFacebookInfoUploaded(long ts) {
 		synchronized (sqlLock) {
 			db = dbHelper.getWritableDatabase();
@@ -1605,6 +1840,14 @@ public class DatabaseControl {
 	}
 
 	// Additional Questionnaire
+
+	/**
+	 * Get the latest AdditionalQuestionnaire result
+	 * 
+	 * @return AdditionalQuestionnaire. If there are no AdditionalQuestionnaire,
+	 *         return a dummy data.
+	 * @see ubicomp.soberdiary.data.structure.AdditionalQuestionnaire
+	 */
 	public AdditionalQuestionnaire getLatestAdditionalQuestionnaire() {
 		synchronized (sqlLock) {
 			db = dbHelper.getReadableDatabase();
@@ -1626,6 +1869,14 @@ public class DatabaseControl {
 		}
 	}
 
+	/**
+	 * Insert a AdditionalQuestionnaire result
+	 * 
+	 * @return # of credits got by the user
+	 * @param data
+	 *            inserted AdditionalQuestionnaire
+	 * @see ubicomp.soberdiary.data.structure.AdditionalQuestionnaire
+	 */
 	public int insertAdditionalQuestionnaire(AdditionalQuestionnaire data) {
 		synchronized (sqlLock) {
 			AdditionalQuestionnaire prev_data = getLatestAdditionalQuestionnaire();
@@ -1653,6 +1904,14 @@ public class DatabaseControl {
 		}
 	}
 
+	/**
+	 * Get all AdditionalQuestionnaire results which are not uploaded to the
+	 * server
+	 * 
+	 * @return An array of AdditionalQuestionnaire. If there are no
+	 *         AdditionalQuestionnaire, return null.
+	 * @see ubicomp.soberdiary.data.structure.AdditionalQuestionnaire
+	 */
 	public AdditionalQuestionnaire[] getNotUploadedAdditionalQuestionnaire() {
 		synchronized (sqlLock) {
 			AdditionalQuestionnaire[] data = null;
@@ -1689,6 +1948,13 @@ public class DatabaseControl {
 		}
 	}
 
+	/**
+	 * Label the AdditionalQuestionnaire result uploaded
+	 * 
+	 * @param ts
+	 *            Timestamp of the uploaded AdditionalQuestionnaire
+	 * @see ubicomp.soberdiary.data.structure.AdditionalQuestionnaire
+	 */
 	public void setAdditionalQuestionnaireUploaded(long ts) {
 		synchronized (sqlLock) {
 			db = dbHelper.getWritableDatabase();
@@ -1699,6 +1965,14 @@ public class DatabaseControl {
 	}
 
 	// UserVoiceFeedback
+
+	/**
+	 * Insert a UserVoiceFeedback result collected when user retry BrAC test
+	 * 
+	 * @param data
+	 *            inserted UserVoiceFeedback
+	 * @see ubicomp.soberdiary.data.structure.UserVoiceFeedback
+	 */
 	public void insertUserVoiceFeedback(UserVoiceFeedback data) {
 		synchronized (sqlLock) {
 			db = dbHelper.getWritableDatabase();
@@ -1712,6 +1986,13 @@ public class DatabaseControl {
 		}
 	}
 
+	/**
+	 * Get all UserVoiceFeedback which are not uploaded to the server
+	 * 
+	 * @return An array of UserVoiceFeedback. If there are no UserVoiceFeedback,
+	 *         return null.
+	 * @see ubicomp.soberdiary.data.structure.UserVoiceFeedback
+	 */
 	public UserVoiceFeedback[] getNotUploadedUserVoiceFeedback() {
 		synchronized (sqlLock) {
 			UserVoiceFeedback[] data = null;
@@ -1754,6 +2035,13 @@ public class DatabaseControl {
 		}
 	}
 
+	/**
+	 * Label the UserVoiceFeedback uploaded
+	 * 
+	 * @param ts
+	 *            Timestamp of the uploaded UserVoiceFeedback
+	 * @see ubicomp.soberdiary.data.structure.UserVoiceFeedback
+	 */
 	public void setUserVoiceFeedbackUploaded(long ts) {
 		synchronized (sqlLock) {
 			db = dbHelper.getWritableDatabase();
@@ -1764,6 +2052,14 @@ public class DatabaseControl {
 	}
 
 	// ExchangeHistory
+
+	/**
+	 * Insert a ExchangeHistory when the user exchanges credits for coupons
+	 * 
+	 * @param data
+	 *            inserted ExchangeHistory
+	 * @see ubicomp.soberdiary.data.structure.ExchangeHistory
+	 */
 	public void insertExchangeHistory(ExchangeHistory data) {
 		synchronized (sqlLock) {
 			db = dbHelper.getWritableDatabase();
@@ -1775,6 +2071,13 @@ public class DatabaseControl {
 		}
 	}
 
+	/**
+	 * Get all ExchangeHistory which are not uploaded to the server
+	 * 
+	 * @return An array of ExchangeHistory. If there are no ExchangeHistory,
+	 *         return null.
+	 * @see ubicomp.soberdiary.data.structure.ExchangeHistory
+	 */
 	public ExchangeHistory[] getNotUploadedExchangeHistory() {
 		synchronized (sqlLock) {
 			ExchangeHistory[] data = null;
@@ -1804,6 +2107,13 @@ public class DatabaseControl {
 		}
 	}
 
+	/**
+	 * Label the ExchangeHistory uploaded
+	 * 
+	 * @param ts
+	 *            Timestamp of the uploaded ExchangeHistory
+	 * @see ubicomp.soberdiary.data.structure.ExchangeHistory
+	 */
 	public void setExchangeHistoryUploaded(long ts) {
 		synchronized (sqlLock) {
 			db = dbHelper.getWritableDatabase();
@@ -1814,6 +2124,15 @@ public class DatabaseControl {
 	}
 
 	// BreathDetail
+
+	/**
+	 * Insert a BreathDetail recorded detailed information of breath condition
+	 * when the user takes BrAC tests
+	 * 
+	 * @param data
+	 *            inserted BreathDetail
+	 * @see ubicomp.soberdiary.data.structure.BreathDetail
+	 */
 	public void insertBreathDetail(BreathDetail data) {
 		synchronized (sqlLock) {
 			db = dbHelper.getWritableDatabase();
@@ -1832,6 +2151,7 @@ public class DatabaseControl {
 				content.put("disconnectionMillis", data.getDisconnectionMillis());
 				content.put("serialDiffMax", data.getSerialDiffMax());
 				content.put("serialDiffAverage", data.getSerialDiffAverage());
+				content.put("sensorId", data.getSensorId());
 				db.insert("BreathDetail", null, content);
 			}
 			cursor.close();
@@ -1839,6 +2159,13 @@ public class DatabaseControl {
 		}
 	}
 
+	/**
+	 * Get all BreathDetail which are not uploaded to the server
+	 * 
+	 * @return An array of BreathDetail. If there are no BreathDetail,
+	 *         return null.
+	 * @see ubicomp.soberdiary.data.structure.BreathDetail
+	 */
 	public BreathDetail[] getNotUploadedBreathDetail() {
 		synchronized (sqlLock) {
 			BreathDetail[] data = null;
@@ -1868,8 +2195,9 @@ public class DatabaseControl {
 				long disconnectionMillis = cursor.getLong(8);
 				int serialDiffMax = cursor.getInt(9);
 				float serialDiffAverage = cursor.getFloat(10);
+				String sensorId = cursor.getString(cursor.getColumnIndex("sensorId"));
 				data[i] = new BreathDetail(ts, blowStartTimes, blowBreakTimes, pressureDiffMax, pressureMin,
-						pressureAverage, voltageInit, disconnectionMillis, serialDiffMax, serialDiffAverage);
+						pressureAverage, voltageInit, disconnectionMillis, serialDiffMax, serialDiffAverage,sensorId);
 			}
 			cursor.close();
 			db.close();
@@ -1877,6 +2205,13 @@ public class DatabaseControl {
 		}
 	}
 
+	/**
+	 * Label the BreathDetail uploaded
+	 * 
+	 * @param ts
+	 *            Timestamp of the uploaded BreathDetail
+	 * @see ubicomp.soberdiary.data.structure.BreathDetail
+	 */
 	public void setBreathDetailUploaded(long ts) {
 		synchronized (sqlLock) {
 			db = dbHelper.getWritableDatabase();

@@ -49,6 +49,7 @@ public class SimpleBluetooth {
 	private BluetoothSocket socket;
 	private Context context;
 	private static String DEVICE_NAME_FORMAL = "sober123_";
+	private static String DEVICE_NAME_FORMAL_NEW = "sober456_";
 	private static final UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
 	private InputStream in;
@@ -87,7 +88,7 @@ public class SimpleBluetooth {
 		while (iter.hasNext()) {
 			BluetoothDevice device = iter.next();
 			if (device.getName() != null) {
-				if (device.getName().startsWith(DEVICE_NAME_FORMAL)) {
+				if (device.getName().startsWith(DEVICE_NAME_FORMAL)|| device.getName().startsWith(DEVICE_NAME_FORMAL_NEW)) {
 					sensor = device;
 					return true;
 				}
@@ -112,7 +113,7 @@ public class SimpleBluetooth {
 				String name = device.getName();
 				if (name == null)
 					return;
-				if (name.startsWith(DEVICE_NAME_FORMAL)) {
+				if (name.startsWith(DEVICE_NAME_FORMAL) || name.startsWith(DEVICE_NAME_FORMAL_NEW)) {
 					if (btAdapter.isDiscovering())
 						btAdapter.cancelDiscovery();
 					sensor = device;

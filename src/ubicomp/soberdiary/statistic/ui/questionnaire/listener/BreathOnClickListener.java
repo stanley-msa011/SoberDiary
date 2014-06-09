@@ -1,6 +1,6 @@
 package ubicomp.soberdiary.statistic.ui.questionnaire.listener;
 
-import ubicomp.soberdiary.statistic.ui.QuestionnaireBox;
+import ubicomp.soberdiary.statistic.ui.QuestionnaireDialog;
 import ubicomp.soberdiary.statistic.ui.questionnaire.content.BreathContent;
 import ubicomp.soberdiary.system.clicklog.ClickLog;
 import ubicomp.soberdiary.system.clicklog.ClickLogId;
@@ -8,7 +8,7 @@ import android.view.View;
 
 public class BreathOnClickListener extends QuestionnaireOnClickListener {
 
-	public BreathOnClickListener(QuestionnaireBox msgBox) {
+	public BreathOnClickListener(QuestionnaireDialog msgBox) {
 		super(msgBox);
 	}
 

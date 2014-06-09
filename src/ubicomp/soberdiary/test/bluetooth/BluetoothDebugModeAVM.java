@@ -3,6 +3,7 @@ package ubicomp.soberdiary.test.bluetooth;
 import android.os.Bundle;
 import android.os.Message;
 import android.util.Log;
+import ubicomp.soberdiary.system.config.PreferenceControl;
 import ubicomp.soberdiary.test.camera.CameraRunHandler;
 import ubicomp.soberdiary.test.data.BracValueDebugHandler;
 import ubicomp.soberdiary.test.data.BracValueFileHandler;
@@ -19,6 +20,9 @@ public class BluetoothDebugModeAVM extends Bluetooth {
 	private String temp_pressure;
 	private long showBrACTime = 0;
 	
+	private int showPressureCount = 0;
+	private static final int SHOW_PRESSURE_COUNT_MOD = 5;
+	
 	public BluetoothDebugModeAVM(BluetoothDebugger debugger, BluetoothMessageUpdater updater,
 			CameraRunHandler cameraRunHandler, BracValueFileHandler bracFileHandler,
 			BracValueDebugHandler bracDebugHandler) {
@@ -26,6 +30,18 @@ public class BluetoothDebugModeAVM extends Bluetooth {
 		this.bracDebugHandler = bracDebugHandler;
 	}
 
+	@Override
+	protected void setSensorPressureLimit(){
+		String sensorId = PreferenceControl.getSensorID();
+		if (sensorId.startsWith(DEVICE_NAME_FORMAL_OLD)) {
+			PRESSURE_DIFF_MIN_RANGE = PRESSURE_DIFF_MIN_RANGE_OLD;
+			PRESSURE_DIFF_MIN = PRESSURE_DIFF_MIN_OLD;
+		} else {
+			PRESSURE_DIFF_MIN_RANGE = PRESSURE_DIFF_MIN_RANGE_NEW;
+			PRESSURE_DIFF_MIN = PRESSURE_DIFF_MIN_NEW;
+		}
+	}
+	
 	@Override
 	public void start() {
 		debugger.showDebug("bluetooth start the test");
@@ -50,6 +66,7 @@ public class BluetoothDebugModeAVM extends Bluetooth {
 		showValue = 0.f;
 		startToRecord = false;
 		showBrACTime = 0;
+		showPressureCount = 0;
 		try {
 			in = socket.getInputStream();
 			debugger.showDebug("bluetooth start to read");
@@ -237,7 +254,9 @@ public class BluetoothDebugModeAVM extends Bluetooth {
 
 				float diff_limit = PRESSURE_DIFF_MIN_RANGE * (5000.f - tempDuration) / 5000.f + PRESSURE_DIFF_MIN;
 
-				//debugger.showDebug("p: " + pressureCurrent + " min: " + pressureMin + " l:" + diff_limit);
+				if (showPressureCount ==0)
+					debugger.showDebug("p: " + pressureCurrent + " min: " + pressureMin + " l:" + diff_limit);
+				showPressureCount = (showPressureCount +1)%SHOW_PRESSURE_COUNT_MOD;
 
 				if (pressureCurrent > pressureMin + diff_limit && !isPeak) {
 					debugger.showDebug("Peak start");
