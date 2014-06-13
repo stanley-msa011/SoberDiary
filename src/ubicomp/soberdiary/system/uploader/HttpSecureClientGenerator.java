@@ -13,12 +13,18 @@ import org.apache.http.params.CoreProtocolPNames;
 import ubicomp.soberdiary.main.App;
 import ubicomp.soberdiary.main.R;
 
-/**Generate SSL HTTP client
- * @author Stanley Wang*/
+/**
+ * Generate SSL HTTP client
+ * 
+ * @author Stanley Wang
+ */
 public class HttpSecureClientGenerator {
-	
-	/**Generate SSL Http client
-	 * @return DefaultHttpClient with SSL certificate*/
+
+	/**
+	 * Generate SSL Http client
+	 * 
+	 * @return DefaultHttpClient with SSL certificate
+	 */
 	public static DefaultHttpClient getSecureHttpClient() {
 		DefaultHttpClient httpClient = new DefaultHttpClient();
 		KeyStore trustStore;

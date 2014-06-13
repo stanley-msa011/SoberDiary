@@ -21,6 +21,7 @@ public class PreferenceControl {
 
 	private static final SharedPreferences sp = App.getSp();
 
+	/** Default setting at the first time of launching SoberDiary */
 	public static void defaultSetting() {
 		setUID("sober_default_test");
 		setIsDeveloper(false);
@@ -28,34 +29,67 @@ public class PreferenceControl {
 		setStartDate(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
 	}
 
+	/**
+	 * get UID
+	 * 
+	 * @return uid (default: sober_default_test)
+	 */
 	public static String getUID() {
 		return sp.getString("uid", "sober_default_test");
 	}
 
+	/**
+	 * set UID
+	 * 
+	 * @param uid
+	 *            new UID
+	 */
 	public static void setUID(String uid) {
 		SharedPreferences.Editor edit = sp.edit();
 		edit.putString("uid", uid);
 		edit.commit();
 	}
 
+	/**
+	 * Check if the UID is default UID
+	 * 
+	 * @return true of the UID is default UID
+	 */
 	public static boolean defaultCheck() {
 		return getUID().equals("sober_default_test");
 	}
 
+	/**
+	 * Check if it is the first time launching SoberDiary
+	 * 
+	 * @return true if UID is ""
+	 */
 	public static boolean checkFirstUID() {
 		return sp.getString("uid", "").equals("");
 	}
 
+	/**
+	 * Get sensorId
+	 * 
+	 * @return sensor Id. If there are no sensor used before, return "unknown"
+	 */
 	public static String getSensorID() {
 		return sp.getString("sensor_id", "unknown");
 	}
 
+	/**
+	 * Set sensor id
+	 * 
+	 * @param sensorID
+	 *            sensor ID
+	 */
 	public static void setSensorID(String sensorID) {
 		SharedPreferences.Editor edit = sp.edit();
 		edit.putString("sensor_id", sensorID);
 		edit.commit();
 	}
 
+	/**Get the names of the */
 	public static String[] getConnectFamilyName() {
 		String[] names = new String[3];
 		names[0] = sp.getString("family_name0", "");

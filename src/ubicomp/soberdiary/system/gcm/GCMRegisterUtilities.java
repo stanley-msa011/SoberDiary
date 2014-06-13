@@ -15,19 +15,31 @@ import org.apache.http.params.CoreProtocolPNames;
 
 import com.google.android.gcm.GCMRegistrar;
 
-
 import ubicomp.soberdiary.system.config.PreferenceControl;
 import ubicomp.soberdiary.system.uploader.HttpSecureClientGenerator;
 import ubicomp.soberdiary.system.uploader.ServerUrl;
 import android.content.Context;
 
+/**
+ * Register GCM id to the server
+ * 
+ * @author Stanley Wang
+ */
 public class GCMRegisterUtilities {
 
-	public static boolean register(Context context,String regId){
-		
-        String serverUrl = ServerUrl.SERVER_URL_GCM_REGISTER();
-        String uid = PreferenceControl.getUID();
-        
+	/**
+	 * register to the server
+	 * 
+	 * @param context
+	 *            Activity or Service context
+	 * @param regId
+	 *            gcmId registered from Google
+	 */
+	public static boolean register(Context context, String regId) {
+
+		String serverUrl = ServerUrl.SERVER_URL_GCM_REGISTER();
+		String uid = PreferenceControl.getUID();
+
 		try {
 			DefaultHttpClient httpClient = HttpSecureClientGenerator.getSecureHttpClient();
 			HttpPost httpPost = new HttpPost(serverUrl);
@@ -36,35 +48,35 @@ public class GCMRegisterUtilities {
 			builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
 			builder.addTextBody("uid", uid);
 			builder.addTextBody("regId", regId);
-			
+
 			httpPost.setEntity(builder.build());
-			boolean result =uploader(httpClient, httpPost);
+			boolean result = uploader(httpClient, httpPost);
 			GCMRegistrar.setRegisteredOnServer(context, result);
 			return result;
 		} catch (Exception e) {
 			GCMRegistrar.setRegisteredOnServer(context, false);
 			return false;
-		} 
+		}
 	}
-	
-	private static boolean uploader(HttpClient httpClient, HttpPost httpPost){
+
+	private static boolean uploader(HttpClient httpClient, HttpPost httpPost) {
 		HttpResponse httpResponse;
-		ResponseHandler <String> res=new BasicResponseHandler();  
-		boolean  result = false;
+		ResponseHandler<String> res = new BasicResponseHandler();
+		boolean result = false;
 		try {
 			httpResponse = httpClient.execute(httpPost);
 			result = (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK);
-			if (result){
+			if (result) {
 				String response = res.handleResponse(httpResponse).toString();
 				result = response.contains("upload success");
 			}
 		} catch (Exception e) {
-		} finally{
-			if ( httpClient!=null){
-				ClientConnectionManager ccm= httpClient.getConnectionManager();
-					if (ccm!=null)
-						ccm.shutdown();
-				}
+		} finally {
+			if (httpClient != null) {
+				ClientConnectionManager ccm = httpClient.getConnectionManager();
+				if (ccm != null)
+					ccm.shutdown();
+			}
 		}
 		return result;
 	}

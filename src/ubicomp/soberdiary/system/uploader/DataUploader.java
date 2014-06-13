@@ -55,7 +55,7 @@ public class DataUploader {
 
 	private static final String TAG = "UPLOAD";
 
-	/**Upload the data & remove uploaded data*/
+	/** Upload the data & remove uploaded data */
 	public static void upload() {
 
 		if (cleanThread != null && !cleanThread.isInterrupted()) {
@@ -88,18 +88,18 @@ public class DataUploader {
 		}
 	}
 
-	/**AsyncTask handles the data uploading task*/
+	/** AsyncTask handles the data uploading task */
 	public static class DataUploadTask extends AsyncTask<Void, Void, Void> {
 
 		private DatabaseControl db;
-		
-		/**ENUM UPLOAD ERROR*/
+
+		/** ENUM UPLOAD ERROR */
 		public static final int ERROR = -1;
-		/**ENUM UPLOAD SUCCESS*/
+		/** ENUM UPLOAD SUCCESS */
 		public static final int SUCCESS = 1;
 		private File logDir;
 
-		/**Constructor*/
+		/** Constructor */
 		public DataUploadTask() {
 			db = new DatabaseControl();
 			logDir = new File(MainStorage.getMainStorageDirectory(), "sequence_log");

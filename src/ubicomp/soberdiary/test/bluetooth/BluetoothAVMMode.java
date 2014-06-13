@@ -8,30 +8,54 @@ import ubicomp.soberdiary.test.camera.CameraRunHandler;
 import ubicomp.soberdiary.test.data.BracValueDebugHandler;
 import ubicomp.soberdiary.test.data.BracValueFileHandler;
 
-public class BluetoothDebugModeACVM extends Bluetooth {
+/**
+ * Control Bluetooth related functions for maintainence
+ * 
+ * @author Stanley Wang
+ */
+public class BluetoothAVMMode extends Bluetooth {
 
 	protected BracValueDebugHandler bracDebugHandler;
-
 	protected static float PRESSURE_DIFF_MIN_RANGE_OLD = 50f;
 	protected static float PRESSURE_DIFF_MIN_OLD = 100.f;
 	protected static float PRESSURE_DIFF_MIN_RANGE_NEW = 30.f;
 	protected static float PRESSURE_DIFF_MIN_NEW = 20.f;
 	protected final static long MAX_TEST_TIME = 50000;
+	
+	private String temp_pressure;
 	private long showBrACTime = 0;
 	
-	public BluetoothDebugModeACVM(BluetoothDebugger debugger, BluetoothMessageUpdater updater,
+	private int showPressureCount = 0;
+	private static final int SHOW_PRESSURE_COUNT_MOD = 5;
+	
+	/**
+	 * Constructor
+	 * 
+	 * @param debugger
+	 *            BluetoothDebugger
+	 * @param updater
+	 *            BluetoothMessageUpdater
+	 * @param cameraRunHandler
+	 *            CameraRunHandler
+	 * @param bracFileHandler
+	 *            BracValueFileHandler
+	 * @param recordDetail
+	 *            record detail information of BrAC detection
+	 * @param bracDebugHandler
+	 *            BracValueDebugHandler
+	 * @see BluetoothDebugger
+	 * @see BluetoothMessageUpdater
+	 * @see CameraRunHandler
+	 * @see BracValueFileHandler
+	 * @see BracValueDebugHandler
+	 */
+	public BluetoothAVMMode(BluetoothDebugger debugger, BluetoothMessageUpdater updater,
 			CameraRunHandler cameraRunHandler, BracValueFileHandler bracFileHandler,
 			BracValueDebugHandler bracDebugHandler) {
 		super(debugger, updater, cameraRunHandler, bracFileHandler, true);
 		this.bracDebugHandler = bracDebugHandler;
 	}
 
-	private static int READ_A0 = 10;
-	private static int READ_A1 = 11;
-
-	private int showPressureCount = 0;
-	private static final int SHOW_PRESSURE_COUNT_MOD = 5;
-	
 	@Override
 	protected void setSensorPressureLimit(){
 		String sensorId = PreferenceControl.getSensorID();
@@ -65,7 +89,7 @@ public class BluetoothDebugModeACVM extends Bluetooth {
 		tempDuration = 0;
 		firstStartTime = -1;
 		imageCount = 0;
-		showValue = temp_A0 = temp_A1 = 0.f;
+		showValue = 0.f;
 		startToRecord = false;
 		showBrACTime = 0;
 		showPressureCount = 0;
@@ -85,39 +109,33 @@ public class BluetoothDebugModeACVM extends Bluetooth {
 
 				for (int i = 0; i < bytes; ++i) {
 					if ((char) temp[i] == 'a') {
-						end = sendMsgToApp(msg);
+						end = parseMsg(msg);
 						sendDebugMsg(msg);
 						msg = "a";
-						read_type = READ_A0;
-					} else if ((char) temp[i] == 'c') {
-						end = sendMsgToApp(msg);
-						sendDebugMsg(msg);
-						msg = "c";
-						read_type = READ_A1;
+						read_type = READ_ALCOHOL;
 					} else if ((char) temp[i] == 'm') {
-						end = sendMsgToApp(msg);
+						end = parseMsg(msg);
 						sendDebugMsg(msg);
 						msg = "m";
 						read_type = READ_PRESSURE;
 					} else if ((char) temp[i] == 'v') {
-						end = sendMsgToApp(msg);
+						end = parseMsg(msg);
 						sendDebugMsg(msg);
 						msg = "v";
 						read_type = READ_VOLTAGE;
-					} else if ((char) temp[i] == 's'){
-						end = sendMsgToApp(msg);
-						read_type = READ_NULL;
 					} else if ((char) temp[i] == 'b') {
 						throw new Exception(EXCEPTION_NO_BATTERY);
 					} else if ((char) temp[i] == 'p') {
 						throw new Exception(EXCEPTION_PRESSURE_ERROR);
-					} else if (read_type != READ_NULL) {
+					} else if ((char) temp[i] == 's'){
+						end = parseMsg(msg);
+						read_type = READ_NULL;
+					}else if (read_type != READ_NULL) {
 						msg += (char) temp[i];
 					}
 				}
 				if (end)
 					break;
-
 				if (in.available() > 0) {
 					bytes = in.read(temp);
 					sleepTime /= 2;
@@ -135,8 +153,6 @@ public class BluetoothDebugModeACVM extends Bluetooth {
 					t.join();
 				} else {
 					bytes = 0;
-					if (disconnectionMillis > MAX_ZERO_DURATION)
-						throw new Exception(EXCEPTION_ZERO_DURATION);
 					sleepTime *= 2;
 					sleepTime = Math.min(MAX_SLEEP_TIME, sleepTime);
 
@@ -158,9 +174,9 @@ public class BluetoothDebugModeACVM extends Bluetooth {
 				}
 
 			}
-			close();
+			closeSuccess();
 		} catch (Exception e) {
-			close();
+			closeSuccess();
 			handleException(e);
 		}
 	}
@@ -175,7 +191,7 @@ public class BluetoothDebugModeACVM extends Bluetooth {
 			debugger.showDebug("Close by blowing twice");
 			cameraRunHandler.sendEmptyMessage(4);
 			debugger.showDebug("Close by bad connection");
-		} else if (e.getMessage() != null && e.getMessage().equals(EXCEPTION_ZERO_DURATION)) {
+		} else if (e.getMessage() != null && e.getMessage().equals(EXCEPTION_DISCONNECTION)) {
 			cameraRunHandler.sendEmptyMessage(5);
 		} else if (e.getMessage() != null && e.getMessage().equals(EXCEPTION_PRESSURE_ERROR)){
 			debugger.showDebug("Close by pressure sensor corrupt");
@@ -187,10 +203,11 @@ public class BluetoothDebugModeACVM extends Bluetooth {
 	}
 
 	@Override
-	public void close() {
-		normalClose();
+	public void closeSuccess() {
+		close();
 		if (bracDebugHandler != null)
 			bracDebugHandler.close();
+
 	}
 
 	protected String debugMsg = "";
@@ -210,10 +227,6 @@ public class BluetoothDebugModeACVM extends Bluetooth {
 			debugMsgBuilder.append(',');
 			debugMsgBuilder.append(msg.substring(1, msg.length() - 1));
 			return;
-		} else if (msg.charAt(0) == 'c') {
-			debugMsgBuilder.append(',');
-			debugMsgBuilder.append(msg.substring(1, msg.length() - 1));
-			return;
 		} else if (msg.charAt(0) == 'v') {
 			debugMsgBuilder.append(',');
 			debugMsgBuilder.append(msg.substring(1, msg.length() - 1));
@@ -230,11 +243,8 @@ public class BluetoothDebugModeACVM extends Bluetooth {
 		bracDebugHandler.sendMessage(message);
 	}
 
-	private float temp_A0, temp_A1;
-	private String temp_pressure;
-
 	@Override
-	protected boolean sendMsgToApp(String msg) {
+	protected boolean parseMsg(String msg) {
 		synchronized (lock) {
 			if (msg == "")
 				;
@@ -244,25 +254,13 @@ public class BluetoothDebugModeACVM extends Bluetooth {
 					long timeStamp = System.currentTimeMillis() / 1000L;
 					float alcohol = Float.valueOf(msg.substring(1));
 					String output = timeStamp + "\t" + temp_pressure + "\t" + alcohol;
-					//debugger.showDebug("time: " + timeStamp);
-					//debugger.showDebug("a0: " + alcohol);
 					if (startToRecord) {
-						temp_A0 = alcohol;
-						// write to the file
-						write_to_file(output);
-					}
-				}
-			} else if (msg.charAt(0) == 'c') {
-				if (isPeak) {
-					float alcohol = Float.valueOf(msg.substring(1));
-					String output = "\t" + alcohol;
-					//debugger.showDebug("a1: " + alcohol);
-					if (startToRecord) {
-						temp_A1 = alcohol;
-						write_to_file(output);
+						showValue = alcohol;
+						writeToFile(output);
 					}
 				}
 			} else if (msg.charAt(0) == 'm') {
+
 				temp_pressure = msg.substring(1, msg.length() - 1);
 				pressureCurrent = Float.valueOf(temp_pressure);
 
@@ -270,7 +268,7 @@ public class BluetoothDebugModeACVM extends Bluetooth {
 
 				if (!start && pressureCurrent < pressureMin) {
 					pressureMin = pressureCurrent;
-					debugger.showDebug("absolute min setting: " + pressureMin);
+					debugger.showDebug("absolute min = " + pressureMin);
 				}
 
 				if (!start) {
@@ -278,12 +276,12 @@ public class BluetoothDebugModeACVM extends Bluetooth {
 					return false;
 				}
 
-				
 				float diff_limit = PRESSURE_DIFF_MIN_RANGE * (5000.f - tempDuration) / 5000.f + PRESSURE_DIFF_MIN;
+
 				if (showPressureCount ==0)
 					debugger.showDebug("p: " + pressureCurrent + " min: " + pressureMin + " l:" + diff_limit);
 				showPressureCount = (showPressureCount +1)%SHOW_PRESSURE_COUNT_MOD;
-				
+
 				if (pressureCurrent > pressureMin + diff_limit && !isPeak) {
 					debugger.showDebug("Peak start");
 					isPeak = true;
@@ -296,8 +294,8 @@ public class BluetoothDebugModeACVM extends Bluetooth {
 					tempDuration += (endTime - startTime);
 					startTime = endTime;
 
-					showValue = temp_A1 - temp_A0;
 				
+					
 					if (totalDuration > MILLIS_5 && updateCircleTimes < 5) {
 						showBrACCircle(5);
 						updateCircleTimes = 5;
@@ -346,9 +344,9 @@ public class BluetoothDebugModeACVM extends Bluetooth {
 				if (isPeak) {
 					float voltage = Float.valueOf(msg.substring(1));
 					String output = "\t" + voltage + "\n";
-					//debugger.showDebug("v: " + voltage);
+					//debugger.showDebug("voltage: " + voltage);
 					if (startToRecord)
-						write_to_file(output);
+						writeToFile(output);
 				}
 			} else if (msg.charAt(0)=='s'){
 				//Do nothing

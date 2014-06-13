@@ -7,12 +7,25 @@ import java.util.Random;
 import ubicomp.soberdiary.system.check.DefaultCheck;
 import ubicomp.soberdiary.system.check.LockCheck;
 
+/**
+ * Control the register and unregister of gcm id to the server
+ * 
+ * @author Stanley Wang
+ */
 public final class GCMServerUtilities {
 
 	private static final int MAX_ATTEMPTS = 5;
 	private static final int BACKOFF_MILLI_SECONDS = 2000;
 	private static final Random random = new Random();
 
+	/**
+	 * Register
+	 * 
+	 * @param context
+	 *            Activity or Service context
+	 * @param regId
+	 *            GCM id registered from Google
+	 */
 	public static boolean register(final Context context, final String regId) {
 		if (DefaultCheck.check() || LockCheck.check())
 			return false;
@@ -34,6 +47,14 @@ public final class GCMServerUtilities {
 		return false;
 	}
 
+	/**
+	 * Unregister (Do nothing in this case)
+	 * 
+	 * @param context
+	 *            Activity or Service context
+	 * @param regId
+	 *            GCM id registered from Google
+	 */
 	public static void unregister(final Context context, final String regId) {
 		if (DefaultCheck.check() || LockCheck.check())
 			return;

@@ -4,7 +4,7 @@ package ubicomp.soberdiary.main;
 import static ubicomp.soberdiary.system.config.Config.SENDER_ID;
 import ubicomp.soberdiary.data.database.DatabaseControl;
 import ubicomp.soberdiary.data.structure.GCMRead;
-import ubicomp.soberdiary.system.gcm.GCMNotificationGen;
+import ubicomp.soberdiary.system.gcm.GCMNotificationControl;
 import ubicomp.soberdiary.system.gcm.GCMServerUtilities;
 
 import android.content.Context;
@@ -48,7 +48,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 		long ts = System.currentTimeMillis();
 		db.insertGCMRead(new GCMRead(ts,0,msgText,false));
 		
-		GCMNotificationGen.gen(context);
+		GCMNotificationControl.generate(context);
 
 	}
 

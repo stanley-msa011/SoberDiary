@@ -11,11 +11,22 @@ import ubicomp.soberdiary.data.structure.GCMRead;
 import ubicomp.soberdiary.main.GCMAlertActivity;
 import ubicomp.soberdiary.main.R;
 
-public class GCMNotificationGen {
+/**
+ * Control notifications sent from GCM
+ * 
+ * @author Stanley Wang
+ */
+public class GCMNotificationControl {
 
 	private static final int BASE_ID = 100;
 
-	public static void gen(Context context) {
+	/**
+	 * generate the notifications
+	 * 
+	 * @param context
+	 *            Activity context or Service context
+	 */
+	public static void generate(Context context) {
 		DatabaseControl db = new DatabaseControl();
 		GCMRead[] gcms = db.getNotReadGCMRead();
 		if (gcms == null)
@@ -25,6 +36,16 @@ public class GCMNotificationGen {
 		}
 	}
 
+	/**
+	 * Implementation for the notification generation
+	 * 
+	 * @param context
+	 *            Context
+	 * @param data
+	 *            GCM message data
+	 * @param id
+	 *            Id of the notification
+	 */
 	@SuppressWarnings("deprecation")
 	private static void generateNotification(Context context, GCMRead data, int id) {
 

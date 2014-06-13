@@ -22,12 +22,12 @@ import ubicomp.soberdiary.system.clicklog.ClickLogId;
 import ubicomp.soberdiary.system.clicklog.ClickLog;
 import ubicomp.soberdiary.system.config.Config;
 import ubicomp.soberdiary.system.config.PreferenceControl;
-import ubicomp.soberdiary.test.bluetooth.BTInitHandler;
-import ubicomp.soberdiary.test.bluetooth.BTRunTask;
+import ubicomp.soberdiary.test.bluetooth.BluetoothInitHandler;
+import ubicomp.soberdiary.test.bluetooth.BluetoothReadTask;
 import ubicomp.soberdiary.test.bluetooth.Bluetooth;
 import ubicomp.soberdiary.test.bluetooth.BluetoothCaller;
-import ubicomp.soberdiary.test.bluetooth.BluetoothDebugModeACVM;
-import ubicomp.soberdiary.test.bluetooth.BluetoothDebugModeAVM;
+import ubicomp.soberdiary.test.bluetooth.BluetoothACVMMode;
+import ubicomp.soberdiary.test.bluetooth.BluetoothAVMMode;
 import ubicomp.soberdiary.test.bluetooth.BluetoothDebugger;
 import ubicomp.soberdiary.test.bluetooth.BluetoothMessageUpdater;
 import ubicomp.soberdiary.test.bluetooth.SimpleBluetooth;
@@ -36,21 +36,21 @@ import ubicomp.soberdiary.test.camera.CameraInitHandler;
 import ubicomp.soberdiary.test.camera.CameraRecorder;
 import ubicomp.soberdiary.test.camera.CameraRunHandler;
 import ubicomp.soberdiary.test.data.BracDataHandler;
-import ubicomp.soberdiary.test.data.BracDataHandlerDebugMode;
-import ubicomp.soberdiary.test.data.BracDataHandlerDebugModeNormal;
+import ubicomp.soberdiary.test.data.BracDataHandlerACVMMode;
+import ubicomp.soberdiary.test.data.BracDataHandlerAVMMode;
 import ubicomp.soberdiary.test.data.BracValueDebugHandler;
 import ubicomp.soberdiary.test.data.BracValueFileHandler;
 import ubicomp.soberdiary.test.data.ImageFileHandler;
 import ubicomp.soberdiary.test.data.QuestionFile;
 import ubicomp.soberdiary.test.gps.GPSInitTask;
 import ubicomp.soberdiary.test.gps.GPSInterface;
-import ubicomp.soberdiary.test.ui.AdditionalQuestionMsgBox;
-import ubicomp.soberdiary.test.ui.FeedbackMsgBox;
+import ubicomp.soberdiary.test.ui.AdditionalQuestionDialog;
+import ubicomp.soberdiary.test.ui.FeedbackDialog;
+import ubicomp.soberdiary.test.ui.FeedbackDialogCaller;
 import ubicomp.soberdiary.test.ui.NotificationDialog;
-import ubicomp.soberdiary.test.ui.NotificationInterface;
+import ubicomp.soberdiary.test.ui.NotificationDialogCaller;
 import ubicomp.soberdiary.test.ui.TestQuestionCaller;
-import ubicomp.soberdiary.test.ui.TestQuestionMsgBox;
-
+import ubicomp.soberdiary.test.ui.TestQuestionDialog;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -82,7 +82,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 public class TestFragment extends Fragment implements GPSInterface, TestQuestionCaller, BluetoothDebugger,
-		BluetoothMessageUpdater, BluetoothCaller, CameraCaller, EnablePage, NotificationInterface {
+		BluetoothMessageUpdater, BluetoothCaller, CameraCaller, EnablePage, NotificationDialogCaller, FeedbackDialogCaller {
 
 	private static final String TAG = "TEST_PAGE";
 
@@ -107,8 +107,8 @@ public class TestFragment extends Fragment implements GPSInterface, TestQuestion
 
 	// Bluetooth
 	private Bluetooth bt;
-	private BTInitHandler btInitHandler;
-	private BTRunTask btRunTask;
+	private BluetoothInitHandler btInitHandler;
+	private BluetoothReadTask btRunTask;
 
 	// Camera
 	private CameraInitHandler cameraInitHandler;
@@ -125,8 +125,8 @@ public class TestFragment extends Fragment implements GPSInterface, TestQuestion
 	private BracDataHandler BDH;
 
 	private RelativeLayout main_layout;
-	private TestQuestionMsgBox msgBox;
-	private FeedbackMsgBox feedbackBox;
+	private TestQuestionDialog msgBox;
+	private FeedbackDialog feedbackBox;
 
 	private FailMessageHandler failBgHandler;
 	private MsgLoadingHandler msgLoadingHandler;
@@ -160,7 +160,7 @@ public class TestFragment extends Fragment implements GPSInterface, TestQuestion
 	private static SoundPool soundpool;
 	private static int soundId;
 
-	private AdditionalQuestionMsgBox addBox;
+	private AdditionalQuestionDialog addBox;
 
 	private NotificationDialog notificationDialog;
 
@@ -238,7 +238,7 @@ public class TestFragment extends Fragment implements GPSInterface, TestQuestion
 			addBox = null;
 		}
 		if (notificationDialog != null)
-			notificationDialog.removeView();
+			notificationDialog.clear();
 		if (startText != null) {
 			startText.setAnimation(null);
 			startButtonAnimation.cancel();
@@ -254,10 +254,10 @@ public class TestFragment extends Fragment implements GPSInterface, TestQuestion
 		LoadingDialogControl.dismiss();
 		if (PreferenceControl.showAdditionalQuestionnaire()) {
 			PreferenceControl.setShowAdditonalQuestionnaire();
-			addBox = new AdditionalQuestionMsgBox(main_layout, testFragment);
-			addBox.generateAdditionalBox();
+			addBox = new AdditionalQuestionDialog(main_layout, testFragment);
+			addBox.show();
 		} else
-			notificationDialog.setting();
+			notificationDialog.initialize();
 	}
 
 	@Override
@@ -300,8 +300,8 @@ public class TestFragment extends Fragment implements GPSInterface, TestQuestion
 
 		helpButton.setOnTouchListener(new ScaleOnTouchListener());
 
-		msgBox = new TestQuestionMsgBox(testFragment, testFragment, main_layout);
-		feedbackBox = new FeedbackMsgBox(testFragment, main_layout);
+		msgBox = new TestQuestionDialog(testFragment, testFragment, main_layout);
+		feedbackBox = new FeedbackDialog(testFragment, main_layout);
 
 		notificationDialog = new NotificationDialog(testFragment.getActivity(), main_layout, testFragment, testFragment);
 
@@ -332,10 +332,10 @@ public class TestFragment extends Fragment implements GPSInterface, TestQuestion
 		
 		if (debug) {
 			if (debug_type)
-				bt = new BluetoothDebugModeAVM(testFragment, testFragment, cameraRunHandler, bracFileHandler,
+				bt = new BluetoothAVMMode(testFragment, testFragment, cameraRunHandler, bracFileHandler,
 						bracDebugHandler);
 			else
-				bt = new BluetoothDebugModeACVM(testFragment, testFragment, cameraRunHandler, bracFileHandler,
+				bt = new BluetoothACVMMode(testFragment, testFragment, cameraRunHandler, bracFileHandler,
 						bracDebugHandler);
 		} else
 			bt = new Bluetooth(testFragment, testFragment, cameraRunHandler, bracFileHandler, true);
@@ -369,8 +369,8 @@ public class TestFragment extends Fragment implements GPSInterface, TestQuestion
 	}
 
 	@Override
-	public void startGPS(boolean enable) {
-		msgBox.showWaitingBox();
+	public void initializeGPS(boolean enable) {
+		msgBox.showWaiting();
 		if (enable) {
 			gps_state = true;
 			Object[] gps_enable = { gps_state };
@@ -390,7 +390,7 @@ public class TestFragment extends Fragment implements GPSInterface, TestQuestion
 	// BluetoothInterface
 	public void startBT() {
 		// initialize bt task
-		btInitHandler = new BTInitHandler(testFragment, bt);
+		btInitHandler = new BluetoothInitHandler(testFragment, bt);
 		btInitHandler.sendEmptyMessage(0);
 		// initialize camera task
 		cameraInitHandler = new CameraInitHandler(testFragment, cameraRecorder);
@@ -511,7 +511,7 @@ public class TestFragment extends Fragment implements GPSInterface, TestQuestion
 			if (INIT_PROGRESS[_BT] && INIT_PROGRESS[_CAMERA]) {
 				btInitHandler.removeMessages(0);
 				cameraInitHandler.removeMessages(0);
-				btRunTask = new BTRunTask(this, bt);
+				btRunTask = new BluetoothReadTask(this, bt);
 				btRunTask.execute();
 				setGuideMessage(R.string.test_guide_init_top, R.string.test_guide_init_bottom);
 				showDebug("Device launched");
@@ -545,9 +545,9 @@ public class TestFragment extends Fragment implements GPSInterface, TestQuestion
 		if (DONE_PROGRESS[_GPS] && DONE_PROGRESS[_BT] && DONE_PROGRESS[_CAMERA]) {
 			if (PreferenceControl.isDebugMode()) {
 				if (PreferenceControl.debugType())
-					BDH = new BracDataHandlerDebugModeNormal(activity, timestamp);
+					BDH = new BracDataHandlerAVMMode(timestamp);
 				else
-					BDH = new BracDataHandlerDebugMode(activity, timestamp);
+					BDH = new BracDataHandlerACVMMode(timestamp);
 			} else
 				BDH = new BracDataHandler(timestamp);
 			BDH.start();
@@ -588,7 +588,7 @@ public class TestFragment extends Fragment implements GPSInterface, TestQuestion
 			cameraRecorder.close();
 
 		if (bt != null)
-			bt.close();
+			bt.closeSuccess();
 		if (gpsInitTask != null)
 			gpsInitTask.cancel(true);
 		if (btInitHandler != null)
@@ -630,24 +630,26 @@ public class TestFragment extends Fragment implements GPSInterface, TestQuestion
 			startButton.setEnabled(false);
 			Log.d(TAG, "MsgLoadingHandler");
 			if (PreferenceControl.getUpdateDetectionTimestamp() > 0) {
-				feedbackBox.gen();
-				feedbackBox.generateMsgBox(true);
+				feedbackBox.initialize();
+				feedbackBox.show(true);
 			} else {
 				msgBox.initialize();
-				msgBox.showMsgBox();
+				msgBox.show();
 			}
 			messageView.setText(R.string.test_guide_msg_box);
 		}
 	}
 
-	public void feedbackToMsgBox() {
-		feedbackBox.closeBox();
+	@Override
+	public void feedbackToTestQuestionDialog() {
+		feedbackBox.close();
 		msgBox.initialize();
-		msgBox.showMsgBox();
+		msgBox.show();
 	}
 
+	@Override
 	public void feedbackToFail() {
-		feedbackBox.closeBox();
+		feedbackBox.close();
 		startButton.setOnClickListener(new EndTestOnClickListener());
 	}
 
@@ -684,8 +686,8 @@ public class TestFragment extends Fragment implements GPSInterface, TestQuestion
 			setGuideMessage(R.string.test_guide_end, msg_str_id);
 
 			if (PreferenceControl.getUpdateDetectionTimestamp() > 0 && !PreferenceControl.getUpdateDetection()) {
-				feedbackBox.gen();
-				feedbackBox.generateMsgBox(false);
+				feedbackBox.initialize();
+				feedbackBox.show(false);
 				startButton.setOnClickListener(null);
 			} else
 				MainActivity.getMainActivity().setTimers();
@@ -770,7 +772,7 @@ public class TestFragment extends Fragment implements GPSInterface, TestQuestion
 	private class ChangeTabsHandler extends Handler {
 		public void handleMessage(Message msg) {
 			if (msgBox != null)
-				msgBox.closeBox();
+				msgBox.close();
 			MainActivity.getMainActivity().enableTabAndClick(true);
 			MainActivity.getMainActivity().changeTab(1);
 		}
@@ -869,8 +871,8 @@ public class TestFragment extends Fragment implements GPSInterface, TestQuestion
 	@Override
 	public void notifyAdditionalQuestionnaire() {
 		PreferenceControl.setShowAdditonalQuestionnaire();
-		addBox = new AdditionalQuestionMsgBox(main_layout, testFragment);
-		addBox.generateAdditionalBox();
+		addBox = new AdditionalQuestionDialog(main_layout, testFragment);
+		addBox.show();
 	}
 
 	// Debug
@@ -914,7 +916,7 @@ public class TestFragment extends Fragment implements GPSInterface, TestQuestion
 			volButton.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					SimpleBluetooth.getInitialVoltage(testFragment);
+					SimpleBluetooth.showVoltage(testFragment);
 				}
 			});
 			TextView vol_tv = (TextView) view.findViewById(R.id.debug_voltage_value);

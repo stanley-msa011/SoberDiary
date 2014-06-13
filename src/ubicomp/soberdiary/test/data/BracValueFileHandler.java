@@ -9,6 +9,11 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
+/**
+ * Handler of recording the BrAC detection
+ * 
+ * @author Stanley Wang
+ */
 public class BracValueFileHandler extends Handler {
 	private File file;
 	private BufferedWriter writer;
@@ -17,6 +22,14 @@ public class BracValueFileHandler extends Handler {
 
 	private static final String TAG = "BrAC_VALUE_HANDLER";
 
+	/**
+	 * Constructor
+	 * 
+	 * @param directory
+	 *            directory of the detection data
+	 * @param timestamp
+	 *            string of the detection timestamp
+	 */
 	public BracValueFileHandler(File directory, String timestamp) {
 		this.directory = directory;
 		this.timestamp = timestamp;
@@ -29,14 +42,25 @@ public class BracValueFileHandler extends Handler {
 		}
 	}
 
+	/**
+	 * get string of the detection timestamp
+	 * 
+	 * @return string of the timestamp
+	 */
 	public String getTimestamp() {
 		return timestamp;
 	}
 
+	/**
+	 * get the directory of the detection data
+	 * 
+	 * @return directory of the detection data
+	 */
 	public File getDirectory() {
 		return directory;
 	}
 
+	@Override
 	public void handleMessage(Message msg) {
 		String str = msg.getData().getString("ALCOHOL");
 		if (writer != null) {
@@ -50,6 +74,7 @@ public class BracValueFileHandler extends Handler {
 		}
 	}
 
+	/** Close the writer */
 	public void close() {
 		if (writer != null) {
 			try {

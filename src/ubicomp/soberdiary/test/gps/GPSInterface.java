@@ -8,6 +8,11 @@ public interface GPSInterface {
 	/** Call GPS Setting Activity in Android */
 	public void callGPSActivity();
 
-	/** Start GPS */
-	public void startGPS(boolean enable);
+	/**
+	 * Initialize GPS services
+	 * 
+	 * @param enable
+	 *            true if activates the service
+	 */
+	public void initializeGPS(boolean enable);
 }

@@ -9,7 +9,6 @@ import ubicomp.soberdiary.data.structure.UserVoiceFeedback;
 import ubicomp.soberdiary.main.App;
 import ubicomp.soberdiary.main.MainActivity;
 import ubicomp.soberdiary.main.R;
-import ubicomp.soberdiary.main.fragments.TestFragment;
 import ubicomp.soberdiary.main.ui.Typefaces;
 import ubicomp.soberdiary.main.ui.toast.CustomToast;
 import ubicomp.soberdiary.system.clicklog.ClickLog;
@@ -32,13 +31,17 @@ import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
 
-public class FeedbackMsgBox {
+/**
+ * Dialog for recording user's feedback when the user retry the BrAC test
+ * 
+ * @author Stanley Wang
+ */
+public class FeedbackDialog {
 
 	private Context context;
 	private LayoutInflater inflater;
-	private RelativeLayout mainLayout;
+	private RelativeLayout mainLayout, barLayout = null;
 	private LinearLayout boxLayout = null;
-	private RelativeLayout barLayout = null;
 	private RelativeLayout leftLayout, rightLayout, topLayout;
 	private TextView help, leftText, rightText;
 
@@ -64,15 +67,23 @@ public class FeedbackMsgBox {
 
 	private RecordCountDownTimer countDownTimer;
 
-	private TestFragment testFragment;
+	private FeedbackDialogCaller feedbackDialogCaller;
 
 	private boolean testSuccess = false;
 
 	private DecimalFormat format;
 
-	public FeedbackMsgBox(TestFragment testFragment0, RelativeLayout mainLayout) {
+	/**
+	 * Constructor
+	 * 
+	 * @param caller
+	 *            Caller of the dialog
+	 * @param mainLayout
+	 *            RelativeLayout contains the dialog
+	 */
+	public FeedbackDialog(FeedbackDialogCaller caller, RelativeLayout mainLayout) {
 		this.context = App.getContext();
-		this.testFragment = testFragment0;
+		this.feedbackDialogCaller = caller;
 		this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		boxLayout = (LinearLayout) inflater.inflate(R.layout.dialog_feedback, null);
 		this.mainLayout = mainLayout;
@@ -117,11 +128,11 @@ public class FeedbackMsgBox {
 						file.exists()));
 				PreferenceControl.setUpdateDetection(false);
 				if (testSuccess)
-					testFragment.feedbackToMsgBox();
+					feedbackDialogCaller.feedbackToTestQuestionDialog();
 				else {
 					PreferenceControl.setUpdateDetection(false);
 					PreferenceControl.setUpdateDetectionTimestamp(0);
-					testFragment.feedbackToFail();
+					feedbackDialogCaller.feedbackToFail();
 				}
 			}
 		});
@@ -138,7 +149,8 @@ public class FeedbackMsgBox {
 			}
 	}
 
-	public void gen() {
+	/** initialize the dialog */
+	public void initialize() {
 
 		RelativeLayout.LayoutParams boxParam = (LayoutParams) boxLayout.getLayoutParams();
 		boxParam.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
@@ -228,13 +240,20 @@ public class FeedbackMsgBox {
 		leftImg.invalidate();
 	}
 
+	/** remove the dialog and release the resources */
 	public void clear() {
 		if (mainLayout != null && boxLayout != null && boxLayout.getParent() != null
 				&& boxLayout.getParent().equals(mainLayout))
 			mainLayout.removeView(boxLayout);
 	}
 
-	public void generateMsgBox(boolean testSuccess) {
+	/**
+	 * show the dialog
+	 * 
+	 * @param testSuccess
+	 *            If the BrAC test successfully complete
+	 */
+	public void show(boolean testSuccess) {
 		PreferenceControl.setTestSuccess();
 		timestamp = PreferenceControl.getUpdateDetectionTimestamp();
 		boxLayout.setVisibility(View.VISIBLE);
@@ -243,7 +262,8 @@ public class FeedbackMsgBox {
 		setState(STATE_INIT);
 	}
 
-	public void closeBox() {
+	/**close the dialog*/
+	public void close() {
 		if (boxLayout != null)
 			boxLayout.setVisibility(View.INVISIBLE);
 		if (changeStateHandler != null)

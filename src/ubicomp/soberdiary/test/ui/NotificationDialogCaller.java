@@ -1,6 +1,6 @@
 package ubicomp.soberdiary.test.ui;
 
-public interface NotificationInterface {
+public interface NotificationDialogCaller {
 
 	public void notifyStartButton();
 

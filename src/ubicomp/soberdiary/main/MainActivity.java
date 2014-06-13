@@ -15,7 +15,7 @@ import ubicomp.soberdiary.system.clicklog.ClickLogId;
 import ubicomp.soberdiary.system.clicklog.ClickLog;
 import ubicomp.soberdiary.system.config.Config;
 import ubicomp.soberdiary.system.config.PreferenceControl;
-import ubicomp.soberdiary.system.gcm.GCMNotificationGen;
+import ubicomp.soberdiary.system.gcm.GCMNotificationControl;
 import ubicomp.soberdiary.system.gcm.GCMUtilities;
 import android.content.Context;
 import android.content.Intent;
@@ -221,7 +221,7 @@ public class MainActivity extends FragmentActivity {
 	@Override
 	protected void onDestroy() {
 		GCMUtilities.onDestroy(getApplicationContext());
-		GCMNotificationGen.gen(App.getContext());
+		GCMNotificationControl.generate(App.getContext());
 		super.onDestroy();
 	}
 

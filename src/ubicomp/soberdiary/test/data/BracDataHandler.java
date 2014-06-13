@@ -18,6 +18,11 @@ import ubicomp.soberdiary.system.config.PreferenceControl;
 import android.content.Context;
 import android.util.Log;
 
+/**
+ * Handle the BrAC detection data
+ * 
+ * @author Stanley Wang
+ */
 public class BracDataHandler {
 
 	private static final String TAG = "BrAC_DATA_HANDLER";
@@ -27,21 +32,27 @@ public class BracDataHandler {
 	protected double sensorResult = 0;
 	protected DatabaseControl db;
 
+	public static final int NOTHING = 0;
+	public static final int ERROR = -1;
+	public static final int SUCCESS = 1;
+
+	/**
+	 * Constructor
+	 * 
+	 * @param timestamp
+	 *            timestamp of the detection
+	 */
 	public BracDataHandler(long timestamp) {
 		ts = timestamp;
 		this.context = App.getContext();
 		db = new DatabaseControl();
 	}
 
-	public static final int NOTHING = 0;
-	public static final int ERROR = -1;
-	public static final int SUCCESS = 1;
-
-	public int start() {
+	/** start to handle the detection data */
+	public void start() {
 
 		File mainStorageDir = MainStorage.getMainStorageDirectory();
 		File textFile, questionFile;
-		int result = SUCCESS;
 
 		textFile = new File(mainStorageDir.getPath() + File.separator + ts + File.separator + ts + ".txt");
 		questionFile = new File(mainStorageDir.getPath() + File.separator + ts + File.separator + "question.txt");
@@ -83,8 +94,6 @@ public class BracDataHandler {
 			prevShowWeekState = 0;
 		boolean pageChange = (prevShowWeekState < curState);
 		PreferenceControl.setPageChange(pageChange);
-		Log.d("PAGE_CHANGE", prevShowWeek + " " + prevShowWeekState + " " + curDetection.getTv().getWeek() + " " + curState + " "
-				+ pageChange);
 
 		if (sensorResult < Detection.BRAC_THRESHOLD)
 			if (emotion <= 2 || craving >= 4)
@@ -96,13 +105,24 @@ public class BracDataHandler {
 		else
 			PreferenceControl.setTestResult(3);
 
-		return result;
 	}
 
+	/**
+	 * get detection result
+	 * 
+	 * @return BrAC value reading from the sensor
+	 */
 	public double getResult() {
 		return sensorResult;
 	}
 
+	/**
+	 * Parse the detection text file
+	 * 
+	 * @param textFile
+	 *            file contains all the detection value
+	 * @return BrAC value
+	 */
 	protected double parseTextFile(File textFile) {
 		double median = 0;
 		try {
@@ -131,6 +151,13 @@ public class BracDataHandler {
 		return median;
 	}
 
+	/**
+	 * Parse the questionnaire file
+	 * 
+	 * @param textFile
+	 *            file contains all the questionnaire result
+	 * @return emotion * 100 + craving
+	 */
 	protected int getQuestionResult(File textFile) {
 		int result = -1;
 		try {

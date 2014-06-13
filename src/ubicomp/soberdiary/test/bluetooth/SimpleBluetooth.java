@@ -17,28 +17,12 @@ import android.content.IntentFilter;
 import android.os.Build;
 import android.util.Log;
 
+/**
+ * Bluetooth functions only for reading voltage
+ * 
+ * @author Stanley Wang
+ */
 public class SimpleBluetooth {
-
-	public static void getInitialVoltage(BluetoothDebugger debugger) {
-		if (volThread != null && volThread.isAlive()) {
-			volThread.interrupt();
-		}
-		volThread = new Thread(new InitRunnable(debugger));
-		volThread.start();
-	}
-
-	public static void closeConnection() {
-		if (sb != null)
-			Log.d(TAG, "close by other classes");
-		try {
-			sb.close();
-		} catch (Exception e) {
-		}
-		if (volThread != null && volThread.isAlive()) {
-			volThread.interrupt();
-		}
-		volThread = null;
-	}
 
 	private static final String TAG = "simpleBluetooth";
 	private static SimpleBluetooth sb;
@@ -60,6 +44,11 @@ public class SimpleBluetooth {
 	private final static byte[] sendEndMessage = { 'z', 'z', 'z' };
 	private boolean connected = false;
 
+	/**
+	 * Constructor
+	 * 
+	 * @param debugger
+	 */
 	public SimpleBluetooth(BluetoothDebugger debugger) {
 		btAdapter = BluetoothAdapter.getDefaultAdapter();
 		this.debugger = debugger;
@@ -88,7 +77,8 @@ public class SimpleBluetooth {
 		while (iter.hasNext()) {
 			BluetoothDevice device = iter.next();
 			if (device.getName() != null) {
-				if (device.getName().startsWith(DEVICE_NAME_FORMAL)|| device.getName().startsWith(DEVICE_NAME_FORMAL_NEW)) {
+				if (device.getName().startsWith(DEVICE_NAME_FORMAL)
+						|| device.getName().startsWith(DEVICE_NAME_FORMAL_NEW)) {
 					sensor = device;
 					return true;
 				}
@@ -160,6 +150,7 @@ public class SimpleBluetooth {
 	private int READ_NULL = 0;
 	private int READ_VOLTAGE = 1;
 
+	/** Read from Bluetooth */
 	public void read() {
 
 		boolean end = false;
@@ -244,24 +235,20 @@ public class SimpleBluetooth {
 		debugger.showDebug(msg, 1);
 	}
 
-	// For ack
-
+	/** Send start message to the sensor */
 	public boolean sendStart() {
 		try {
 			int counter = 0;
 			while (true) {
-				Log.d(TAG, "try to send start");
 				out = socket.getOutputStream();
 				in = socket.getInputStream();
-				Log.d(TAG, "get input");
 				for (int i = 0; i < 5; ++i)
 					out.write(sendStartMessage);
-				Thread t1 = new Thread(new SRunnable());
-				Thread t2 = new Thread(new SRunnable2());
+				Thread t1 = new Thread(new AckRunnable());
+				Thread t2 = new Thread(new WaitRunnable());
 				t1.start();
 				t2.start();
 
-				Log.d(TAG, "start t1 & t2");
 				try {
 					t2.join();
 					if (!connected) {
@@ -285,7 +272,7 @@ public class SimpleBluetooth {
 		}
 	}
 
-	private class SRunnable implements Runnable {
+	private class AckRunnable implements Runnable {
 		@Override
 		public void run() {
 			try {
@@ -300,7 +287,7 @@ public class SimpleBluetooth {
 		}
 	}
 
-	private class SRunnable2 implements Runnable {
+	private class WaitRunnable implements Runnable {
 		@Override
 		public void run() {
 			try {
@@ -310,6 +297,7 @@ public class SimpleBluetooth {
 		}
 	}
 
+	/** Send end message to the sensor */
 	public void sendEnd() {
 		try {
 			if (out == null)
@@ -349,5 +337,28 @@ public class SimpleBluetooth {
 				sb.close();
 			}
 		}
+	}
+
+	/** Show the voltage of the sensor */
+	public static void showVoltage(BluetoothDebugger debugger) {
+		if (volThread != null && volThread.isAlive()) {
+			volThread.interrupt();
+		}
+		volThread = new Thread(new InitRunnable(debugger));
+		volThread.start();
+	}
+
+	/** close the connection */
+	public static void closeConnection() {
+		if (sb != null)
+			Log.d(TAG, "close by other classes");
+		try {
+			sb.close();
+		} catch (Exception e) {
+		}
+		if (volThread != null && volThread.isAlive()) {
+			volThread.interrupt();
+		}
+		volThread = null;
 	}
 }

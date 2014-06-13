@@ -25,7 +25,7 @@ import android.widget.SeekBar;
 import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
 
-public class TestQuestionMsgBox{
+public class TestQuestionDialog {
 
 	private TestQuestionCaller testQuestionCaller;
 	private GPSInterface gpsInterface;
@@ -72,7 +72,20 @@ public class TestQuestionMsgBox{
 
 	private boolean done, doneByDoubleClick;
 
-	public TestQuestionMsgBox(GPSInterface gps, TestQuestionCaller testQuestionCaller, RelativeLayout mainLayout) {
+	private int text_color = App.getContext().getResources().getColor(R.color.dark_gray);
+	private int highlight_color = App.getContext().getResources().getColor(R.color.lite_orange);
+
+	/**
+	 * Constructor
+	 * 
+	 * @param gps
+	 *            Class support the gps control-related functions
+	 * @param testQuesionCaller
+	 *            caller of the dialog
+	 * @param mainLayout
+	 *            layout contains the dialog
+	 */
+	public TestQuestionDialog(GPSInterface gps, TestQuestionCaller testQuestionCaller, RelativeLayout mainLayout) {
 		this.testQuestionCaller = testQuestionCaller;
 		this.gpsInterface = gps;
 		this.context = App.getContext();
@@ -169,6 +182,7 @@ public class TestQuestionMsgBox{
 		notSend.setTypeface(wordTypefaceBold);
 	}
 
+	/** Initialize the dialog */
 	public void initialize() {
 
 		RelativeLayout.LayoutParams boxParam = (LayoutParams) boxLayout.getLayoutParams();
@@ -190,14 +204,12 @@ public class TestQuestionMsgBox{
 		});
 	}
 
+	/** remove the dialog and release the resources */
 	public void clear() {
 		if (mainLayout != null && boxLayout != null && boxLayout.getParent() != null
 				&& boxLayout.getParent().equals(mainLayout))
 			mainLayout.removeView(boxLayout);
 	}
-
-	private int text_color = App.getContext().getResources().getColor(R.color.dark_gray);
-	private int highlight_color = App.getContext().getResources().getColor(R.color.lite_orange);
 
 	private void enableSend(boolean enable) {
 		if (enable) {
@@ -223,7 +235,8 @@ public class TestQuestionMsgBox{
 		doneByDoubleClick = click;
 	}
 
-	public void showMsgBox() {
+	/** show the dialog */
+	public void show() {
 		enableSend(false);
 		PreferenceControl.setTestSuccess();
 		help.setText("");
@@ -258,7 +271,7 @@ public class TestQuestionMsgBox{
 			int emotion = emotionSeekBar.getProgress();
 
 			testQuestionCaller.writeQuestionFile(emotion, craving);
-			gpsInterface.startGPS(enableGPS);
+			gpsInterface.initializeGPS(enableGPS);
 		}
 	}
 
@@ -279,11 +292,12 @@ public class TestQuestionMsgBox{
 			int emotion = -1;
 
 			testQuestionCaller.writeQuestionFile(emotion, craving);
-			gpsInterface.startGPS(enableGPS);
+			gpsInterface.initializeGPS(enableGPS);
 		}
 	}
 
-	public void showWaitingBox() {
+	/** show waiting message */
+	public void showWaiting() {
 		send.setOnClickListener(null);
 		notSend.setOnClickListener(null);
 		help.setText(R.string.wait);
@@ -292,7 +306,8 @@ public class TestQuestionMsgBox{
 		PreferenceControl.setLatestTestCompleteTime(System.currentTimeMillis());
 	}
 
-	public void closeBox() {
+	/** close the dialog */
+	public void close() {
 		if (boxLayout != null)
 			boxLayout.setVisibility(View.INVISIBLE);
 	}

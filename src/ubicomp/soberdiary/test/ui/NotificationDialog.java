@@ -30,6 +30,11 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+/**
+ * Dialog for notifying functions which is seldom used by the user
+ * 
+ * @author Stanley Wang
+ */
 public class NotificationDialog {
 
 	private FrameLayout layout;
@@ -52,17 +57,29 @@ public class NotificationDialog {
 
 	private int showType = -1;
 
-	private NotificationInterface notificationInterface;
+	private NotificationDialogCaller notificationCaller;
 
 	private Context context;
 
-	public NotificationDialog(Context context, RelativeLayout main_layout, EnablePage enablePage,
-			NotificationInterface notificationInterface) {
+	/**
+	 * Constructor
+	 * 
+	 * @param context
+	 *            Activity context
+	 * @param mainLayout
+	 *            Layout contains the dialog
+	 * @param enablePage
+	 *            class supporting EnablePage
+	 * @param caller
+	 *            Caller of the dialog
+	 */
+	public NotificationDialog(Context context, RelativeLayout mainLayout, EnablePage enablePage,
+			NotificationDialogCaller caller) {
 
 		this.context = context;
-		this.mainLayout = main_layout;
+		this.mainLayout = mainLayout;
 		this.enablePage = enablePage;
-		this.notificationInterface = notificationInterface;
+		this.notificationCaller = caller;
 
 		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		layout = (FrameLayout) inflater.inflate(R.layout.dialog_notification, null);
@@ -92,7 +109,8 @@ public class NotificationDialog {
 		image = (ImageView) layout.findViewById(R.id.notification_image);
 	}
 
-	public boolean setting() {
+	/** Initialize the dialog */
+	public boolean initialize() {
 
 		showType = -1;
 
@@ -151,7 +169,7 @@ public class NotificationDialog {
 
 		settingType(type);
 
-		removeView();
+		clear();
 		addView();
 
 		return true;
@@ -175,7 +193,8 @@ public class NotificationDialog {
 		enablePage.enablePage(false);
 	}
 
-	public void removeView() {
+	/** Remove the dialog and release the resources */
+	public void clear() {
 		if (layout != null && layout.getParent() != null) {
 			ViewGroup vg = (ViewGroup) layout.getParent();
 			vg.removeView(layout);
@@ -187,7 +206,7 @@ public class NotificationDialog {
 		@Override
 		public void onClick(View v) {
 			ClickLog.Log(ClickLogId.TEST_NOTIFICATION_CANCEL);
-			removeView();
+			clear();
 		}
 	}
 
@@ -195,15 +214,15 @@ public class NotificationDialog {
 		@Override
 		public void onClick(View v) {
 			ClickLog.Log(ClickLogId.TEST_NOTIFICATION_GOTO);
-			removeView();
+			clear();
 			Integer[] page_states = new DatabaseControl().getDetectionScoreByWeek();
 			int page_week = page_states.length - 1;
 			switch (showType) {
 			case 0:
-				notificationInterface.notifyStartButton();
+				notificationCaller.notifyStartButton();
 				break;
 			case 1:
-				notificationInterface.notifyAdditionalQuestionnaire();
+				notificationCaller.notifyAdditionalQuestionnaire();
 				break;
 			case 2:
 				Intent intentEmotionActivity = new Intent(context, EmotionActivity.class);

@@ -14,7 +14,7 @@ import ubicomp.soberdiary.main.App;
 import ubicomp.soberdiary.main.R;
 import ubicomp.soberdiary.system.config.PreferenceControl;
 import ubicomp.soberdiary.test.camera.CameraRunHandler;
-import ubicomp.soberdiary.test.data.BracPressureHandler;
+import ubicomp.soberdiary.test.data.BreathDetailHandler;
 import ubicomp.soberdiary.test.data.BracValueFileHandler;
 
 import android.bluetooth.BluetoothAdapter;
@@ -31,6 +31,11 @@ import android.os.Bundle;
 import android.os.Message;
 import android.util.Log;
 
+/**
+ * Control Bluetooth related functions
+ * 
+ * @author Stanley Wang
+ */
 public class Bluetooth {
 
 	protected static final String TAG = "BT";
@@ -87,7 +92,7 @@ public class Bluetooth {
 	protected final static int READ_SERIAL = 4;
 
 	protected Object lock = new Object();
-	protected BTUIHandler btUIHandler;
+	protected BluetoothUIHandler btUIHandler;
 
 	protected int imageCount;
 
@@ -103,7 +108,7 @@ public class Bluetooth {
 
 	private int blowStartTimes = 0;
 	private int blowBreakTimes = 0;
-	private BracPressureHandler bracPressureHandler = null;
+	private BreathDetailHandler bracPressureHandler = null;
 	private ArrayList<Float> pressureList;
 	private float tempPressure;
 	private float pressureDiffMax;
@@ -120,7 +125,7 @@ public class Bluetooth {
 
 	protected String EXCEPTION_NO_BATTERY = "NO BATTERY";
 	protected String EXCEPTION_BLOW_TWICE = "BLOW TWICE";
-	protected String EXCEPTION_ZERO_DURATION = "ZERO DURATION";
+	protected String EXCEPTION_DISCONNECTION = "DISCONNECTION";
 	protected String EXCEPTION_TIME_OUT = "TIME OUT";
 	protected String EXCEPTION_PRESSURE_ERROR = "PRESSURE ERROR";
 	protected String EXCEPTION_HIGH_INITIAL_CONDITION = "HIGH_INITIAL_CONDITION";
@@ -135,8 +140,33 @@ public class Bluetooth {
 
 	private ArrayList<Integer> serialList = new ArrayList<Integer>();
 
+	protected final static byte[] sendStartMessage = { 'y', 'y', 'y' };
+	protected final static byte[] sendEndMessage = { 'z', 'z', 'z' };
+
+	protected OutputStream out;
+
+	protected boolean connected = false;
+
+	/**
+	 * Constructor
+	 * 
+	 * @param debugger
+	 *            BluetoothDebugger
+	 * @param updater
+	 *            BluetoothMessageUpdater
+	 * @param cameraRunHandler
+	 *            CameraRunHandler
+	 * @param bracFileHandler
+	 *            BracValueFileHandler
+	 * @param recordDetail
+	 *            record detail information of BrAC detection
+	 * @see BluetoothDebugger
+	 * @see BluetoothMessageUpdater
+	 * @see CameraRunHandler
+	 * @see BracValueFileHandler
+	 */
 	public Bluetooth(BluetoothDebugger debugger, BluetoothMessageUpdater updater, CameraRunHandler cameraRunHandler,
-			BracValueFileHandler bracFileHandler, boolean recordPressure) {
+			BracValueFileHandler bracFileHandler, boolean recordDetail) {
 		this.debugger = debugger;
 		this.context = App.getContext();
 		this.cameraRunHandler = cameraRunHandler;
@@ -145,11 +175,10 @@ public class Bluetooth {
 		if (btAdapter == null)
 			Log.e(TAG, "THE DEVICE DOES NOT SUPPORT BLUETOOTH");
 		pressureCurrent = 0.f;
-		btUIHandler = new BTUIHandler(updater);
+		btUIHandler = new BluetoothUIHandler(updater);
 		start = false;
-		if (recordPressure) {
-			bracPressureHandler = new BracPressureHandler(bracFileHandler.getDirectory(),
-					bracFileHandler.getTimestamp());
+		if (recordDetail) {
+			bracPressureHandler = new BreathDetailHandler(bracFileHandler.getDirectory());
 			pressureList = new ArrayList<Float>();
 		}
 		if (soundpool == null) {
@@ -159,6 +188,11 @@ public class Bluetooth {
 		}
 	}
 
+	/**
+	 * Enable Bluetooth adapter
+	 * 
+	 * @see BluetoothAdapter
+	 */
 	public void enableAdapter() {
 		btEnabledBeforeStart = true;
 		if (!btAdapter.isEnabled()) {
@@ -175,6 +209,12 @@ public class Bluetooth {
 		}
 	}
 
+	/**
+	 * Pair with the device. If there are no device matches the device name.
+	 * Automatically find the device
+	 * 
+	 * @return true if the phone successfully pairs with the device
+	 */
 	public boolean pair() {
 		sensor = null;
 		Set<BluetoothDevice> devices = btAdapter.getBondedDevices();
@@ -214,21 +254,24 @@ public class Bluetooth {
 						btAdapter.cancelDiscovery();
 					sensor = device;
 					connect();
-					close();
+					closeSuccess();
 				}
 			}
 		}
 	}
 
+	/**
+	 * connect with the device
+	 * 
+	 * @return true if connect successfully
+	 */
 	public boolean connect() {
 		if (btAdapter != null && btAdapter.isDiscovering())
 			btAdapter.cancelDiscovery();
 
 		setSensorPressureLimit();
-		Log.d(TAG,"PRESSURE_DIFF_MIN="+PRESSURE_DIFF_MIN );
-		Log.d(TAG,"PRESSURE_DIFF_MIN_RANGE="+PRESSURE_DIFF_MIN_RANGE);
 		if (sensor == null) {
-			close();
+			closeSuccess();
 			return false;
 		}
 		try {
@@ -248,13 +291,14 @@ public class Bluetooth {
 			socket.connect();
 		} catch (Exception e) {
 			Log.e(TAG, "FAIL TO CONNECT TO THE SENSOR: " + e.toString());
-			closeWithCamera();
+			closeFail();
 			return false;
 		}
 		return true;
 	}
 
-	protected void setSensorPressureLimit(){
+	/** Set the sensor pressure limit by the sensor id */
+	protected void setSensorPressureLimit() {
 		String sensorId = PreferenceControl.getSensorID();
 		if (sensorId.startsWith(DEVICE_NAME_FORMAL_OLD)) {
 			PRESSURE_DIFF_MIN_RANGE = PRESSURE_DIFF_MIN_RANGE_OLD;
@@ -264,30 +308,25 @@ public class Bluetooth {
 			PRESSURE_DIFF_MIN = PRESSURE_DIFF_MIN_NEW;
 		}
 	}
-	
+
+	/** Start to record the brac data */
 	public void start() {
 		start = true;
 		soundpool.play(soundId, 1.f, 1.f, 0, 0, 1.f);
 	}
 
-	protected final static byte[] sendStartMessage = { 'y', 'y', 'y' };
-	protected final static byte[] sendEndMessage = { 'z', 'z', 'z' };
-
-	protected OutputStream out;
-
-	protected boolean connected = false;
-
+	/** Send the start message to the device */
 	public boolean sendStart() {
 		try {
 			int counter = 0;
 			while (true) {
-				debugger.showDebug("start_to_send 'y'");
+				debugger.showDebug("start to send 'y'");
 				out = socket.getOutputStream();
 				in = socket.getInputStream();
 				for (int i = 0; i < 5; ++i)
 					out.write(sendStartMessage);
-				Thread t1 = new Thread(new SRunnable());
-				Thread t2 = new Thread(new SRunnable2());
+				Thread t1 = new Thread(new AckRunnable());
+				Thread t2 = new Thread(new WaitRunnable());
 				t1.start();
 				t2.start();
 
@@ -310,13 +349,13 @@ public class Bluetooth {
 			return true;
 		} catch (IOException e) {
 			Log.d(TAG, "SEND START FAIL " + e.toString());
-			close();
+			closeSuccess();
 			cameraRunHandler.sendEmptyMessage(1);
 			return false;
 		}
 	}
 
-	protected class SRunnable implements Runnable {
+	protected class AckRunnable implements Runnable {
 		@Override
 		public void run() {
 			try {
@@ -331,7 +370,7 @@ public class Bluetooth {
 		}
 	}
 
-	protected class SRunnable2 implements Runnable {
+	protected class WaitRunnable implements Runnable {
 		@Override
 		public void run() {
 			try {
@@ -341,6 +380,7 @@ public class Bluetooth {
 		}
 	}
 
+	/** Send the end message to the device */
 	public void sendEnd() {
 		try {
 			if (out == null)
@@ -360,6 +400,7 @@ public class Bluetooth {
 		}
 	}
 
+	/** read the data from the device */
 	public void read() {
 
 		boolean end = false;
@@ -400,15 +441,15 @@ public class Bluetooth {
 
 				for (int i = 0; i < bytes; ++i) {
 					if ((char) temp[i] == 'a') {
-						end = sendMsgToApp(msg);
+						end = parseMsg(msg);
 						msg = "a";
 						read_type = READ_ALCOHOL;
 					} else if ((char) temp[i] == 'm') {
-						end = sendMsgToApp(msg);
+						end = parseMsg(msg);
 						msg = "m";
 						read_type = READ_PRESSURE;
 					} else if ((char) temp[i] == 'v') {
-						end = sendMsgToApp(msg);
+						end = parseMsg(msg);
 						msg = "v";
 						read_type = READ_VOLTAGE;
 					} else if ((char) temp[i] == 'b') {
@@ -416,7 +457,7 @@ public class Bluetooth {
 					} else if ((char) temp[i] == 'p') {
 						throw new Exception(EXCEPTION_PRESSURE_ERROR);
 					} else if ((char) temp[i] == 's') {
-						end = sendMsgToApp(msg);
+						end = parseMsg(msg);
 						msg = "s";
 						read_type = READ_SERIAL;
 					} else if (read_type != READ_NULL)
@@ -443,7 +484,7 @@ public class Bluetooth {
 				} else {
 					bytes = 0;
 					if (disconnectionMillis > MAX_ZERO_DURATION)
-						throw new Exception(EXCEPTION_ZERO_DURATION);
+						throw new Exception(EXCEPTION_DISCONNECTION);
 					sleepTime *= 2;
 					sleepTime = Math.min(MAX_SLEEP_TIME, sleepTime);
 
@@ -467,20 +508,21 @@ public class Bluetooth {
 					Log.d(TAG, "ZERO_DURATION=" + disconnectionMillis + " " + try_time + " " + sleepTime);
 				}
 			}
-			close();
+			closeSuccess();
 		} catch (Exception e) {
-			close();
+			closeSuccess();
 			handleException(e);
 		}
 	}
 
+	/** Handle the exceptions */
 	protected void handleException(Exception e) {
 		Log.e(TAG, "FAIL TO READ DATA FROM THE SENSOR: " + e.toString());
 		if (e.getMessage() != null && e.getMessage().equals(EXCEPTION_TIME_OUT)) {
 			cameraRunHandler.sendEmptyMessage(3);
 		} else if (e.getMessage() != null && e.getMessage().equals(EXCEPTION_BLOW_TWICE)) {
 			cameraRunHandler.sendEmptyMessage(4);
-		} else if (e.getMessage() != null && e.getMessage().equals(EXCEPTION_ZERO_DURATION)) {
+		} else if (e.getMessage() != null && e.getMessage().equals(EXCEPTION_DISCONNECTION)) {
 			cameraRunHandler.sendEmptyMessage(5);
 		} else if (e.getMessage() != null && e.getMessage().equals(EXCEPTION_PRESSURE_ERROR)) {
 			cameraRunHandler.sendEmptyMessage(6);
@@ -490,11 +532,12 @@ public class Bluetooth {
 			cameraRunHandler.sendEmptyMessage(2);
 	}
 
-	protected boolean sendMsgToApp(String msg) throws Exception {
+	/** Parse the message */
+	protected boolean parseMsg(String msg) throws Exception {
 		synchronized (lock) {
 			if (msg == "")
 				;// Do nothing
-			else if (msg.charAt(0) == 'a') {
+			else if (msg.charAt(0) == 'a') { // Alcohol
 				if (!start) {
 					float alcohol = Float.valueOf(msg.substring(1));
 					if (alcohol > MAX_INITIAL_BRAC) {
@@ -507,10 +550,10 @@ public class Bluetooth {
 					if (startToRecord) {
 						showValue = alcohol;
 						pressureList.add(tempPressure);
-						write_to_file(output);
+						writeToFile(output);
 					}
 				}
-			} else if (msg.charAt(0) == 'm') {
+			} else if (msg.charAt(0) == 'm') { // Pressure
 
 				pressureCurrent = Float.valueOf(msg.substring(1));
 
@@ -592,11 +635,11 @@ public class Bluetooth {
 					++blowBreakTimes;
 					Log.d(TAG, "Peak End");
 				}
-			} else if (msg.charAt(0) == 'v') {
+			} else if (msg.charAt(0) == 'v') { // Voltage
 				if (!start) {
 					voltageInit = Integer.valueOf(msg.substring(1, msg.length() - 1));
 				}
-			} else if (msg.charAt(0) == 's') {
+			} else if (msg.charAt(0) == 's') { // Serial number
 				int serial = Integer.valueOf(msg.substring(1, msg.length() - 1));
 				serialList.add(serial);
 			}
@@ -604,8 +647,9 @@ public class Bluetooth {
 		return false;
 	}
 
-	public void close() {
-		normalClose();
+	/** close Bluetooth if the test completes successfully */
+	public void closeSuccess() {
+		close();
 
 		try {
 			if (bracPressureHandler != null && pressureList != null) {
@@ -639,7 +683,8 @@ public class Bluetooth {
 				long bdTs = Long.valueOf(bracFileHandler.getTimestamp());
 
 				BreathDetail bd = new BreathDetail(bdTs, blowStartTimes, blowBreakTimes, pressureDiffMax, pressureMin,
-						pressureAverage, voltageInit, disconnectionMillis, serialDiffMax, serialDiffAverage, PreferenceControl.getSensorID());
+						pressureAverage, voltageInit, disconnectionMillis, serialDiffMax, serialDiffAverage,
+						PreferenceControl.getSensorID());
 				DatabaseControl db = new DatabaseControl();
 				db.insertBreathDetail(bd);
 
@@ -655,12 +700,10 @@ public class Bluetooth {
 		;
 	}
 
-	protected void normalClose() {
-		Log.d(TAG, "NORMAL CLOSE");
-
+	/** close Bluetooth */
+	protected void close() {
 		sendEnd();
 
-		Log.d(TAG, "SEND END DONE");
 		try {
 			if (in != null)
 				in.close();
@@ -692,12 +735,19 @@ public class Bluetooth {
 		;
 	}
 
-	public void closeWithCamera() {
-		close();
+	/** close Bluetooth if the test failed */
+	public void closeFail() {
+		closeSuccess();
 		cameraRunHandler.sendEmptyMessage(1);
 	}
 
-	protected void write_to_file(String str) {
+	/**
+	 * write the string to the brac file
+	 * 
+	 * @param str
+	 *            string written to the file
+	 */
+	protected void writeToFile(String str) {
 		Message msg = new Message();
 		Bundle data = new Bundle();
 		data.putString("ALCOHOL", str);
@@ -705,17 +755,29 @@ public class Bluetooth {
 		bracFileHandler.sendMessage(msg);
 	}
 
-	protected void showBrACCircle(int time) {
+	/**
+	 * Change the circle on the Brac detection page
+	 * 
+	 * @param times
+	 *            0~6 state of the completeness of the brac test
+	 */
+	protected void showBrACCircle(int times) {
 		Message msg = new Message();
 		Bundle data = new Bundle();
-		data.putInt("TIME", time);
+		data.putInt("TIME", times);
 		msg.setData(data);
 		msg.what = 2;
 		btUIHandler.removeMessages(2);
 		btUIHandler.sendMessage(msg);
 	}
-	
-	protected void showBrACValue(float value){
+
+	/**
+	 * Show the BrAC value on the detection page (for debug)
+	 * 
+	 * @param value
+	 *            BrAC value
+	 */
+	protected void showBrACValue(float value) {
 		Message msg = new Message();
 		Bundle data = new Bundle();
 		data.putFloat("value", value);

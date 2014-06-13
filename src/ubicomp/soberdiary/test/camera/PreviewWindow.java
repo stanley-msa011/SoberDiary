@@ -6,10 +6,22 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 @SuppressLint("ViewConstructor")
+/**View shows the camera preview
+ * 
+ * @author Stanley Wang*/
 public class PreviewWindow extends SurfaceView implements SurfaceHolder.Callback {
 
 	private CameraRecorder cameraRecorder;
 
+	/**
+	 * Constructor
+	 * 
+	 * @param context
+	 *            Activity context
+	 * @param cameraRecorder
+	 *            cameraRecorder
+	 * @see CameraRecorder
+	 */
 	public PreviewWindow(Context context, CameraRecorder cameraRecorder) {
 		super(context);
 		this.cameraRecorder = cameraRecorder;
@@ -32,6 +44,7 @@ public class PreviewWindow extends SurfaceView implements SurfaceHolder.Callback
 	public void surfaceDestroyed(SurfaceHolder holder) {
 	}
 
+	/** Restart the preview */
 	public void restartPreview() {
 		if (cameraRecorder.getCamera() != null) {
 			try {

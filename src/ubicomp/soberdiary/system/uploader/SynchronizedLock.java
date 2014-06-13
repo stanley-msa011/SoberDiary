@@ -4,6 +4,12 @@ import android.annotation.SuppressLint;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 
+/**
+ * Lock for DataUploader
+ * 
+ * @author Stanley Wang
+ * @see DataUploadeer
+ */
 public class SynchronizedLock implements java.util.concurrent.locks.Lock {
 
 	@SuppressLint("UseValueOf")

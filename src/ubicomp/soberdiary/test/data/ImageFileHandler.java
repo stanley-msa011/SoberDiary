@@ -9,6 +9,11 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
+/**
+ * Handler for saving the DCIMs of the user
+ * 
+ * @author Stanley Wang
+ */
 public class ImageFileHandler extends Handler {
 	private File file;
 	private FileOutputStream writer;
@@ -18,18 +23,32 @@ public class ImageFileHandler extends Handler {
 
 	private static final String TAG = "IMAGE_FILE_HANDLER";
 
+	/**
+	 * Constructor
+	 * 
+	 * @param directory
+	 *            directory of the detection data
+	 * @param timestamp
+	 *            string of the detection timestamp
+	 */
 	public ImageFileHandler(File directory, String timestamp) {
 		this.directory = directory;
 		this.timestamp = timestamp;
 	}
 
+	/**
+	 * Set the camera recorder
+	 * 
+	 * @param recorder
+	 *            camera recorder
+	 */
 	public void setRecorder(CameraRecorder recorder) {
 		this.recorder = recorder;
 	}
 
+	@Override
 	public void handleMessage(Message msg) {
 
-		Log.d(TAG, "HANDLE MESSAGE");
 		int count = msg.what;
 		String file_name = "IMG_" + timestamp + "_" + count + ".sob";
 

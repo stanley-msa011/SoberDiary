@@ -24,35 +24,32 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.RelativeLayout.LayoutParams;
 
-public class AdditionalQuestionMsgBox {
+/**
+ * Questionnaire Dialog for the additional questionnaire appearing at night
+ * 
+ * @author Stanley Wang
+ */
+public class AdditionalQuestionDialog {
 
 	private Context context;
 	private LayoutInflater inflater;
-	private RelativeLayout boxLayout = null;
+	private RelativeLayout boxLayout = null,mainLayout;
 
-	private TextView emotionText, cravingText;
+	private TextView emotionText, cravingText, emotionShowText, cravingShowText, title, help, send, notSend;
 	private SeekBar emotionSeekBar, cravingSeekBar;
 
-	private RelativeLayout mainLayout;
-
-	private ImageView emotionShow;
-	private ImageView cravingShow;
-	private TextView emotionShowText;
-	private TextView cravingShowText;
+	private ImageView emotionShow, cravingShow;
 
 	private TextView[] eNum, cNum;
 
-	private static String[] emotionStr;
-	private static String[] cravingStr;
+	private static String[] emotionStr, cravingStr;
 
 	private LinearLayout questionLayout;
 
 	private EndOnClickListener endListener;
 	private CancelOnClickListener cancelListener;
 
-	private Typeface digitTypeface;
-	private Typeface wordTypeface;
-	private Typeface wordTypefaceBold;
+	private Typeface digitTypeface, wordTypeface, wordTypefaceBold;
 
 	private int[] emotionResIds = { R.drawable.emotion_0, R.drawable.emotion_1, R.drawable.emotion_2,
 			R.drawable.emotion_3, R.drawable.emotion_4 };
@@ -60,16 +57,24 @@ public class AdditionalQuestionMsgBox {
 			R.drawable.craving_3, R.drawable.craving_4, R.drawable.craving_5, R.drawable.craving_6,
 			R.drawable.craving_7, R.drawable.craving_8, R.drawable.craving_9 };
 
-	private TextView title, help;
-	private TextView send, notSend;
-
+	private int text_color = App.getContext().getResources().getColor(R.color.dark_gray);
+	private int highlight_color = App.getContext().getResources().getColor(R.color.lite_orange);
+	
 	private EndOnTouchListener endOnTouchListener;
 
 	private boolean done, doneByDoubleClick;
 
 	private EnablePage enablePage;
 
-	public AdditionalQuestionMsgBox(RelativeLayout mainLayout, EnablePage enablePage) {
+	/**
+	 * Constructor
+	 * 
+	 * @param mainLayout
+	 *            Layout contains the AdditionalQuestionDialog
+	 * @param enablePage
+	 *            the class support Interface EnablePage
+	 */
+	public AdditionalQuestionDialog(RelativeLayout mainLayout, EnablePage enablePage) {
 		context = App.getContext();
 		inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		this.mainLayout = mainLayout;
@@ -155,6 +160,7 @@ public class AdditionalQuestionMsgBox {
 		notSend.setTypeface(wordTypefaceBold);
 	}
 
+	/** remove the dialog and release the resources */
 	public void clear() {
 		if (mainLayout != null && boxLayout != null && boxLayout.getParent() != null
 				&& boxLayout.getParent().equals(mainLayout))
@@ -162,8 +168,7 @@ public class AdditionalQuestionMsgBox {
 		enablePage.enablePage(true);
 	}
 
-	private int text_color = App.getContext().getResources().getColor(R.color.dark_gray);
-	private int highlight_color = App.getContext().getResources().getColor(R.color.lite_orange);
+	
 
 	private void enableSend(boolean enable) {
 		if (enable) {
@@ -189,7 +194,7 @@ public class AdditionalQuestionMsgBox {
 		doneByDoubleClick = click;
 	}
 
-	public void generateAdditionalBox() {
+	public void show() {
 		RelativeLayout.LayoutParams boxParam = (LayoutParams) boxLayout.getLayoutParams();
 		boxParam.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
 

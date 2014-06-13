@@ -9,16 +9,28 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
-public class BracPressureHandler extends Handler {
+/**
+ * Handle the file contain breath detail condition
+ * 
+ * @author Stanley Wang
+ */
+public class BreathDetailHandler extends Handler {
 
 	private static final String TAG = "BrAC_PRESSURE_HANDLER";
 	private File file;
 	private BufferedWriter writer;
 
-	public BracPressureHandler(File directory, String timestamp) {
+	/**
+	 * Constructor
+	 * 
+	 * @param directory
+	 *            of the detection
+	 */
+	public BreathDetailHandler(File directory) {
 		file = new File(directory, "detection_detail.txt");
 	}
 
+	@Override
 	public void handleMessage(Message msg) {
 		String str = msg.getData().getString("pressure");
 		try {

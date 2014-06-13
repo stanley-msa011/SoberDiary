@@ -3,12 +3,25 @@ package ubicomp.soberdiary.test.bluetooth;
 import ubicomp.soberdiary.test.Tester;
 import android.os.AsyncTask;
 
-public class BTRunTask extends AsyncTask<Void, Void, Void> {
+/**
+ * AsyncTask for reading from the device
+ * 
+ * @author Stanley Wang
+ */
+public class BluetoothReadTask extends AsyncTask<Void, Void, Void> {
 
 	private BluetoothCaller btCaller;
 	private Bluetooth bt;
 
-	public BTRunTask(BluetoothCaller btCaller, Bluetooth bt) {
+	/**
+	 * Constructor
+	 * 
+	 * @param btCaller
+	 *            Caller of the Bluetooth functions
+	 * @param bt
+	 *            Bluetooth control class
+	 */
+	public BluetoothReadTask(BluetoothCaller btCaller, Bluetooth bt) {
 		this.btCaller = btCaller;
 		this.bt = bt;
 	}
@@ -18,14 +31,16 @@ public class BTRunTask extends AsyncTask<Void, Void, Void> {
 		if (bt.sendStart())
 			bt.read();
 		else
-			bt.closeWithCamera();
+			bt.closeFail();
 		return null;
 	}
 
+	@Override
 	protected void onCancelled(Void result) {
-		bt.close();
+		bt.closeSuccess();
 	};
 
+	@Override
 	protected void onPostExecute(Void result) {
 		btCaller.updateDoneState(Tester._BT);
 	}

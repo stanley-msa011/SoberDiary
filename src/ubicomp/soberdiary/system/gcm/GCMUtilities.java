@@ -13,10 +13,21 @@ import android.os.Build;
 
 import com.google.android.gcm.GCMRegistrar;
 
+/**
+ * Control the GCM related utilities
+ * 
+ * @author Stanley Wang
+ */
 public class GCMUtilities {
 
 	private static AsyncTask<Void, Void, Void> registerTask = null;
 
+	/**
+	 * Execute when onCreate
+	 * 
+	 * @param context
+	 *            Activity context
+	 */
 	public static void onCreate(final Context context) {
 
 		if (DefaultCheck.check() || LockCheck.check())
@@ -58,6 +69,12 @@ public class GCMUtilities {
 		}
 	}
 
+	/**
+	 * Execute when onDestroy
+	 * 
+	 * @param context
+	 *            Activity context
+	 */
 	public static void onDestroy(Context context) {
 		if (registerTask != null) {
 			registerTask.cancel(true);
@@ -74,6 +91,7 @@ public class GCMUtilities {
 		GCMRegistrar.onDestroy(context);
 	}
 
+	/** BroadcastReceiver for receiving the GCM */
 	private final static BroadcastReceiver GCMReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {

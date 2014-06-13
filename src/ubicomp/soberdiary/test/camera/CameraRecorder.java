@@ -23,6 +23,8 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 @SuppressLint("InlinedApi")
+/**Class controls camera related functions
+ * @author Stanley Wang*/
 public class CameraRecorder {
 
 	private CameraCaller cameraCaller;
@@ -40,6 +42,14 @@ public class CameraRecorder {
 
 	private static final String TAG = "CAM_RECORDER";
 
+	/**
+	 * Constructor
+	 * 
+	 * @param cameraCaller
+	 *            class which calls the camera related functions
+	 * @param imgFileHandler
+	 *            handler for saving the images
+	 * */
 	public CameraRecorder(CameraCaller cameraCaller, ImageFileHandler imgFileHandler) {
 		this.cameraCaller = cameraCaller;
 		this.context = App.getContext();
@@ -48,7 +58,8 @@ public class CameraRecorder {
 		pictureCallback = new PictureCallback();
 	}
 
-	public void init() {
+	/** Initialize the camera */
+	public void initialize() {
 		picture_count = 0;
 		int camera_count = 1;
 		camera_count = Camera.getNumberOfCameras();
@@ -80,6 +91,11 @@ public class CameraRecorder {
 		setSurfaceCallback();
 	}
 
+	/**
+	 * Get the smallest support image size
+	 * 
+	 * @return Point of the image size in pixels
+	 */
 	protected Point getBestSize(List<Size> list) {
 		int bestWidth = Integer.MAX_VALUE;
 		int bestHeight = Integer.MAX_VALUE;
@@ -96,6 +112,7 @@ public class CameraRecorder {
 		return new Point(bestWidth, bestHeight);
 	}
 
+	/** Start and show the preview window */
 	public void start() {
 		if (preview != null)
 			preview.setVisibility(View.VISIBLE);
@@ -119,11 +136,13 @@ public class CameraRecorder {
 		}
 	}
 
+	/** take the picture */
 	public void takePicture() {
 		if (camera != null)
 			camera.takePicture(null, new RawPictureCallback(), pictureCallback);
 	}
 
+	/** close and release the resources */
 	public void close() {
 		if (preview != null)
 			preview.setVisibility(View.INVISIBLE);
@@ -162,16 +181,28 @@ public class CameraRecorder {
 		}
 	}
 
+	/** Close the camera when the BrAC test successfully completed */
 	public void closeSuccess() {
 		close();
 		cameraCaller.updateDoneState(Tester._CAMERA);
 	}
 
+	/**
+	 * Close the camera when the BrAC test failed
+	 * 
+	 * @param type
+	 *            fail type
+	 */
 	public void closeFail(int type) {
 		close();
 		cameraCaller.stopByFail(type);
 	}
 
+	/**
+	 * Get the camera
+	 * 
+	 * @return camera
+	 */
 	public Camera getCamera() {
 		return camera;
 	}
