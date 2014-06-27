@@ -6,7 +6,7 @@ import ubicomp.soberdiary.main.R;
 import ubicomp.soberdiary.data.database.DatabaseControl;
 import ubicomp.soberdiary.data.structure.EmotionManagement;
 import ubicomp.soberdiary.data.structure.TimeValue;
-import ubicomp.soberdiary.main.ui.BarGen;
+import ubicomp.soberdiary.main.ui.BarButtonGenerator;
 import ubicomp.soberdiary.main.ui.ScreenSize;
 import ubicomp.soberdiary.system.clicklog.ClickLog;
 import ubicomp.soberdiary.system.clicklog.ClickLogId;
@@ -51,7 +51,7 @@ public class EmotionManageHistoryActivity extends Activity {
 		titleLayout = (LinearLayout) this.findViewById(R.id.emotion_manage_title_layout);
 		main = (LinearLayout) this.findViewById(R.id.emotion_manage_main_layout);
 
-		View title = BarGen.createTitleView(getString(R.string.emotion_manage_history_title) + "　"
+		View title = BarButtonGenerator.createTitleView(getString(R.string.emotion_manage_history_title) + "　"
 				+ curTV.toSimpleDateString());
 		titleLayout.addView(title);
 
@@ -77,7 +77,7 @@ public class EmotionManageHistoryActivity extends Activity {
 
 		if (titleLayout.getChildCount() > 1)
 			titleLayout.removeViewAt(1);
-		View tv = BarGen.createTextView(R.string.emotion_manage_history_help);
+		View tv = BarButtonGenerator.createTextView(R.string.emotion_manage_history_help);
 		titleLayout.addView(tv);
 
 		list = new ArrayList<EmotionManagement>();
@@ -91,25 +91,25 @@ public class EmotionManageHistoryActivity extends Activity {
 
 		int from = main.getChildCount();
 		for (int i = from; i < MIN_BARS; ++i) {
-			View v = BarGen.createBlankView();
+			View v = BarButtonGenerator.createBlankView();
 			main.addView(v);
 		}
 	}
 
 	private View createItem(EmotionManagement em, int idx) {
 		if (em.getEmotion() < 100)
-			return BarGen.createIconViewInverse(em.getReason(), EMOTION_DRAWABLE_ID[em.getEmotion()],
+			return BarButtonGenerator.createIconViewInverse(em.getReason(), EMOTION_DRAWABLE_ID[em.getEmotion()],
 					new CustomOnItemSelectListener(idx));
 		else
-			return BarGen.createIconViewInverse(em.getReason(), EMOTION_VER1_ID[em.getEmotion() - 100],
+			return BarButtonGenerator.createIconViewInverse(em.getReason(), EMOTION_VER1_ID[em.getEmotion() - 100],
 					new CustomOnItemSelectListener(idx));
 	}
 
 	private View selectItem(EmotionManagement em) {
 		if (em.getEmotion() < 100)
-			return BarGen.createTextAreaViewInverse(em.getReason(), EMOTION_DRAWABLE_ID[em.getEmotion()]);
+			return BarButtonGenerator.createTextAreaViewInverse(em.getReason(), EMOTION_DRAWABLE_ID[em.getEmotion()]);
 		else
-			return BarGen.createTextAreaViewInverse(em.getReason(), EMOTION_VER1_ID[em.getEmotion() - 100]);
+			return BarButtonGenerator.createTextAreaViewInverse(em.getReason(), EMOTION_VER1_ID[em.getEmotion() - 100]);
 	}
 
 	private class CustomOnItemSelectListener implements OnClickListener {

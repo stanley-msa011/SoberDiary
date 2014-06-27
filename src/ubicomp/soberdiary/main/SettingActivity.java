@@ -1,7 +1,7 @@
 package ubicomp.soberdiary.main;
 
 import ubicomp.soberdiary.main.R;
-import ubicomp.soberdiary.main.ui.BarGen;
+import ubicomp.soberdiary.main.ui.BarButtonGenerator;
 import ubicomp.soberdiary.main.ui.Typefaces;
 import ubicomp.soberdiary.main.ui.spinnergroup.MultiRadioGroup;
 import ubicomp.soberdiary.main.ui.spinnergroup.SingleRadioGroup;
@@ -11,6 +11,7 @@ import ubicomp.soberdiary.system.clicklog.ClickLogId;
 import ubicomp.soberdiary.system.config.PreferenceControl;
 import android.os.Bundle;
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,6 +45,9 @@ public class SettingActivity extends Activity {
 	private View socialGroupView;
 	private SingleRadioGroup notificationGroup;
 	private View notificationGroupView;
+	private View bluetoothView;
+
+	private static final int PRIVACY = 0, RECREATION = 100, CONTACT = 200, SOCIAL = 300, ALARM = 400, SYSTEM = 500;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -59,14 +63,12 @@ public class SettingActivity extends Activity {
 
 		mainLayout.removeAllViews();
 
-		View title = BarGen.createTitleView(R.string.setting_title);
+		View title = BarButtonGenerator.createTitleView(R.string.setting_title);
 		titleLayout.addView(title);
 
 		setting();
 
 	}
-
-	private static final int PRIVACY = 0, RECREATION = 100, CONTACT = 200, SOCIAL = 300, OTHERS = 400;
 
 	private void setting() {
 
@@ -176,19 +178,19 @@ public class SettingActivity extends Activity {
 			mainLayout.addView(contactViews[i]);
 		}
 
-		
 		int[] socialSelections = PreferenceControl.getConnectSocialHelpIdx();
 		boolean[] socialSelected = new boolean[ConnectSocialInfo.NAME.length];
-		for (int i=0;i<socialSelected.length;++i){
+		for (int i = 0; i < socialSelected.length; ++i) {
 			socialSelected[i] = false;
-			for (int j=0;j<socialSelections.length;++j)
-				if (i==socialSelections[j])
+			for (int j = 0; j < socialSelections.length; ++j)
+				if (i == socialSelections[j])
 					socialSelected[i] = true;
 		}
-		
-		socialGroup = new MultiRadioGroup(activity,ConnectSocialInfo.NAME,socialSelected,3,R.string.setting_limit,ClickLogId.SETTING_SELECT+SOCIAL);
+
+		socialGroup = new MultiRadioGroup(activity, ConnectSocialInfo.NAME, socialSelected, 3, R.string.setting_limit,
+				ClickLogId.SETTING_SELECT + SOCIAL);
 		socialGroupView = socialGroup.getView();
-		
+
 		View socialView = createListView(R.string.setting_social, new OnClickListener() {
 			private boolean visible = false;
 
@@ -212,16 +214,17 @@ public class SettingActivity extends Activity {
 		socialGroupView.setVisibility(View.GONE);
 
 		String[] strs = App.getContext().getResources().getStringArray(R.array.setting_time_gap);
-		notificationGroup = new SingleRadioGroup(activity,strs,PreferenceControl.getNotificationTimeIdx(),ClickLogId.SETTING_SELECT+OTHERS);
+		notificationGroup = new SingleRadioGroup(activity, strs, PreferenceControl.getNotificationTimeIdx(),
+				ClickLogId.SETTING_SELECT + ALARM);
 		notificationGroupView = notificationGroup.getView();
 		notificationGroupView.setVisibility(View.GONE);
-		
-		RelativeLayout otherView = createListView(R.string.setting_others, new OnClickListener() {
+
+		RelativeLayout alarmView = createListView(R.string.setting_alarm, new OnClickListener() {
 			private boolean visible = false;
 
 			@Override
 			public void onClick(View v) {
-				ClickLog.Log(ClickLogId.SETTING_TITLE_LIST + OTHERS);
+				ClickLog.Log(ClickLogId.SETTING_TITLE_LIST + ALARM);
 				ImageView list = (ImageView) v.findViewById(R.id.question_list);
 				if (visible) {
 					notificationGroupView.setVisibility(View.GONE);
@@ -234,8 +237,42 @@ public class SettingActivity extends Activity {
 			}
 
 		});
-		mainLayout.addView(otherView);
+		mainLayout.addView(alarmView);
 		mainLayout.addView(notificationGroupView);
+
+		bluetoothView = BarButtonGenerator.createSettingButtonView(R.string.setting_bluetooth, new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				ClickLog.Log(ClickLogId.SETTING_CHECK + SYSTEM);
+				Intent intentBluetooth = new Intent();
+				intentBluetooth.setAction(android.provider.Settings.ACTION_BLUETOOTH_SETTINGS);
+				startActivity(intentBluetooth);
+			}
+
+		});
+		bluetoothView.setVisibility(View.GONE);
+
+		RelativeLayout systemView = createListView(R.string.setting_system, new OnClickListener() {
+			private boolean visible = false;
+
+			@Override
+			public void onClick(View v) {
+				ClickLog.Log(ClickLogId.SETTING_TITLE_LIST + SYSTEM);
+				ImageView list = (ImageView) v.findViewById(R.id.question_list);
+				if (visible) {
+					bluetoothView.setVisibility(View.GONE);
+					list.setVisibility(View.INVISIBLE);
+				} else {
+					bluetoothView.setVisibility(View.VISIBLE);
+					list.setVisibility(View.VISIBLE);
+				}
+				visible = !visible;
+			}
+
+		});
+		mainLayout.addView(systemView);
+		mainLayout.addView(bluetoothView);
 
 	}
 
@@ -247,11 +284,11 @@ public class SettingActivity extends Activity {
 
 	@Override
 	protected void onPause() {
-		
+
 		int[] socialSelections = new int[3];
 		int social_idx = 0;
 		boolean[] socialSelected = socialGroup.getResult();
-		for (int i=0;i<socialSelected.length;++i){
+		for (int i = 0; i < socialSelected.length; ++i) {
 			if (socialSelected[i])
 				socialSelections[social_idx++] = i;
 		}

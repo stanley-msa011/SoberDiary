@@ -19,7 +19,7 @@ public class Config {
 	public static final int COUNT_DOWN_SECOND = 10;
 	
 	/**Count seconds before a BrAC test under debug mode*/
-	public static final int COUNT_DOWN_SECOND_DEBUG = 1;
+	public static final int COUNT_DOWN_SECOND_DEBUG = 2;
 
 	// StorytellingFragment
 	

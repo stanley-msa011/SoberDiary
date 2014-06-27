@@ -14,7 +14,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-public class BarGen {
+public class BarButtonGenerator {
 	private static final LayoutInflater inflater = (LayoutInflater) App.getContext().getSystemService(
 			Context.LAYOUT_INFLATER_SERVICE);
 	private static Typeface wordTypefaceBold = Typefaces.getWordTypefaceBold();
@@ -182,6 +182,18 @@ public class BarGen {
 		textRight.setText(rightTextId);
 		textRight.setTypeface(wordTypefaceBold);
 		textRight.setOnClickListener(rightListener);
+
+		return layout;
+	}
+
+	public static View createSettingButtonView(int textStr, OnClickListener listener) {
+
+		RelativeLayout layout = (RelativeLayout) inflater.inflate(R.layout.bar_setting_item, null);
+		TextView text = (TextView) layout.findViewById(R.id.question_description);
+		text.setTypeface(wordTypeface);
+		text.setText(textStr);
+
+		layout.setOnClickListener(listener);
 
 		return layout;
 	}

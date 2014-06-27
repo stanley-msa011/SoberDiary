@@ -10,7 +10,7 @@ import org.json.JSONObject;
 import ubicomp.soberdiary.main.R;
 import ubicomp.soberdiary.data.database.DatabaseControl;
 import ubicomp.soberdiary.data.structure.FacebookInfo;
-import ubicomp.soberdiary.main.ui.BarGen;
+import ubicomp.soberdiary.main.ui.BarButtonGenerator;
 import ubicomp.soberdiary.main.ui.LoadingDialogControl;
 import ubicomp.soberdiary.main.ui.Typefaces;
 import ubicomp.soberdiary.main.ui.spinnergroup.SingleIconRadioGroup;
@@ -119,7 +119,7 @@ public class FacebookActivity extends Activity {
 		inputMessage = createEditView();
 		inputLayout.addView(inputMessage);
 
-		View privacyTextView = BarGen.createTextView(R.string.fb_privacy);
+		View privacyTextView = BarButtonGenerator.createTextView(R.string.fb_privacy);
 		inputLayout.addView(privacyTextView);
 		LinearLayout.LayoutParams privacyParam = (LinearLayout.LayoutParams) privacyTextView.getLayoutParams();
 		privacyParam.topMargin=(int) App.getContext().getResources().getDimension(R.dimen.fb_gap);
@@ -128,7 +128,7 @@ public class FacebookActivity extends Activity {
 		inputLayout.addView(privacySelection);
 		
 
-		shareButton = BarGen.createIconView(R.string.fb_share, 0, new SendOnClickListener());
+		shareButton = BarButtonGenerator.createIconView(R.string.fb_share, 0, new SendOnClickListener());
 
 		inputLayout.addView(shareButton);
 

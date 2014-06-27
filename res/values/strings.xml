@@ -86,8 +86,8 @@
     <string name="test_guide_testing_top">請將臉對於螢幕中央，並開始吹氣</string>
     <string name="test_guide_testing_bottom">酒測器已可進行測試</string>
     
-    <string name="test_guide_pair_top">PIN碼請輸入 1234</string>
-    <string name="test_guide_pair_bottom">與酒測器配對中</string>
+    <string name="test_guide_pair_top">請至藍牙設定頁面進行設定</string>
+    <string name="test_guide_pair_bottom">酒測器藍牙配對設定錯誤</string>
     
     <string name="test_guide_update_top">請於倒數結束前重新進行酒測</string>
     <string name="test_guide_update_bottom">重新測試倒數中</string>

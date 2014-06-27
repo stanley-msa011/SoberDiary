@@ -16,14 +16,12 @@ import ubicomp.soberdiary.system.config.PreferenceControl;
 import ubicomp.soberdiary.test.camera.CameraRunHandler;
 import ubicomp.soberdiary.test.data.BreathDetailHandler;
 import ubicomp.soberdiary.test.data.BracValueFileHandler;
-
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Build;
@@ -219,24 +217,31 @@ public class Bluetooth {
 		sensor = null;
 		Set<BluetoothDevice> devices = btAdapter.getBondedDevices();
 		Iterator<BluetoothDevice> iter = devices.iterator();
+		
+		int deviceCount = 0;
 		while (iter.hasNext()) {
 			BluetoothDevice device = iter.next();
 			if (device.getName() != null) {
 				if (device.getName().startsWith(DEVICE_NAME_FORMAL_OLD)
 						|| device.getName().startsWith(DEVICE_NAME_FORMAL_NEW)) {
 					sensor = device;
+					++deviceCount;
 					PreferenceControl.setSensorID(device.getName());
-					return true;
+					//return true;
 				}
 			}
 		}
-		if (sensor == null) {
+		return deviceCount == 1;
+		
+		
+	/*	if (sensor == null) {
 			IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
 			BroadcastReceiver receiver = new btReceiver();
 			context.registerReceiver(receiver, filter);
 			btAdapter.startDiscovery();
 		}
-		return false;
+		*/
+		//return false;
 	}
 
 	protected class btReceiver extends BroadcastReceiver {

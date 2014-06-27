@@ -4,7 +4,7 @@ import ubicomp.soberdiary.main.R;
 import ubicomp.soberdiary.data.database.DatabaseControl;
 import ubicomp.soberdiary.data.structure.EmotionDIY;
 import ubicomp.soberdiary.data.structure.Questionnaire;
-import ubicomp.soberdiary.main.ui.BarGen;
+import ubicomp.soberdiary.main.ui.BarButtonGenerator;
 import ubicomp.soberdiary.main.ui.ScreenSize;
 import ubicomp.soberdiary.main.ui.Typefaces;
 import ubicomp.soberdiary.main.ui.toast.CustomToast;
@@ -102,7 +102,7 @@ public class EmotionActivity extends Activity {
 		initializeAnimEndDialog();
 		db = new DatabaseControl();
 
-		View title = BarGen.createTitleView(R.string.emotionDIY_title);
+		View title = BarButtonGenerator.createTitleView(R.string.emotionDIY_title);
 		titleLayout.addView(title);
 
 	}
@@ -170,17 +170,17 @@ public class EmotionActivity extends Activity {
 		mainLayout.removeAllViews();
 		mainTop.removeAllViews();
 
-		View tv = BarGen.createTextView(R.string.emotionDIY_help);
+		View tv = BarButtonGenerator.createTextView(R.string.emotionDIY_help);
 		mainLayout.addView(tv);
 
 		for (int i = 0; i < solutionTexts.length; ++i) {
-			View v = BarGen.createIconView(solutionTexts[i], DRAWABLE_ID[i], ClickListeners[i]);
+			View v = BarButtonGenerator.createIconView(solutionTexts[i], DRAWABLE_ID[i], ClickListeners[i]);
 			mainLayout.addView(v);
 		}
 
 		int from = mainLayout.getChildCount();
 		for (int i = from; i < MIN_BARS; ++i) {
-			View v = BarGen.createBlankView();
+			View v = BarButtonGenerator.createBlankView();
 			mainLayout.addView(v);
 		}
 
@@ -198,7 +198,7 @@ public class EmotionActivity extends Activity {
 		mainLayout.removeAllViews();
 		mainTop.removeAllViews();
 
-		View tv = BarGen.createTextView(R.string.call_to);
+		View tv = BarButtonGenerator.createTextView(R.string.call_to);
 		mainLayout.addView(tv);
 
 		String[] names = new String[3];
@@ -222,7 +222,7 @@ public class EmotionActivity extends Activity {
 			OnClickListener listener = new CallCheckOnClickListener(type, names[i], calls[i]);
 			String text = names[i];
 			if (names[i].length() > 0) {
-				View vv = BarGen.createIconView(text, R.drawable.icon_call, listener);
+				View vv = BarButtonGenerator.createIconView(text, R.drawable.icon_call, listener);
 				mainLayout.addView(vv);
 				++counter;
 			}
@@ -230,13 +230,13 @@ public class EmotionActivity extends Activity {
 		if (counter == 0) {
 			mainLayout.removeAllViews();
 
-			View tv2 = BarGen.createTextView(R.string.emotion_connect_null);
+			View tv2 = BarButtonGenerator.createTextView(R.string.emotion_connect_null);
 			mainLayout.addView(tv2);
 		}
 
 		int from = mainLayout.getChildCount();
 		for (int i = from; i < MIN_BARS; ++i) {
-			View v = BarGen.createBlankView();
+			View v = BarButtonGenerator.createBlankView();
 			mainLayout.addView(v);
 		}
 	}
@@ -256,22 +256,22 @@ public class EmotionActivity extends Activity {
 		View tv;
 		switch (selection) {
 		case 0:
-			tv = BarGen.createTextView(R.string.emotionDIY_help_case0);
+			tv = BarButtonGenerator.createTextView(R.string.emotionDIY_help_case0);
 			animId = R.anim.animation_music;
 			mediaId = R.raw.emotion_0;
 			break;
 		case 1:
-			tv = BarGen.createTextView(R.string.emotionDIY_help_case1);
+			tv = BarButtonGenerator.createTextView(R.string.emotionDIY_help_case1);
 			animId = R.anim.animation_breath;
 			mediaId = R.raw.emotion_1;
 			break;
 		case 2:
-			tv = BarGen.createTextView(R.string.emotionDIY_help_case2);
+			tv = BarButtonGenerator.createTextView(R.string.emotionDIY_help_case2);
 			animId = R.anim.animation_walk;
 			mediaId = R.raw.emotion_2;
 			break;
 		default:
-			tv = BarGen.createTextView(R.string.emotionDIY_help_case1);
+			tv = BarButtonGenerator.createTextView(R.string.emotionDIY_help_case1);
 			animId = R.anim.animation_breath;
 			mediaId = R.raw.emotion_1;
 			break;
@@ -295,7 +295,7 @@ public class EmotionActivity extends Activity {
 		}
 
 		RelativeLayout av = null;
-		av = (RelativeLayout) BarGen.createAnimationView(animId);
+		av = (RelativeLayout) BarButtonGenerator.createAnimationView(animId);
 
 		barLayout = (RelativeLayout) av.findViewById(R.id.question_progress_layout);
 		barBg = (ImageView) av.findViewById(R.id.question_progress_bar_bg);
@@ -417,14 +417,14 @@ public class EmotionActivity extends Activity {
 
 		String text = getString(R.string.emotionDIY_help_case4) + recreation;
 		View tv;
-		tv = BarGen.createTextView(text);
+		tv = BarButtonGenerator.createTextView(text);
 		mainLayout.addView(tv);
-		View vv = BarGen.createIconView(R.string.try_to_do, R.drawable.icon_ok, new EndOnClickListener(3, recreation));
+		View vv = BarButtonGenerator.createIconView(R.string.try_to_do, R.drawable.icon_ok, new EndOnClickListener(3, recreation));
 		mainLayout.addView(vv);
 
 		int from = mainLayout.getChildCount();
 		for (int i = from; i < MIN_BARS; ++i) {
-			View v = BarGen.createBlankView();
+			View v = BarButtonGenerator.createBlankView();
 			mainLayout.addView(v);
 		}
 	}
@@ -456,21 +456,21 @@ public class EmotionActivity extends Activity {
 
 		View tv;
 		if (exist)
-			tv = BarGen.createTextView(R.string.emotionDIY_help_case3);
+			tv = BarButtonGenerator.createTextView(R.string.emotionDIY_help_case3);
 		else
-			tv = BarGen.createTextView(R.string.emotionDIY_help_case3_2);
+			tv = BarButtonGenerator.createTextView(R.string.emotionDIY_help_case3_2);
 		mainLayout.addView(tv);
 
 		for (int i = 0; i < has_value.length; ++i) {
 			if (has_value[i]) {
-				View v = BarGen.createIconView(recreation[i], 0, new RecreationSelectionOnClickListener(recreation[i]));
+				View v = BarButtonGenerator.createIconView(recreation[i], 0, new RecreationSelectionOnClickListener(recreation[i]));
 				mainLayout.addView(v);
 			}
 		}
 
 		int from = mainLayout.getChildCount();
 		for (int i = from; i < MIN_BARS; ++i) {
-			View v = BarGen.createBlankView();
+			View v = BarButtonGenerator.createBlankView();
 			mainLayout.addView(v);
 		}
 	}

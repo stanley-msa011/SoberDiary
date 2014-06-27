@@ -5,7 +5,7 @@ import java.util.Random;
 import ubicomp.soberdiary.data.database.DatabaseControl;
 import ubicomp.soberdiary.data.structure.StorytellingTest;
 import ubicomp.soberdiary.main.R;
-import ubicomp.soberdiary.main.ui.BarGen;
+import ubicomp.soberdiary.main.ui.BarButtonGenerator;
 import ubicomp.soberdiary.main.ui.ScreenSize;
 import ubicomp.soberdiary.main.ui.Typefaces;
 import ubicomp.soberdiary.main.ui.toast.CustomToast;
@@ -74,29 +74,29 @@ public class StorytellingTestActivity extends Activity {
 		inputLayout = (LinearLayout) this.findViewById(R.id.st_input_layout);
 		titleText.setTypeface(wordTypefaceBold);
 
-		View messageView = BarGen.createTextView(R.string.storytelling_test_question);
+		View messageView = BarButtonGenerator.createTextView(R.string.storytelling_test_question);
 		inputLayout.addView(messageView);
 		String[] selections = settingQuestion();
 
-		View questionView = BarGen.createQuoteQuestionView(question);
+		View questionView = BarButtonGenerator.createQuoteQuestionView(question);
 		inputLayout.addView(questionView);
 
 		View selectionView = createSelectionView(selections);
 		inputLayout.addView(selectionView);
 
-		View agreeTextView = BarGen.createTextView(R.string.storytelling_test_agreement);
+		View agreeTextView = BarButtonGenerator.createTextView(R.string.storytelling_test_agreement);
 		inputLayout.addView(agreeTextView);
 
 		View agreementView = createSeekBarView();
 		inputLayout.addView(agreementView);
 
-		View submitView = BarGen.createTwoButtonView(R.string.story_test_cancel, R.string.story_test_ok, new CancelOnClickListener(), new SubmitOnClickListener());
+		View submitView = BarButtonGenerator.createTwoButtonView(R.string.story_test_cancel, R.string.story_test_ok, new CancelOnClickListener(), new SubmitOnClickListener());
 		
 		inputLayout.addView(submitView);
 		
 		int from = inputLayout.getChildCount();
 		for (int i=from;i<MIN_BARS;++i){
-			View v = BarGen.createBlankView();
+			View v = BarButtonGenerator.createBlankView();
 			inputLayout.addView(v);
 		}
 	}

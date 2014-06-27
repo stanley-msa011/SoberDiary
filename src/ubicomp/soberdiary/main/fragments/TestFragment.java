@@ -668,7 +668,6 @@ public class TestFragment extends Fragment implements GPSInterface, TestQuestion
 
 			messageView.setText("");
 			countDownText.setText("");
-			//testCircle.setBackgroundResource(BLOW_RESOURCE[0]);
 			testCircle.setImageResource(BLOW_RESOURCE[0]);
 
 			int msg_str_id = msg.getData().getInt("msg");
@@ -793,8 +792,16 @@ public class TestFragment extends Fragment implements GPSInterface, TestQuestion
 		activity.startActivity(intent);
 	}
 
+	@Override
 	public void setPairMessage() {
 		setGuideMessage(R.string.test_guide_pair_top, R.string.test_guide_pair_bottom);
+		messageView.setText("");
+		countDownText.setText("");
+		startButton.setOnClickListener(new EndTestOnClickListener());
+		startButton.setEnabled(true);
+		startButton.setVisibility(View.VISIBLE);
+		startText.setVisibility(View.VISIBLE);
+		startText.setText(R.string.ok);
 	}
 
 	@Override
