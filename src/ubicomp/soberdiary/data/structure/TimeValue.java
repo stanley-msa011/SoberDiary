@@ -39,7 +39,8 @@ public class TimeValue {
 		return new TimeValue(year, month, day, hour, timeslot, timestamp, week);
 	}
 
-	protected TimeValue(int year, int month, int day, int hour, int timeslot, long timestamp, int week) {
+	protected TimeValue(int year, int month, int day, int hour, int timeslot,
+			long timestamp, int week) {
 		this.year = year;
 		this.month = month;
 		this.day = day;
@@ -60,12 +61,21 @@ public class TimeValue {
 	}
 
 	public boolean isSameTimeBlock(TimeValue tv) {
-		return tv != null && this.year == tv.year && this.month == tv.month && this.day == tv.day
-				&& this.timeslot == tv.timeslot;
+		return tv != null && this.year == tv.year && this.month == tv.month
+				&& this.day == tv.day && this.timeslot == tv.timeslot;
 	}
 
 	public boolean isSameDay(TimeValue tv) {
-		return tv != null && this.year == tv.year && this.month == tv.month && this.day == tv.day;
+		return tv != null && this.year == tv.year && this.month == tv.month
+				&& this.day == tv.day;
+	}
+
+	public int beforeAfter(int year, int month, int day) {
+		if (this.year != year)
+			return year - this.year;
+		if (this.month != month)
+			return month - this.month;
+		return day - this.day;
 	}
 
 	public String toFileString() {
@@ -77,7 +87,8 @@ public class TimeValue {
 	}
 
 	public String toDetailString() {
-		return year + "/" + (month + 1) + "/" + day + ":" + timeslot + " @week=" + week + " ts = " + timestamp;
+		return year + "/" + (month + 1) + "/" + day + ":" + timeslot
+				+ " @week=" + week + " ts = " + timestamp;
 	}
 
 	public boolean afterADay(TimeValue tv) {
