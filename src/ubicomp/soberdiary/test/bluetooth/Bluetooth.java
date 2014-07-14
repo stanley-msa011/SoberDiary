@@ -55,7 +55,7 @@ public class Bluetooth {
 	protected static float PRESSURE_DIFF_MIN_RANGE;
 	protected static float PRESSURE_DIFF_MIN;
 	protected final static float PRESSURE_DIFF_MIN_RANGE_OLD = 50f;
-	protected final static float PRESSURE_DIFF_MIN_OLD = 900.f;
+	protected final static float PRESSURE_DIFF_MIN_OLD = 850.f;
 	protected final static float PRESSURE_DIFF_MIN_RANGE_NEW = 50f;
 	protected final static float PRESSURE_DIFF_MIN_NEW = 70.f;
 	protected final static float MAX_PRESSURE = Float.MAX_VALUE;

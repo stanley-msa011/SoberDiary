@@ -585,15 +585,17 @@ public class MainActivity extends FragmentActivity {
 			count_down_text.setText(String.valueOf(time));
 			count_down_layout.setVisibility(View.VISIBLE);
 			if (tabHost.getCurrentTab() == 0 && fragments[0] != null && fragments[0].isAdded()) {
-				if (canUpdate) {
-					((TestFragment) fragments[0]).setGuideMessage(R.string.test_guide_recovery_update_top,
-							R.string.test_guide_recovery_update_bottom);
-				} else {
-					((TestFragment) fragments[0]).setGuideMessage(R.string.test_guide_recovery_top,
-							R.string.test_guide_recovery_bottom);
+				if (((TestFragment) fragments[0]).getShowCountDown()) {
+					if (canUpdate) {
+						((TestFragment) fragments[0]).setGuideMessage(R.string.test_guide_recovery_update_top,
+								R.string.test_guide_recovery_update_bottom);
+					} else {
+						((TestFragment) fragments[0]).setGuideMessage(R.string.test_guide_recovery_top,
+								R.string.test_guide_recovery_bottom);
+					}
+					((TestFragment) fragments[0]).setStartButtonText(R.string.recoverying);
+					((TestFragment) fragments[0]).enableStartButton(false);
 				}
-				((TestFragment) fragments[0]).setStartButtonText(R.string.recoverying);
-				((TestFragment) fragments[0]).enableStartButton(false);
 			}
 
 		}

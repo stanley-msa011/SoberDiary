@@ -166,7 +166,8 @@ public class TestFragment extends Fragment implements GPSInterface, TestQuestion
 
 	private CountDownTimer testCountDownTimer = null;
 	private CountDownTimer openSensorMsgTimer = null;
-
+	private boolean showCountDown = true;
+	
 	private LinearLayout middleLayout;
 
 	private TextView guideTop, guideBottom;
@@ -174,6 +175,8 @@ public class TestFragment extends Fragment implements GPSInterface, TestQuestion
 	private Animation startButtonAnimation = AnimationUtils.loadAnimation(App.getContext(),
 			R.anim.animation_start_button);
 
+	
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -251,6 +254,7 @@ public class TestFragment extends Fragment implements GPSInterface, TestQuestion
 		ClickLog.Log(ClickLogId.TEST_ENTER);
 		checkDebug(PreferenceControl.isDebugMode(), PreferenceControl.debugType());
 		setState(STATE_INIT);
+		showCountDown = true;
 		LoadingDialogControl.dismiss();
 		if (PreferenceControl.showAdditionalQuestionnaire()) {
 			PreferenceControl.setShowAdditonalQuestionnaire();
@@ -485,6 +489,7 @@ public class TestFragment extends Fragment implements GPSInterface, TestQuestion
 			ClickLog.Log(ClickLogId.TEST_END_BUTTON);
 			stopDueToInit();
 			setState(STATE_INIT);
+			showCountDown = true;
 		}
 	}
 
@@ -657,6 +662,9 @@ public class TestFragment extends Fragment implements GPSInterface, TestQuestion
 	private class FailMessageHandler extends Handler {
 
 		public void handleMessage(Message msg) {
+			
+			showCountDown = false;
+			
 			if (msgLoadingHandler != null) {
 				msgLoadingHandler.removeMessages(0);
 				msgLoadingHandler = null;
@@ -880,6 +888,10 @@ public class TestFragment extends Fragment implements GPSInterface, TestQuestion
 		PreferenceControl.setShowAdditonalQuestionnaire();
 		addBox = new AdditionalQuestionDialog(main_layout, testFragment);
 		addBox.show();
+	}
+	
+	public boolean getShowCountDown(){
+		return showCountDown;
 	}
 
 	// Debug
