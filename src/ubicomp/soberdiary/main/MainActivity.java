@@ -44,6 +44,12 @@ import android.widget.TabHost.TabSpec;
 import android.widget.TabWidget;
 import android.widget.TextView;
 
+/**
+ * Main activity of SoberDiary. This activity contains the three functions -
+ * test, statistic, and storytelling.
+ * 
+ * @author Stanley Wang
+ */
 public class MainActivity extends FragmentActivity {
 
 	private static MainActivity mainActivity = null;

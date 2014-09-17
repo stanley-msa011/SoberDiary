@@ -16,6 +16,11 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.LinearLayout;
 
+/**
+ * Activity for showing the history of Emotion Management inserted by the user
+ * 
+ * @author Stanley Wang
+ */
 public class EmotionManageHistoryActivity extends Activity {
 
 	private ArrayList<EmotionManagement> list;
@@ -36,7 +41,7 @@ public class EmotionManageHistoryActivity extends Activity {
 	private long timeInMillis;
 	private TimeValue curTV;
 	private int prevPosition = -1;
-	
+
 	private static final int MIN_BARS = ScreenSize.getMinBars() - 1;
 
 	@Override

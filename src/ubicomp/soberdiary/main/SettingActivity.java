@@ -25,6 +25,11 @@ import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+/**
+ * Activity for normal user setting
+ * 
+ * @author Stanley Wang
+ */
 public class SettingActivity extends Activity {
 
 	private LayoutInflater inflater;

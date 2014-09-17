@@ -19,7 +19,12 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 
-public class GPSService extends Service{
+/**
+ * Service for handling GPS function
+ * 
+ * @author Stanley Wang
+ */
+public class GPSService extends Service {
 
 	private CustomLocationListener gpsLocationListener;
 	private CustomLocationListener networkLocationListener;
@@ -28,61 +33,60 @@ public class GPSService extends Service{
 	private BufferedWriter writer, writerAccuracy;
 	private Location bestLoc = null;
 	private static final int gap = 10;
-	
+
 	public final static long GPS_TOTAL_TIME = 33000L;
 	private final static long GPS_SEARCH_TIME = 30000L;
-	
+
 	private static final String TAG = "GPS_SERVICE";
-	
+
 	private Timer timer = null;
-	
-	public int onStartCommand(Intent intent, int flags,int startId){
-		Log.d(TAG,"start the service");
-		
+
+	@Override
+	public int onStartCommand(Intent intent, int flags, int startId) {
+		Log.d(TAG, "start the service");
+
 		super.onStartCommand(intent, flags, startId);
-		 bestLoc = null;
+		bestLoc = null;
 		Bundle data = intent.getExtras();
 		String directory = data.getString("directory");
-		
-		Log.d(TAG,"dir: "+directory);
-		
+
+		Log.d(TAG, "dir: " + directory);
+
 		locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-		
-		
-		
-		file = new File(getStorageDirectory(directory),"geo.txt");
+
+		file = new File(getStorageDirectory(directory), "geo.txt");
 		try {
 			writer = new BufferedWriter(new FileWriter(file));
 		} catch (IOException e) {
-			Log.d(TAG,"FILE: FAIL TO OPEN");
+			Log.d(TAG, "FILE: FAIL TO OPEN");
 			writer = null;
 		}
-		
-		fileAccuracy = new File(getStorageDirectory(directory),"geoAccuracy.txt");
+
+		fileAccuracy = new File(getStorageDirectory(directory), "geoAccuracy.txt");
 		try {
 			writerAccuracy = new BufferedWriter(new FileWriter(fileAccuracy));
 		} catch (IOException e) {
-			Log.d(TAG,"FILE: FAIL TO OPEN");
+			Log.d(TAG, "FILE: FAIL TO OPEN");
 			writerAccuracy = null;
 		}
-		
+
 		boolean gps_enabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-		
+
 		boolean network_enabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-		
-		if (gps_enabled){
+
+		if (gps_enabled) {
 			gpsLocationListener = new CustomLocationListener();
-			locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,500,10,gpsLocationListener);
+			locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 500, 10, gpsLocationListener);
 		}
-		if(network_enabled){
+		if (network_enabled) {
 			networkLocationListener = new CustomLocationListener();
-			locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,500,10,networkLocationListener);
+			locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 500, 10, networkLocationListener);
 		}
 		timer = new Timer();
 		timer.schedule(new TimeoutTask(), GPS_SEARCH_TIME);
 
 		this.stopSelf();
-		
+
 		return Service.START_REDELIVER_INTENT;
 	}
 
@@ -90,115 +94,123 @@ public class GPSService extends Service{
 	public IBinder onBind(Intent arg0) {
 		return null;
 	}
-	
-	private File getStorageDirectory(String timestamp){
-		File dir =MainStorage.getMainStorageDirectory();
-		
-		File mainDirectory = new File(dir,timestamp);
+
+	private File getStorageDirectory(String timestamp) {
+		File dir = MainStorage.getMainStorageDirectory();
+
+		File mainDirectory = new File(dir, timestamp);
 		if (!mainDirectory.exists())
-			if (!mainDirectory.mkdirs()){
+			if (!mainDirectory.mkdirs()) {
 				return null;
 			}
 		return mainDirectory;
 	}
-	
-	private class CustomLocationListener implements LocationListener{
+
+	private class CustomLocationListener implements LocationListener {
 
 		@Override
 		public void onLocationChanged(Location location) {
-			
-			
-			if (location!=null){
-				Log.d(TAG,"update loc: "+location.getProvider());
+
+			if (location != null) {
+				Log.d(TAG, "update loc: " + location.getProvider());
 				if (bestLoc == null)
 					bestLoc = location;
 				else
 					bestLoc = getBetterLocation(location, bestLoc);
 			}
 		}
+
 		@Override
-		public void onProviderDisabled(String provider) {}
+		public void onProviderDisabled(String provider) {
+		}
+
 		@Override
-		public void onProviderEnabled(String provider) {}
+		public void onProviderEnabled(String provider) {
+		}
+
 		@Override
-		public void onStatusChanged(String provider, int status, Bundle extras) {}
+		public void onStatusChanged(String provider, int status, Bundle extras) {
+		}
 	}
-	
-	private void sendLocation(Location loc){
-		if (loc!=null){
+
+	private void sendLocation(Location loc) {
+		if (loc != null) {
 			double latitude = loc.getLatitude();
 			double longitude = loc.getLongitude();
-		
-			String location_str = latitude+"\t"+longitude;
+
+			String location_str = latitude + "\t" + longitude;
 			float accuracy = loc.getAccuracy();
-			Log.d("GEO","ACCURACY="+accuracy);
+			Log.d("GEO", "ACCURACY=" + accuracy);
 			write_to_file(location_str);
 			write_to_fileAccuracy(accuracy);
-		}else{
+		} else {
 			boolean gps_enabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 			boolean network_enabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-			int l1,l2;
-			l1 = gps_enabled?9999:999;
-			l2 = network_enabled?9999:999;
-			String location_str = l1+"\t"+l2;
-			
+			int l1, l2;
+			l1 = gps_enabled ? 9999 : 999;
+			l2 = network_enabled ? 9999 : 999;
+			String location_str = l1 + "\t" + l2;
+
 			write_to_file(location_str);
 		}
 	}
-	
-	private void write_to_file(String str){
-		if (writer!=null){
+
+	private void write_to_file(String str) {
+		if (writer != null) {
 			try {
 				writer.write(str);
 				writer.close();
 				writer = null;
-			} catch (IOException e) {	}
+			} catch (IOException e) {
+			}
 		}
 	}
-	
-	private void write_to_fileAccuracy(float accuracy){
-		if (writerAccuracy!=null){
+
+	private void write_to_fileAccuracy(float accuracy) {
+		if (writerAccuracy != null) {
 			try {
 				writerAccuracy.write(String.valueOf(accuracy));
 				writerAccuracy.close();
 				writerAccuracy = null;
-			} catch (IOException e) {	}
+			} catch (IOException e) {
+			}
 		}
 	}
-	
-	private class TimeoutTask extends TimerTask{
+
+	private class TimeoutTask extends TimerTask {
 		@Override
 		public void run() {
 			sendLocation(bestLoc);
 			try {
-				Thread.sleep(GPS_TOTAL_TIME - GPS_SEARCH_TIME +100);
-			} catch (InterruptedException e) {}
-			
-			if(locationManager !=null){
-				if (gpsLocationListener != null){
+				Thread.sleep(GPS_TOTAL_TIME - GPS_SEARCH_TIME + 100);
+			} catch (InterruptedException e) {
+			}
+
+			if (locationManager != null) {
+				if (gpsLocationListener != null) {
 					locationManager.removeUpdates(gpsLocationListener);
-					Log.d("GPS","remove gps");
+					Log.d("GPS", "remove gps");
 				}
-				if (networkLocationListener != null){
+				if (networkLocationListener != null) {
 					locationManager.removeUpdates(networkLocationListener);
-					Log.d("GPS","remove network");
+					Log.d("GPS", "remove network");
 				}
 			}
-			
+
 			locationManager = null;
 			gpsLocationListener = null;
 			networkLocationListener = null;
-			
+
 			stopSelf();
 		}
-		
+
 	}
-	
-//----------------------------------------------------------------------------------------------------------------------	
+
+	// ----------------------------------------------------------------------------------------------------------------------
 	private Location getBetterLocation(Location newLocation, Location currentBestLocation) {
 		if (newLocation == null)
 			return currentBestLocation;
-		
+
 		if (currentBestLocation == null)
 			return newLocation;
 
@@ -222,7 +234,8 @@ public class GPSService extends Service{
 		// Check if the old and new location are from the same provider
 		boolean isFromSameProvider = isSameProvider(newLocation.getProvider(), currentBestLocation.getProvider());
 
-		// Determine location quality using a combination of timeliness and accuracy
+		// Determine location quality using a combination of timeliness and
+		// accuracy
 		if (isMoreAccurate)
 			return newLocation;
 		else if (isNewer && !isLessAccurate)
@@ -233,11 +246,11 @@ public class GPSService extends Service{
 		return currentBestLocation;
 	}
 
-    private boolean isSameProvider(String provider1, String provider2) {
-        if (provider1 == null) {
-          return provider2 == null;
-        }
-        return provider1.equals(provider2);
-    }
-	
+	private boolean isSameProvider(String provider1, String provider2) {
+		if (provider1 == null) {
+			return provider2 == null;
+		}
+		return provider1.equals(provider2);
+	}
+
 }

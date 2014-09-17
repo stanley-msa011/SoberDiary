@@ -108,6 +108,7 @@ public class DatabaseRestore extends AsyncTask<Void, Void, Void> {
 		context.startActivity(intent);
 	}
 
+	/** Unzip the backup file */
 	private void unzip() {
 		try {
 			ZipInputStream zin = new ZipInputStream(new FileInputStream(zipFile));
@@ -131,6 +132,10 @@ public class DatabaseRestore extends AsyncTask<Void, Void, Void> {
 		}
 	}
 
+	/**
+	 * Restore Table Alcoholic related data Set user ID (UID), start date, and
+	 * the # of self-help counters exchanged for coupons
+	 */
 	private void restoreAlcoholic() {
 		String filename = "alcoholic";
 		File f = new File(dir + "/" + uid + "/" + filename + ".restore");
@@ -167,6 +172,7 @@ public class DatabaseRestore extends AsyncTask<Void, Void, Void> {
 		}
 	}
 
+	/** Restore from the table Detection */
 	private void restoreDetection() {
 		String filename = "detection";
 		File f = new File(dir + "/" + uid + "/" + filename + ".restore");
@@ -202,6 +208,10 @@ public class DatabaseRestore extends AsyncTask<Void, Void, Void> {
 		}
 	}
 
+	/**
+	 * Restore from the table Emotion DIY (Only restored # of self-help counters
+	 * got by the user)
+	 */
 	private void restoreEmotionDIY() {
 		String filename = "emotiondiy";
 		File f = new File(dir + "/" + uid + "/" + filename + ".restore");
@@ -230,6 +240,10 @@ public class DatabaseRestore extends AsyncTask<Void, Void, Void> {
 		}
 	}
 
+	/**
+	 * Restore from the table Questionnaire (Only restore the # self-help
+	 * counters got by the user)
+	 */
 	private void restoreQuestionnaire() {
 		String filename = "questionnaire";
 		File f = new File(dir + "/" + uid + "/" + filename + ".restore");
@@ -258,6 +272,7 @@ public class DatabaseRestore extends AsyncTask<Void, Void, Void> {
 		}
 	}
 
+	/** Restore from the table Emotion Management */
 	private void restoreEmotionManagement() {
 		String filename = "emotionmanage";
 		File f = new File(dir + "/" + uid + "/" + filename + ".restore");
@@ -305,6 +320,10 @@ public class DatabaseRestore extends AsyncTask<Void, Void, Void> {
 		}
 	}
 
+	/**
+	 * Restore from the table UserVoiceRecord and copy the audio files into the
+	 * corresponded directory
+	 */
 	private void restoreUserVoiceRecord() {
 		String filename = "storyrecord";
 		File f = new File(dir + "/" + uid + "/" + filename + ".restore");
@@ -365,6 +384,10 @@ public class DatabaseRestore extends AsyncTask<Void, Void, Void> {
 		}
 	}
 
+	/**
+	 * Restore from the table AdditionalQuestionnaire (Only restore the # of
+	 * self-help counters got by the user)
+	 */
 	private void restoreAdditionalQuestionnaire() {
 		String filename = "additional";
 		File f = new File(dir + "/" + uid + "/" + filename + ".restore");
@@ -395,6 +418,10 @@ public class DatabaseRestore extends AsyncTask<Void, Void, Void> {
 		}
 	}
 
+	/**
+	 * Restore from the table Storytelling Read (Only restore the # of self-help
+	 * counters got by the user)
+	 */
 	private void restoreStorytellingRead() {
 		String filename = "storyread";
 		File f = new File(dir + "/" + uid + "/" + filename + ".restore");
@@ -425,6 +452,10 @@ public class DatabaseRestore extends AsyncTask<Void, Void, Void> {
 		}
 	}
 
+	/**
+	 * Restore from the table Storytelling Test (Only restore the # of self-help
+	 * counters got by the user)
+	 */
 	private void restoreStorytellingTest() {
 		String filename = "storytest";
 		File f = new File(dir + "/" + uid + "/" + filename + ".restore");
@@ -455,6 +486,10 @@ public class DatabaseRestore extends AsyncTask<Void, Void, Void> {
 		}
 	}
 
+	/**
+	 * Restore from the table Facebook (Only restore the # of self-help
+	 * counters got by the user)
+	 */
 	private void restoreFacebookInfo() {
 		String filename = "facebook";
 		File f = new File(dir + "/" + uid + "/" + filename + ".restore");

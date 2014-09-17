@@ -1,4 +1,3 @@
-
 package ubicomp.soberdiary.main;
 
 import static ubicomp.soberdiary.system.config.Config.SENDER_ID;
@@ -13,6 +12,12 @@ import android.content.Intent;
 import com.google.android.gcm.GCMBaseIntentService;
 import com.google.android.gcm.GCMRegistrar;
 
+/**
+ * Service for handling GCM service register and unregister (unregister is not
+ * activated )
+ * 
+ * @author Stanley Wang
+ */
 public class GCMIntentService extends GCMBaseIntentService {
 
 	public GCMIntentService() {
@@ -43,11 +48,11 @@ public class GCMIntentService extends GCMBaseIntentService {
 
 	private static void generateNotification(Context context, String message) {
 		String msgText = message;
-		
+
 		DatabaseControl db = new DatabaseControl();
 		long ts = System.currentTimeMillis();
-		db.insertGCMRead(new GCMRead(ts,0,msgText,false));
-		
+		db.insertGCMRead(new GCMRead(ts, 0, msgText, false));
+
 		GCMNotificationControl.generate(context);
 
 	}

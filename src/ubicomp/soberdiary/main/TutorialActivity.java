@@ -16,6 +16,11 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+/**
+ * Activity for user tutorial
+ * 
+ * @author Stanley Wang
+ */
 public class TutorialActivity extends Activity {
 
 	private ImageView replay, arrow1, arrow2, arrow3;
@@ -29,20 +34,20 @@ public class TutorialActivity extends Activity {
 	private Typeface digitTypeface;
 	private Typeface wordTypefaceBold;
 
-	private Animation anim1,anim2,anim3;
+	private Animation anim1, anim2, anim3;
 
 	private final static String DEVICE_NAME_FORMAL_NEW = "sober456_";
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+
 		String sensorName = PreferenceControl.getSensorID();
-		if (sensorName !=null && sensorName.startsWith(DEVICE_NAME_FORMAL_NEW))
+		if (sensorName != null && sensorName.startsWith(DEVICE_NAME_FORMAL_NEW))
 			PreferenceControl.setUseNewSensor(true);
 		else
 			PreferenceControl.setUseNewSensor(false);
-		
+
 		if (PreferenceControl.getUseNewSensor())
 			setContentView(R.layout.activity_tutorial_new_sensor);
 		else
@@ -72,7 +77,7 @@ public class TutorialActivity extends Activity {
 		anim1 = AnimationUtils.loadAnimation(this, R.anim.animation_tutorial_arrow);
 		anim2 = AnimationUtils.loadAnimation(this, R.anim.animation_tutorial_arrow);
 		anim3 = AnimationUtils.loadAnimation(this, R.anim.animation_tutorial_arrow);
-		
+
 	}
 
 	@Override
@@ -94,7 +99,7 @@ public class TutorialActivity extends Activity {
 	}
 
 	private void settingState(int state) {
-		step.setText(String.valueOf(state+1));
+		step.setText(String.valueOf(state + 1));
 		if (anim1 != null)
 			anim1.cancel();
 		if (anim2 != null)

@@ -13,11 +13,18 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+/**
+ * Control insertion and modification on database for the restore process
+ * 
+ * @author Stanley Wang
+ * @see ubicomp.soberdiary.data.database.DatabaseRestoreVer1
+ */
 public class DatabaseRestoreControlVer1 {
 
 	private SQLiteOpenHelper dbHelper = null;
 	private SQLiteDatabase db = null;
-	
+
+	/** Constructor */
 	public DatabaseRestoreControlVer1() {
 		dbHelper = new DBHelper(App.getContext());
 	}
@@ -25,13 +32,14 @@ public class DatabaseRestoreControlVer1 {
 	public void restoreDetection(Detection data) {
 		db = dbHelper.getWritableDatabase();
 
-		String sql = "SELECT * FROM Detection WHERE year = " + data.getTv().getYear() + " AND month=" + data.getTv().getMonth()
-				+ " AND day = " + data.getTv().getDay() + " AND timeslot=" + data.getTv().getTimeslot();
+		String sql = "SELECT * FROM Detection WHERE year = " + data.getTv().getYear() + " AND month="
+				+ data.getTv().getMonth() + " AND day = " + data.getTv().getDay() + " AND timeslot="
+				+ data.getTv().getTimeslot();
 
 		Cursor cursor = db.rawQuery(sql, null);
-		boolean isPrime = ! cursor.moveToFirst();
+		boolean isPrime = !cursor.moveToFirst();
 		cursor.close();
-		
+
 		ContentValues content = new ContentValues();
 		content.put("brac", data.getBrac());
 		content.put("year", data.getTv().getYear());

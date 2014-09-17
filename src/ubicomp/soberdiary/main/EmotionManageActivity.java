@@ -24,6 +24,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
+/**
+ * Activity for the Emotion Management function (insert)
+ * 
+ * @author Stanley Wang
+ */
 public class EmotionManageActivity extends Activity {
 
 	private LayoutInflater inflater;
@@ -35,7 +40,7 @@ public class EmotionManageActivity extends Activity {
 
 	private int emotion, r_type;
 	private String reason;
-	
+
 	private Drawable upDrawable, downDrawable;
 
 	private static final int[] EMOTION_DRAWABLE_ID = { R.drawable.emotion_type_0, R.drawable.emotion_type_1,
@@ -86,8 +91,8 @@ public class EmotionManageActivity extends Activity {
 		upDrawable = getResources().getDrawable(R.drawable.icon_list_hide);
 		downDrawable = getResources().getDrawable(R.drawable.icon_list_show);
 
-		View title = BarButtonGenerator.createTitleView(getString(R.string.emotion_manage_title0) + curTV.toSimpleDateString()
-				+ getString(R.string.emotion_manage_title1));
+		View title = BarButtonGenerator.createTitleView(getString(R.string.emotion_manage_title0)
+				+ curTV.toSimpleDateString() + getString(R.string.emotion_manage_title1));
 		titleLayout.addView(title);
 
 	}
@@ -105,6 +110,7 @@ public class EmotionManageActivity extends Activity {
 		super.onPause();
 	}
 
+	/** set view for asking Question of users' emotion */
 	private void setQuestionEmotion() {
 		mainLayout.removeAllViews();
 
@@ -114,13 +120,14 @@ public class EmotionManageActivity extends Activity {
 		titleLayout.addView(tv);
 
 		for (int i = 0; i < emotionTexts.length; ++i) {
-			View v = BarButtonGenerator.createIconViewInverse(emotionTexts[i], EMOTION_DRAWABLE_ID[i], new EmotionOnClickListener(
-					i));
+			View v = BarButtonGenerator.createIconViewInverse(emotionTexts[i], EMOTION_DRAWABLE_ID[i],
+					new EmotionOnClickListener(i));
 			mainLayout.addView(v);
 		}
 
 	}
 
+	/** set view for asking Question of which type of reason affects the user */
 	private void setQuestionType() {
 		mainLayout.removeAllViews();
 
@@ -130,7 +137,8 @@ public class EmotionManageActivity extends Activity {
 		titleLayout.addView(tv);
 
 		for (int i = 0; i < relatedTexts.length; ++i) {
-			View vv = BarButtonGenerator.createIconView(relatedTexts[i], RELATED_DRAWABLE_ID[i], new RelatedOnClickListener(i));
+			View vv = BarButtonGenerator.createIconView(relatedTexts[i], RELATED_DRAWABLE_ID[i],
+					new RelatedOnClickListener(i));
 			mainLayout.addView(vv);
 		}
 		int from = mainLayout.getChildCount();
@@ -143,7 +151,8 @@ public class EmotionManageActivity extends Activity {
 
 	private String[] select_item;
 
-	private void setQuestionEdit() {
+	/** set view for asking Question of the reason affecting the emotion */
+	private void setQuestionReason() {
 		mainLayout.removeAllViews();
 
 		if (titleLayout.getChildCount() > 1)
@@ -173,6 +182,7 @@ public class EmotionManageActivity extends Activity {
 
 	}
 
+	/** set view for asking Question of end check */
 	private void setQuestionEnd() {
 		mainLayout.removeAllViews();
 		if (r_texts != null)
@@ -193,6 +203,13 @@ public class EmotionManageActivity extends Activity {
 		}
 	}
 
+	/**
+	 * set view for filling out the reason based on the type of the reason
+	 * 
+	 * @param type
+	 *            type of the reason
+	 * @return View view for editing the reason
+	 */
 	private View createEditView(int type) {
 
 		RelativeLayout layout = (RelativeLayout) inflater.inflate(R.layout.bar_edit_item, null);
@@ -243,8 +260,8 @@ public class EmotionManageActivity extends Activity {
 		public void onClick(View v) {
 			ClickLog.Log(ClickLogId.EMOTION_MANAGE_SELECTION);
 
-			int addScore = db.insertEmotionManagement(new EmotionManagement(System.currentTimeMillis(), curTV.getYear(),
-					curTV.getMonth(), curTV.getDay(), emotion, r_type, reason, 0));
+			int addScore = db.insertEmotionManagement(new EmotionManagement(System.currentTimeMillis(),
+					curTV.getYear(), curTV.getMonth(), curTV.getDay(), emotion, r_type, reason, 0));
 
 			if (PreferenceControl.checkCouponChange())
 				PreferenceControl.setCouponChange(true);
@@ -284,7 +301,7 @@ public class EmotionManageActivity extends Activity {
 			ClickLog.Log(ClickLogId.EMOTION_MANAGE_SELECTION);
 			state = 2;
 			r_type = type;
-			setQuestionEdit();
+			setQuestionReason();
 		}
 	}
 
@@ -317,7 +334,7 @@ public class EmotionManageActivity extends Activity {
 				else if (state == 1)
 					setQuestionType();
 				else if (state == 2)
-					setQuestionEdit();
+					setQuestionReason();
 				else if (state == 3)
 					setQuestionEnd();
 			}
@@ -338,7 +355,8 @@ public class EmotionManageActivity extends Activity {
 				updown.setImageDrawable(downDrawable);
 			} else {
 				for (int i = 0; i < select_item.length; ++i) {
-					View vv = BarButtonGenerator.createIconView(select_item[i], 0, new ChangeTextOnClickListener(select_item[i]));
+					View vv = BarButtonGenerator.createIconView(select_item[i], 0, new ChangeTextOnClickListener(
+							select_item[i]));
 					mainLayout.addView(vv, 3 + i);
 				}
 				updown.setImageDrawable(upDrawable);

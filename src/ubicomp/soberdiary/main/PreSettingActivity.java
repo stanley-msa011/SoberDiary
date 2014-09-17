@@ -22,6 +22,11 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
 
+/**
+ * The activity is for developer setting
+ * 
+ * @author Stanley Wang
+ */
 public class PreSettingActivity extends Activity {
 
 	private EditText uid, target_good, target, drink;
@@ -162,7 +167,7 @@ public class PreSettingActivity extends Activity {
 		AlertDialog dummyDataDialog = builder.create();
 		dummyDataButton = (Button) findViewById(R.id.debug_dummy_data);
 		dummyDataButton.setOnClickListener(new AlertOnClickListener(dummyDataDialog));
-		
+
 	}
 
 	private class RestoreOnClickListener implements DialogInterface.OnClickListener {
@@ -172,7 +177,7 @@ public class PreSettingActivity extends Activity {
 			rd.execute();
 		}
 	}
-	
+
 	private class RestoreVer1OnClickListener implements DialogInterface.OnClickListener {
 		@Override
 		public void onClick(DialogInterface dialog, int which) {
@@ -180,7 +185,7 @@ public class PreSettingActivity extends Activity {
 			rd.execute();
 		}
 	}
-	
+
 	private class DummyDataOnClickListener implements DialogInterface.OnClickListener {
 		@Override
 		public void onClick(DialogInterface dialog, int which) {

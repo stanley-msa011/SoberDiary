@@ -32,6 +32,11 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Typeface;
 
+/**
+ * Activity for storytelling test function
+ * 
+ * @author Stanley Wang
+ */
 public class StorytellingTestActivity extends Activity {
 
 	private LinearLayout inputLayout;
@@ -56,10 +61,10 @@ public class StorytellingTestActivity extends Activity {
 	private static final String[] labels = { "A.", "B.", "C." };
 
 	private static final int MIN_BARS = ScreenSize.getMinBars();
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_storytelling_test);
@@ -90,12 +95,13 @@ public class StorytellingTestActivity extends Activity {
 		View agreementView = createSeekBarView();
 		inputLayout.addView(agreementView);
 
-		View submitView = BarButtonGenerator.createTwoButtonView(R.string.story_test_cancel, R.string.story_test_ok, new CancelOnClickListener(), new SubmitOnClickListener());
-		
+		View submitView = BarButtonGenerator.createTwoButtonView(R.string.story_test_cancel, R.string.story_test_ok,
+				new CancelOnClickListener(), new SubmitOnClickListener());
+
 		inputLayout.addView(submitView);
-		
+
 		int from = inputLayout.getChildCount();
-		for (int i=from;i<MIN_BARS;++i){
+		for (int i = from; i < MIN_BARS; ++i) {
 			View v = BarButtonGenerator.createBlankView();
 			inputLayout.addView(v);
 		}
@@ -105,7 +111,7 @@ public class StorytellingTestActivity extends Activity {
 		String[] questions = null;
 		String[] answers = null;
 		Resources r = App.getContext().getResources();
-		int questionWeek = imageWeek%12;
+		int questionWeek = imageWeek % 12;
 		switch (questionWeek) {
 		case 0:
 			questions = r.getStringArray(R.array.quote_question_0);
@@ -234,24 +240,23 @@ public class StorytellingTestActivity extends Activity {
 	}
 
 	/*
-	private class SelectionChangeListener implements RadioGroup.OnCheckedChangeListener {
-		@Override
-		public void onCheckedChanged(RadioGroup group, int checkedId) {
-			ClickLog.Log(ClickLogId.STORYTELLING_TEST_SELECT);
-			TextView tv = (TextView) group.findViewById(checkedId);
-			selectedAnswer = tv.getText().toString().substring(2);
-		}
-	}
-	*/
-	
+	 * private class SelectionChangeListener implements
+	 * RadioGroup.OnCheckedChangeListener {
+	 * 
+	 * @Override public void onCheckedChanged(RadioGroup group, int checkedId) {
+	 * ClickLog.Log(ClickLogId.STORYTELLING_TEST_SELECT); TextView tv =
+	 * (TextView) group.findViewById(checkedId); selectedAnswer =
+	 * tv.getText().toString().substring(2); } }
+	 */
+
 	private class SelectionChangeListener implements CompoundButton.OnCheckedChangeListener {
 
 		@Override
 		public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-			if (isChecked){
+			if (isChecked) {
 				ClickLog.Log(ClickLogId.STORYTELLING_TEST_SELECT);
-				for (int i=0;i<selections.length;++i)
-					if (selections[i].getId()!= buttonView.getId())
+				for (int i = 0; i < selections.length; ++i)
+					if (selections[i].getId() != buttonView.getId())
 						selections[i].setChecked(false);
 				selectedAnswer = buttonView.getText().toString().substring(2);
 			}

@@ -49,6 +49,11 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
 
+/**
+ * Activity for user to upload Storytelling image on their facebook
+ * 
+ * @author Stanley Wang
+ */
 public class FacebookActivity extends Activity {
 
 	private static final String TAG = "FACEBOOK";
@@ -76,12 +81,13 @@ public class FacebookActivity extends Activity {
 	private Bitmap state_bmp;
 
 	private UiLifecycleHelper uiHelper;
-	
-	private static final int[] choices = {R.string.fb_friend,R.string.fb_self};
-	private static final int[] icons = {R.drawable.fb_friend,R.drawable.fb_self};
 
-	private SingleIconRadioGroup sendRadioGroup =new SingleIconRadioGroup(App.getContext(),choices,icons,0,ClickLogId.FACEBOOK_PRIVACY);
-	
+	private static final int[] choices = { R.string.fb_friend, R.string.fb_self };
+	private static final int[] icons = { R.drawable.fb_friend, R.drawable.fb_self };
+
+	private SingleIconRadioGroup sendRadioGroup = new SingleIconRadioGroup(App.getContext(), choices, icons, 0,
+			ClickLogId.FACEBOOK_PRIVACY);
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -122,11 +128,10 @@ public class FacebookActivity extends Activity {
 		View privacyTextView = BarButtonGenerator.createTextView(R.string.fb_privacy);
 		inputLayout.addView(privacyTextView);
 		LinearLayout.LayoutParams privacyParam = (LinearLayout.LayoutParams) privacyTextView.getLayoutParams();
-		privacyParam.topMargin=(int) App.getContext().getResources().getDimension(R.dimen.fb_gap);
-		
-		privacySelection = sendRadioGroup.getView();//createSendGroupView();
+		privacyParam.topMargin = (int) App.getContext().getResources().getDimension(R.dimen.fb_gap);
+
+		privacySelection = sendRadioGroup.getView();// createSendGroupView();
 		inputLayout.addView(privacySelection);
-		
 
 		shareButton = BarButtonGenerator.createIconView(R.string.fb_share, 0, new SendOnClickListener());
 
