@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="javadoc">
+    <target name="javadoc">
+        <javadoc access="public" additionalparam=" -encoding UTF-8 -charset UTF-8" author="true" classpath="../facebook-android-sdk-3.8.0/facebook/bin/facebooksdk.jar;libs/android-support-v4.jar;../facebook-android-sdk-3.8.0/facebook/libs/android-support-v4.jar;libs/httpmime-4.3.3.jar;libs/httpcore-4.3.2.jar" destdir="doc" doctitle="SoberDiary" nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar="false" notree="false" packagenames="ubicomp.soberdiary.data.database,ubicomp.soberdiary.main,ubicomp.soberdiary.test,ubicomp.soberdiary.system.gcm,ubicomp.soberdiary.system.uploader,ubicomp.soberdiary.storytelling.facebook,ubicomp.soberdiary.statistic.ui.block,ubicomp.soberdiary.data.file,ubicomp.soberdiary.test.camera,ubicomp.soberdiary.test.ui,ubicomp.soberdiary.main.ui,com.google.android.gcm,ubicomp.soberdiary.system.clicklog,ubicomp.soberdiary.statistic.ui,ubicomp.soberdiary.system.config,ubicomp.soberdiary.statistic.data,ubicomp.soberdiary.storytelling.ui,ubicomp.soberdiary.statistic.ui.questionnaire.content,ubicomp.soberdiary.main.ui.toast,ubicomp.soberdiary.test.data,com.facebook.android,ubicomp.soberdiary.system.check,ubicomp.soberdiary.system.cleaner,ubicomp.soberdiary.main.ui.spinnergroup,ubicomp.soberdiary.test.gps,ubicomp.soberdiary.statistic.ui.questionnaire.listener,ubicomp.soberdiary.data.structure,ubicomp.soberdiary.main.fragments,ubicomp.soberdiary.test.bluetooth" source="1.7" sourcepath="gen;src" splitindex="true" use="true" version="true">
+            <link href="file:/C:/Users/Wang/workspace/sober_diary/doc/"/>
+            <link href="file:/C:/Program%20Files%20(x86)/Android/android-sdk/docs/reference/"/>
+        </javadoc>
+    </target>
+</project>
